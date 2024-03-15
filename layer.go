@@ -58,7 +58,7 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 	}
 }
 
-func (g *EgridenGame) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, xOffset, yOffset float64) *GridLayer {
+func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, xOffset, yOffset float64) *GridLayer {
 	ln := len(g.gridLayers)
 	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, xOffset, yOffset))
 	return g.gridLayers[ln]
@@ -76,16 +76,17 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 }
 
 func (l *GridLayer) AddObject(o Gobject, x, y int) {
+	copy := *o.(*BaseGobject)
 	if Warnings && l.IsOccupiedAt(x, y) {
 		fmt.Printf(
 			"Egriden WARNING: Gobject already exists at (%d,%d) in layer %s (%d). It will be overwritten.",
 			x, y, l.name, l.z)
 	}
 
-	o.setXY(x, y)
+	copy.setXY(x, y)
 	if l.mode == Sparce {
-		l.mapMat[vec{x, y}] = o
+		l.mapMat[vec{x, y}] = &copy
 		return
 	}
-	l.sliceMat[y][x] = o
+	l.sliceMat[y][x] = &copy
 }

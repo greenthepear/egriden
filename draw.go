@@ -2,34 +2,46 @@ package egriden
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-func (l GridLayer) draw(screen *ebiten.Image) {
+func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(x, y)
+	return op
+}
+
+func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
+	for y := range l.height {
+		for x := range l.width {
+			on.DrawImage(l.sliceMat[y][x].Sprite(),
+				createDrawImageOptionsForXY(
+					float64(x)*float64(l.squareLength)+l.xOffset,
+					float64(y)*float64(l.squareLength)+l.yOffset))
+		}
+	}
+}
+
+func (l *GridLayer) RefreshImage() {
+	img := ebiten.NewImage(
+		l.width*l.squareLength, l.height*l.squareLength)
+	l.drawFromSliceMat(img)
+	l.staticImage = img
+}
+
+func (l GridLayer) Draw(screen *ebiten.Image) {
 	switch l.mode {
 	case Sparce:
 		for vec, o := range l.mapMat {
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(
-				float64(vec.x)+l.xOffset,
-				float64(vec.y)+l.yOffset)
-
-			screen.DrawImage(o.Sprite(), op)
+			screen.DrawImage(o.Sprite(),
+				createDrawImageOptionsForXY(
+					float64(vec.x)*float64(l.squareLength)+l.xOffset,
+					float64(vec.y)*float64(l.squareLength)+l.yOffset))
 		}
 	case Dense:
-		for y := range l.height {
-			for x := range l.width {
-				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Translate(
-					float64(x)+l.xOffset,
-					float64(y)+l.yOffset)
-
-				screen.DrawImage(
-					l.sliceMat[y][x].Sprite(), op)
-			}
-		}
+		l.drawFromSliceMat(screen)
 	case Static:
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(
-			l.xOffset,
-			l.yOffset)
-		screen.DrawImage(l.staticImage, op)
+		if l.staticImage == nil {
+			l.RefreshImage()
+		}
+		screen.DrawImage(l.staticImage,
+			createDrawImageOptionsForXY(l.xOffset*float64(l.squareLength), l.yOffset*float64(l.squareLength)))
 	}
 }

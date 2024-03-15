@@ -28,11 +28,11 @@ func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
 	return BaseGobject{name, 0, 0, &sprites}
 }
 
-func (o BaseGobject) Name() string {
+func (o *BaseGobject) Name() string {
 	return o.name
 }
 
-func (o BaseGobject) XY() (int, int) {
+func (o *BaseGobject) XY() (int, int) {
 	return o.x, o.y
 }
 
@@ -61,4 +61,9 @@ func (o *BaseGobject) SetFrame(i int) {
 func (o *BaseGobject) NextFrame() {
 	o.SetFrame(
 		o.sprites.sequences[o.sprites.currentSequenceKey].frameIndex + 1)
+}
+
+func (o *BaseGobject) Sprite() *ebiten.Image {
+	s := o.sprites.sequences[o.sprites.currentSequenceKey]
+	return s.frames[s.frameIndex]
 }
