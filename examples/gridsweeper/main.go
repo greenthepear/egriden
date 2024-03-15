@@ -61,13 +61,15 @@ func main() {
 
 	for x := range defGridWidth {
 		for y := range defGridHeight {
-			lbg.AddObject(&objBacktile, x, y)
-			lre.AddObject(&objRevealTile, x, y)
+			lbg.AddObject(objBacktile.Build(), x, y)
+			backtileCopy := objRevealTile.Build()
+			backtileCopy.SetFrame(rand.IntN(3))
+			lre.AddObject(backtileCopy, x, y)
 		}
 	}
 
 	for range 6 {
-		lbo.AddObject(&objBomb, rand.IntN(defGridWidth), rand.IntN(defGridHeight))
+		lbo.AddObject(objBomb.Build(), rand.IntN(defGridWidth), rand.IntN(defGridHeight))
 	}
 
 	ebiten.SetWindowSize(640, 640)

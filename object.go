@@ -67,3 +67,8 @@ func (o *BaseGobject) Sprite() *ebiten.Image {
 	s := o.sprites.sequences[o.sprites.currentSequenceKey]
 	return s.frames[s.frameIndex]
 }
+
+func (o BaseGobject) Build() Gobject {
+	copy := o
+	return &copy
+}

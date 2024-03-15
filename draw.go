@@ -27,6 +27,10 @@ func (l *GridLayer) RefreshImage() {
 }
 
 func (l GridLayer) Draw(screen *ebiten.Image) {
+	if !l.visible {
+		return
+	}
+
 	switch l.mode {
 	case Sparce:
 		for vec, o := range l.mapMat {

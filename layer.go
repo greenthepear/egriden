@@ -23,6 +23,7 @@ type GridLayer struct {
 	z                int
 	squareLength     int
 	width, height    int
+	visible          bool
 	mode             drawMode
 	mapMat           map[vec]Gobject
 	sliceMat         [][]Gobject
@@ -48,6 +49,7 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 		squareLength:  squareLength,
 		width:         width,
 		height:        height,
+		visible:       true,
 		mode:          drawMode,
 		mapMat:        mapMat,
 		sliceMat:      sliceMat,
@@ -64,6 +66,10 @@ func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, widt
 	return g.gridLayers[ln]
 }
 
+func (l *GridLayer) SetVisibility(to bool) {
+	l.visible = to
+}
+
 func (l GridLayer) GobjectAt(x, y int) Gobject {
 	if l.mode == Sparce {
 		return l.mapMat[vec{x, y}]
@@ -76,17 +82,16 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 }
 
 func (l *GridLayer) AddObject(o Gobject, x, y int) {
-	copy := *o.(*BaseGobject)
 	if Warnings && l.IsOccupiedAt(x, y) {
 		fmt.Printf(
 			"Egriden WARNING: Gobject already exists at (%d,%d) in layer %s (%d). It will be overwritten.",
 			x, y, l.name, l.z)
 	}
 
-	copy.setXY(x, y)
+	o.setXY(x, y)
 	if l.mode == Sparce {
-		l.mapMat[vec{x, y}] = &copy
+		l.mapMat[vec{x, y}] = o
 		return
 	}
-	l.sliceMat[y][x] = &copy
+	l.sliceMat[y][x] = o
 }
