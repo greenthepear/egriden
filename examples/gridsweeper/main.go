@@ -75,6 +75,8 @@ func main() {
 	ebiten.SetWindowSize(640, 640)
 	ebiten.SetWindowTitle("Gridsweeper")
 
+	//lre.SetVisibility(false)
+
 	if err = ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

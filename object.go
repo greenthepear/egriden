@@ -21,11 +21,11 @@ type BaseGobject struct {
 	name string
 	x, y int
 
-	sprites *SpritePack
+	sprites SpritePack
 }
 
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
-	return BaseGobject{name, 0, 0, &sprites}
+	return BaseGobject{name, 0, 0, sprites}
 }
 
 func (o *BaseGobject) Name() string {
@@ -41,7 +41,7 @@ func (o *BaseGobject) setXY(x, y int) {
 }
 
 func (o *BaseGobject) SetSpritePack(sp SpritePack) {
-	o.sprites = &sp
+	o.sprites = sp
 }
 
 func (o *BaseGobject) SetImageSequence(name string) error {
@@ -54,18 +54,17 @@ func (o *BaseGobject) SetImageSequence(name string) error {
 }
 
 func (o *BaseGobject) SetFrame(i int) {
-	s := o.sprites.sequences[o.sprites.currentSequenceKey]
-	s.frameIndex = i % len(s.frames)
+	o.sprites.frameIndex =
+		i % len(o.sprites.sequences[o.sprites.currentSequenceKey].frames)
 }
 
 func (o *BaseGobject) NextFrame() {
-	o.SetFrame(
-		o.sprites.sequences[o.sprites.currentSequenceKey].frameIndex + 1)
+	o.SetFrame(o.sprites.frameIndex + 1)
 }
 
 func (o *BaseGobject) Sprite() *ebiten.Image {
 	s := o.sprites.sequences[o.sprites.currentSequenceKey]
-	return s.frames[s.frameIndex]
+	return s.frames[o.sprites.frameIndex]
 }
 
 func (o BaseGobject) Build() Gobject {

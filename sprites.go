@@ -10,13 +10,14 @@ import (
 )
 
 type ImageSequence struct {
-	name       string
-	frames     []*ebiten.Image
-	frameIndex int
+	name   string
+	frames []*ebiten.Image
 }
 
 type SpritePack struct {
-	sequences          map[string]*ImageSequence
+	sequences  map[string]*ImageSequence
+	frameIndex int
+
 	currentSequenceKey string
 	visible            bool
 }
@@ -30,7 +31,7 @@ func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, 
 		}
 		frameSlice = append(frameSlice, img)
 	}
-	return ImageSequence{name: name, frames: frameSlice, frameIndex: 0}, nil
+	return ImageSequence{name: name, frames: frameSlice}, nil
 }
 
 // Searches for PNG files in the folder and creates an ImageSequence, with frame order
@@ -47,7 +48,7 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 }
 
 func NewSpritePack() SpritePack {
-	return SpritePack{make(map[string]*ImageSequence), "", true}
+	return SpritePack{make(map[string]*ImageSequence), 0, "", true}
 }
 
 func (ip *SpritePack) AddImageSequence(is ImageSequence) {
