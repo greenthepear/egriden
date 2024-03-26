@@ -11,7 +11,17 @@ func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 	for y := range l.height {
 		for x := range l.width {
-			on.DrawImage(l.sliceMat[y][x].Sprite(),
+			o := l.sliceMat[y][x]
+			if o == nil {
+				continue
+			}
+			if o.OnDraw() != nil {
+				o.OnDraw()(on)
+				if o.DoesDrawScriptOverwriteSprite() {
+					continue
+				}
+			}
+			on.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(
 					float64(x)*float64(l.squareLength)+l.xOffset,
 					float64(y)*float64(l.squareLength)+l.yOffset))
@@ -34,6 +44,12 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 	switch l.mode {
 	case Sparce:
 		for vec, o := range l.mapMat {
+			if o.OnDraw() != nil {
+				o.OnDraw()(screen)
+				if o.DoesDrawScriptOverwriteSprite() {
+					continue
+				}
+			}
 			screen.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(
 					float64(vec.x)*float64(l.squareLength)+l.xOffset,

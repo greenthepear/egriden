@@ -11,10 +11,19 @@ type Gobject interface {
 	XY() (int, int)
 	setXY(int, int)
 
+	//Sprite stuff
 	Sprite() *ebiten.Image
 	SetImageSequence(string) error
 	NextFrame()
 	SetFrame(int)
+
+	//Custom scripts
+	OnCreate() func()
+	OnUpdate() func()
+	OnDraw() func(*ebiten.Image)
+	DoesDrawScriptOverwriteSprite() bool
+
+	isMarkedForDeletion() bool
 }
 
 type BaseGobject struct {
@@ -22,10 +31,12 @@ type BaseGobject struct {
 	x, y int
 
 	sprites SpritePack
+
+	markedForDeletion bool
 }
 
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
-	return BaseGobject{name, 0, 0, sprites}
+	return BaseGobject{name, 0, 0, sprites, false}
 }
 
 func (o *BaseGobject) Name() string {
@@ -67,7 +78,32 @@ func (o *BaseGobject) Sprite() *ebiten.Image {
 	return s.frames[o.sprites.frameIndex]
 }
 
+func (o *BaseGobject) isMarkedForDeletion() bool {
+	return o.markedForDeletion
+}
+
+type BaseGobjectWithoutScripts struct {
+	BaseGobject
+}
+
+func (o *BaseGobjectWithoutScripts) OnCreate() func() {
+	return nil
+}
+
+func (o *BaseGobjectWithoutScripts) OnUpdate() func() {
+	return nil
+}
+
+func (o *BaseGobjectWithoutScripts) OnDraw() func(*ebiten.Image) {
+	return nil
+}
+
+func (o *BaseGobjectWithoutScripts) DoesDrawScriptOverwriteSprite() bool {
+	return false
+}
+
 func (o BaseGobject) Build() Gobject {
-	copy := o
-	return &copy
+	return &BaseGobjectWithoutScripts{
+		BaseGobject: o,
+	}
 }
