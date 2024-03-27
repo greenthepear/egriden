@@ -21,6 +21,9 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 					continue
 				}
 			}
+			if !o.IsVisible() {
+				continue
+			}
 			on.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(
 					float64(x)*float64(l.squareLength)+l.xOffset,
@@ -49,6 +52,9 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 				if o.DoesDrawScriptOverwriteSprite() {
 					continue
 				}
+			}
+			if !o.IsVisible() {
+				continue
 			}
 			screen.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(

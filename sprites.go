@@ -58,6 +58,10 @@ func (ip *SpritePack) AddImageSequence(is ImageSequence) {
 	}
 }
 
+func EmptySpritePack() SpritePack {
+	return SpritePack{}
+}
+
 func NewSpritePackWithSequence(is ImageSequence) SpritePack {
 	ip := NewSpritePack()
 	ip.AddImageSequence(is)

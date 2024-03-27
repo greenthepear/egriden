@@ -12,6 +12,7 @@ type Gobject interface {
 	setXY(int, int)
 
 	//Sprite stuff
+	IsVisible() bool
 	Sprite() *ebiten.Image
 	SetImageSequence(string) error
 	NextFrame()
@@ -73,8 +74,15 @@ func (o *BaseGobject) NextFrame() {
 	o.SetFrame(o.sprites.frameIndex + 1)
 }
 
+func (o *BaseGobject) IsVisible() bool {
+	return o.sprites.visible
+}
+
 func (o *BaseGobject) Sprite() *ebiten.Image {
 	s := o.sprites.sequences[o.sprites.currentSequenceKey]
+	if !o.sprites.visible {
+		return nil
+	}
 	return s.frames[o.sprites.frameIndex]
 }
 
