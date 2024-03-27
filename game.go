@@ -19,11 +19,11 @@ func (g *EgridenAssets) InitEgridenComponents() {
 	g.gobjectsWithUpdateScripts = make([]Gobject, 0)
 }
 
-func (g EgridenAssets) GridLayer(z int) (*GridLayer, error) {
+func (g EgridenAssets) GridLayer(z int) *GridLayer {
 	if z >= len(g.gridLayers) {
-		return nil, fmt.Errorf("no grid layer %d (number of layers %d)", z, len(g.gridLayers))
+		panic(fmt.Sprintf("no grid layer %d (number of layers %d)", z, len(g.gridLayers)))
 	}
-	return g.gridLayers[z], nil
+	return g.gridLayers[z]
 }
 
 func (g EgridenAssets) GridLayers() []*GridLayer {
@@ -37,13 +37,21 @@ func (g EgridenAssets) DrawAllLayers(screen *ebiten.Image) {
 }
 
 func (g *EgridenAssets) RunUpdateScripts() {
-	gobjects := slices.DeleteFunc( //Slow, we're ranging through the slice anyway
-		g.gobjectsWithUpdateScripts,
-		func(o Gobject) bool {
-			return o.isMarkedForDeletion()
-		})
 
-	for _, o := range gobjects {
+	marked := 0
+	for _, o := range g.gobjectsWithUpdateScripts {
+		if o.isMarkedForDeletion() {
+			marked++
+			continue
+		}
 		o.OnUpdate()()
+	}
+
+	if marked > 0 {
+		g.gobjectsWithUpdateScripts = slices.DeleteFunc( //Slow, we're ranging through the slice anyway
+			g.gobjectsWithUpdateScripts,
+			func(o Gobject) bool {
+				return o.isMarkedForDeletion()
+			})
 	}
 }
