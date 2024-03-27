@@ -19,20 +19,20 @@ type vec struct {
 }
 
 type GridLayer struct {
-	name             string
-	z                int
-	squareLength     int
-	width, height    int
-	visible          bool
+	Name             string
+	Z                int
+	SquareLength     int
+	Width, Height    int
+	Visible          bool
 	mode             drawMode
 	mapMat           map[vec]Gobject
 	sliceMat         [][]Gobject
 	staticImage      *ebiten.Image
-	xOffset, yOffset float64
-	numOfGobjects    int
+	XOffset, YOffset float64
+	NumOfGobjects    int
 }
 
-func newGridLayer(name string, z int, squareLength int, width, height int, drawMode drawMode, xOffset, yOffset float64) *GridLayer {
+func newGridLayer(name string, z int, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
 	var mapMat map[vec]Gobject = nil
 	var sliceMat [][]Gobject = nil
 	if drawMode == Sparce {
@@ -44,30 +44,30 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 		}
 	}
 	return &GridLayer{
-		name:          name,
-		z:             z,
-		squareLength:  squareLength,
-		width:         width,
-		height:        height,
-		visible:       true,
+		Name:          name,
+		Z:             z,
+		SquareLength:  squareLength,
+		Width:         width,
+		Height:        height,
+		Visible:       true,
 		mode:          drawMode,
 		mapMat:        mapMat,
 		sliceMat:      sliceMat,
 		staticImage:   nil,
-		xOffset:       xOffset,
-		yOffset:       yOffset,
-		numOfGobjects: 0,
+		XOffset:       XOffset,
+		YOffset:       YOffset,
+		NumOfGobjects: 0,
 	}
 }
 
-func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, xOffset, yOffset float64) *GridLayer {
+func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
 	ln := len(g.gridLayers)
-	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, xOffset, yOffset))
+	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
 	return g.gridLayers[ln]
 }
 
 func (l *GridLayer) SetVisibility(to bool) {
-	l.visible = to
+	l.Visible = to
 }
 
 func (l GridLayer) GobjectAt(x, y int) Gobject {
@@ -85,7 +85,7 @@ func (l *GridLayer) AddObject(o Gobject, x, y int) {
 	if Warnings && l.IsOccupiedAt(x, y) {
 		fmt.Printf(
 			"Egriden WARNING: Gobject already exists at (%d,%d) in layer %s (%d). It will be overwritten.",
-			x, y, l.name, l.z)
+			x, y, l.Name, l.Z)
 	}
 
 	o.setXY(x, y)

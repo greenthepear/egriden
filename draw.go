@@ -9,8 +9,8 @@ func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
 }
 
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
-	for y := range l.height {
-		for x := range l.width {
+	for y := range l.Height {
+		for x := range l.Width {
 			o := l.sliceMat[y][x]
 			if o == nil {
 				continue
@@ -26,21 +26,21 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 			}
 			on.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(
-					float64(x)*float64(l.squareLength)+l.xOffset,
-					float64(y)*float64(l.squareLength)+l.yOffset))
+					float64(x)*float64(l.SquareLength)+l.XOffset,
+					float64(y)*float64(l.SquareLength)+l.YOffset))
 		}
 	}
 }
 
 func (l *GridLayer) RefreshImage() {
 	img := ebiten.NewImage(
-		l.width*l.squareLength, l.height*l.squareLength)
+		l.Width*l.SquareLength, l.Height*l.SquareLength)
 	l.drawFromSliceMat(img)
 	l.staticImage = img
 }
 
 func (l GridLayer) Draw(screen *ebiten.Image) {
-	if !l.visible {
+	if !l.Visible {
 		return
 	}
 
@@ -58,8 +58,8 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 			}
 			screen.DrawImage(o.Sprite(),
 				createDrawImageOptionsForXY(
-					float64(vec.x)*float64(l.squareLength)+l.xOffset,
-					float64(vec.y)*float64(l.squareLength)+l.yOffset))
+					float64(vec.x)*float64(l.SquareLength)+l.XOffset,
+					float64(vec.y)*float64(l.SquareLength)+l.YOffset))
 		}
 	case Dense:
 		l.drawFromSliceMat(screen)
@@ -68,6 +68,6 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 			l.RefreshImage()
 		}
 		screen.DrawImage(l.staticImage,
-			createDrawImageOptionsForXY(l.xOffset*float64(l.squareLength), l.yOffset*float64(l.squareLength)))
+			createDrawImageOptionsForXY(l.XOffset*float64(l.SquareLength), l.YOffset*float64(l.SquareLength)))
 	}
 }
