@@ -12,22 +12,21 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 	for y := range l.Height {
 		for x := range l.Width {
 			o := l.sliceMat[y][x]
-			if o == nil {
+			if o == nil || !o.IsVisible() {
 				continue
 			}
+
+			if !o.DoesDrawScriptOverwriteSprite() {
+				on.DrawImage(o.Sprite(),
+					createDrawImageOptionsForXY(
+						float64(x)*float64(l.SquareLength)+l.XOffset,
+						float64(y)*float64(l.SquareLength)+l.YOffset))
+			}
+
 			if o.OnDraw() != nil {
 				o.OnDraw()(on)
-				if o.DoesDrawScriptOverwriteSprite() {
-					continue
-				}
 			}
-			if !o.IsVisible() {
-				continue
-			}
-			on.DrawImage(o.Sprite(),
-				createDrawImageOptionsForXY(
-					float64(x)*float64(l.SquareLength)+l.XOffset,
-					float64(y)*float64(l.SquareLength)+l.YOffset))
+
 		}
 	}
 }
@@ -47,19 +46,18 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 	switch l.mode {
 	case Sparce:
 		for vec, o := range l.mapMat {
-			if o.OnDraw() != nil {
-				o.OnDraw()(screen)
-				if o.DoesDrawScriptOverwriteSprite() {
-					continue
-				}
-			}
 			if !o.IsVisible() {
 				continue
 			}
-			screen.DrawImage(o.Sprite(),
-				createDrawImageOptionsForXY(
-					float64(vec.x)*float64(l.SquareLength)+l.XOffset,
-					float64(vec.y)*float64(l.SquareLength)+l.YOffset))
+			if !o.DoesDrawScriptOverwriteSprite() {
+				screen.DrawImage(o.Sprite(),
+					createDrawImageOptionsForXY(
+						float64(vec.x)*float64(l.SquareLength)+l.XOffset,
+						float64(vec.y)*float64(l.SquareLength)+l.YOffset))
+			}
+			if o.OnDraw() != nil {
+				o.OnDraw()(screen)
+			}
 		}
 	case Dense:
 		l.drawFromSliceMat(screen)

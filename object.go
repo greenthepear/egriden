@@ -22,7 +22,7 @@ type Gobject interface {
 	OnCreate() func()
 	OnUpdate() func()
 	OnDraw() func(*ebiten.Image)
-	DoesDrawScriptOverwriteSprite() bool
+	DoesDrawScriptOverwriteSprite() bool //TODO: Draw self function to avoid this
 
 	isMarkedForDeletion() bool
 }
@@ -79,11 +79,7 @@ func (o *BaseGobject) IsVisible() bool {
 }
 
 func (o *BaseGobject) Sprite() *ebiten.Image {
-	s := o.sprites.sequences[o.sprites.currentSequenceKey]
-	if !o.sprites.visible {
-		return nil
-	}
-	return s.frames[o.sprites.frameIndex]
+	return o.sprites.Sprite()
 }
 
 func (o *BaseGobject) isMarkedForDeletion() bool {

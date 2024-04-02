@@ -23,6 +23,9 @@ type SpritePack struct {
 }
 
 func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, error) {
+	if len(paths) < 1 {
+		return ImageSequence{}, fmt.Errorf("no paths provided")
+	}
 	frameSlice := make([]*ebiten.Image, 0, len(paths))
 	for _, p := range paths {
 		img, _, err := ebitenutil.NewImageFromFile(p)
@@ -66,4 +69,12 @@ func NewSpritePackWithSequence(is ImageSequence) SpritePack {
 	ip := NewSpritePack()
 	ip.AddImageSequence(is)
 	return ip
+}
+
+func (sp SpritePack) Sprite() *ebiten.Image {
+	if !sp.visible {
+		return nil
+	}
+
+	return sp.sequences[sp.currentSequenceKey].frames[sp.frameIndex]
 }
