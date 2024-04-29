@@ -21,8 +21,8 @@ type Gobject interface {
 	//Custom scripts
 	OnCreate() func()
 	OnUpdate() func()
-	OnDraw() func(*ebiten.Image)
-	DoesDrawScriptOverwriteSprite() bool //TODO: Draw self function to avoid this
+	OnDraw() func(*ebiten.Image, *GridLayer)
+	DrawSprite(*ebiten.Image, *GridLayer)
 
 	isMarkedForDeletion() bool
 	markForDeletion()
@@ -103,12 +103,16 @@ func (o *BaseGobjectWithoutScripts) OnUpdate() func() {
 	return nil
 }
 
-func (o *BaseGobjectWithoutScripts) OnDraw() func(*ebiten.Image) {
+func (o *BaseGobjectWithoutScripts) OnDraw() func(*ebiten.Image, *GridLayer) {
 	return nil
 }
 
-func (o *BaseGobjectWithoutScripts) DoesDrawScriptOverwriteSprite() bool {
-	return false
+func (o *BaseGobjectWithoutScripts) DrawSprite(on *ebiten.Image, l *GridLayer) {
+	x, y := o.XY()
+	on.DrawImage(o.Sprite(),
+		createDrawImageOptionsForXY(
+			float64(x)*float64(l.SquareLength)+l.XOffset,
+			float64(y)*float64(l.SquareLength)+l.YOffset))
 }
 
 func (o BaseGobject) Build() Gobject {
