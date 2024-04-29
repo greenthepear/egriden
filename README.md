@@ -52,13 +52,17 @@ func main(){
 		log.Fatal(err)
 	}
 
-    //Create SpritePack with the sequence. A sprite pack can have multiple sequences, which can be switched using their names (keys)
+    //Create SpritePack with the sequence. A sprite pack can have multiple sequences,
+    //which can be switched using their names (keys)
     playerSprites := egriden.NewSpritePackWithSequence(seq)
 
-    //Create Gobject (short for grid object or go object or game object or whatever you like) with the ImagePack
+    //Create Gobject (short for grid object or go object or game object or whatever
+    //you like) with the ImagePack
     goPlayer := egriden.NewBaseGobject("player", playerSprites)
 
-    //Add to layer, Build() method needed for a baseGobject, otherwise create your own structure for the Gobject interface. You can define create, update, draw functions and other fun stuff.
+    //Add to layer, Build() method needed for a baseGobject, otherwise create your own
+    //structure for the Gobject interface. You can define create, update, draw
+    //functions and other fun stuff.
     layer0.AddGobject(goPlayer.Build(), 1, 5)
 
     //Run the game
