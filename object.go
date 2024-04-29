@@ -107,7 +107,7 @@ func (o *BaseGobjectWithoutScripts) OnDraw() func(*ebiten.Image, *GridLayer) {
 	return nil
 }
 
-func (o *BaseGobjectWithoutScripts) DrawSprite(on *ebiten.Image, l *GridLayer) {
+func (o *BaseGobject) DrawSprite(on *ebiten.Image, l *GridLayer) {
 	x, y := o.XY()
 	on.DrawImage(o.Sprite(),
 		createDrawImageOptionsForXY(
