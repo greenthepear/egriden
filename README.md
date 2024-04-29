@@ -1,8 +1,13 @@
 **egriden** is a framework for the [Ebitengine](https://ebitengine.org/) game engine, perfect for creating simple grid-based puzzle or strategy games.
 
-Currently far from stable or well-documented. Contributions welcome.
+Current features:
+- A grid **layer** system
+- "**Gobjects**" with custom draw and update scripts
+- Animatable **sprite** system with easy loading from PNG files
 
-# Boilerplate tutorial
+***Currently unstable!*** Contributions of any kind are welcome.
+
+# Quick boilerplate tutorial
 
 ```go
 package main
