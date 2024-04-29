@@ -4,12 +4,19 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// For optimization there are a couple of ways a grid layer can be draw depending if it
+// changes frequently (Static or not) and if it has many (Dense) or few (Sparce)
+// gobjects most of the time.
 type drawMode int
 
 const (
-	Sparce drawMode = iota //Used for sparcely populated grids, ranges over a map for drawing
-	Dense                  //Used for thickly populated grids, ranges over a slice for drawing
-	Static                 //Used for layers that don't get updated often, creates ebiten.Image of the the entire layer
+	//Used for sparcely populated grids, ranges over a map for drawing
+	Sparce drawMode = iota
+	//Used for thickly populated grids, ranges over a slice for drawing
+	Dense
+	//Used for layers that don't get updated often, creates ebiten.Image of the the entire layer.
+	//Can be refreshed with GridLayer.RefreshImage().
+	Static
 )
 
 type vec struct {
@@ -61,14 +68,15 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 // Creates a grid layer at the lowest empty Z and returns a pointer to it.
 //
 // See drawMode constants for which one you can use,
-// but for small grids Sparce/Dense doesn't make much of a difference
+// but for small grids Sparce/Dense doesn't make much of a difference.
 func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
 	ln := len(g.gridLayers)
 	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
 	return g.gridLayers[ln]
 }
 
-// False visibility disables drawing both the Sprites and Gobjects' draw functions.
+// False visibility disables drawing both the Sprites and custom draw scripts
+// of all Gobjects.
 func (l *GridLayer) SetVisibility(to bool) {
 	l.Visible = to
 }

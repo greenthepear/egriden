@@ -9,11 +9,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+// ImageSequence is a sequence of images aka frames.
 type ImageSequence struct {
 	name   string
 	frames []*ebiten.Image
 }
 
+// SpritePack is a collection of ImageSequences and controls things like the frame index.
 type SpritePack struct {
 	sequences  map[string]*ImageSequence
 	frameIndex int
@@ -22,6 +24,7 @@ type SpritePack struct {
 	visible            bool
 }
 
+// Create an ImageSequence using multiple (or just one) file paths.
 func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, error) {
 	if len(paths) < 1 {
 		return ImageSequence{}, fmt.Errorf("no paths provided")
@@ -54,6 +57,7 @@ func NewSpritePack() SpritePack {
 	return SpritePack{make(map[string]*ImageSequence), 0, "", true}
 }
 
+// Assigns an ImageSequence to SpritePack
 func (ip *SpritePack) AddImageSequence(is ImageSequence) {
 	ip.sequences[is.name] = &is
 	if ip.currentSequenceKey == "" {
@@ -61,13 +65,24 @@ func (ip *SpritePack) AddImageSequence(is ImageSequence) {
 	}
 }
 
+// A sprite pack that will not render anything
 func EmptySpritePack() SpritePack {
 	return SpritePack{visible: false}
 }
 
+// Create SpritePack and assign sequence
 func NewSpritePackWithSequence(is ImageSequence) SpritePack {
 	ip := NewSpritePack()
 	ip.AddImageSequence(is)
+	return ip
+}
+
+// Create SpritePack and assign multiple sequences
+func NewSpritePackWithSequences(is ...ImageSequence) SpritePack {
+	ip := NewSpritePack()
+	for _, seq := range is {
+		ip.AddImageSequence(seq)
+	}
 	return ip
 }
 
