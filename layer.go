@@ -1,8 +1,6 @@
 package egriden
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -60,17 +58,26 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 	}
 }
 
+// Creates a grid layer at the lowest empty Z and returns a pointer to it.
+//
+// See drawMode constants for which one you can use,
+// but for small grids Sparce/Dense doesn't make much of a difference
 func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
 	ln := len(g.gridLayers)
 	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
 	return g.gridLayers[ln]
 }
 
+// False visibility disables drawing both the Sprites and Gobjects' draw functions.
 func (l *GridLayer) SetVisibility(to bool) {
 	l.Visible = to
 }
 
+// Returns Gobject at x y, nil if empty. Panics if out of bounds.
 func (l GridLayer) GobjectAt(x, y int) Gobject {
+	if x >= l.Width || y >= l.Height {
+		panic("GobjectAt() panic! Out of bounds.")
+	}
 	if l.mode == Sparce {
 		return l.mapMat[vec{x, y}]
 	}
@@ -81,17 +88,18 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 	return l.GobjectAt(x, y) != nil
 }
 
+// Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddObject(o Gobject, x, y int) {
-	if Warnings && l.IsOccupiedAt(x, y) {
-		fmt.Printf(
-			"Egriden WARNING: Gobject already exists at (%d,%d) in layer %s (%d). It will be overwritten.",
-			x, y, l.Name, l.Z)
-	}
-
 	o.setXY(x, y)
 	if l.mode == Sparce {
+		if l.mapMat[vec{x, y}] != nil {
+			l.mapMat[vec{x, y}].markForDeletion()
+		}
 		l.mapMat[vec{x, y}] = o
 		return
+	}
+	if l.sliceMat[y][x] != nil {
+		l.sliceMat[y][x].markForDeletion()
 	}
 	l.sliceMat[y][x] = o
 }

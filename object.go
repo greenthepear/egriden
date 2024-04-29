@@ -25,6 +25,7 @@ type Gobject interface {
 	DoesDrawScriptOverwriteSprite() bool //TODO: Draw self function to avoid this
 
 	isMarkedForDeletion() bool
+	markForDeletion()
 }
 
 type BaseGobject struct {
@@ -84,6 +85,10 @@ func (o *BaseGobject) Sprite() *ebiten.Image {
 
 func (o *BaseGobject) isMarkedForDeletion() bool {
 	return o.markedForDeletion
+}
+
+func (o *BaseGobject) markForDeletion() {
+	o.markedForDeletion = true
 }
 
 type BaseGobjectWithoutScripts struct {

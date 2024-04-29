@@ -62,7 +62,7 @@ func (ip *SpritePack) AddImageSequence(is ImageSequence) {
 }
 
 func EmptySpritePack() SpritePack {
-	return SpritePack{}
+	return SpritePack{visible: false}
 }
 
 func NewSpritePackWithSequence(is ImageSequence) SpritePack {
