@@ -47,10 +47,9 @@ func main(){
     //Create an image sequence from all the PNGs in a folder
     //Image sequences are made of frames, controlled by the frame index
     seq, err := egriden.CreateImageSequenceFromFolder("idle", "./Graphics/player/idle/")
-    
-	if err != nil {
-		log.Fatal(err)
-	}
+    if err != nil {
+        log.Fatal(err)
+    }
 
     //Create SpritePack with the sequence. A sprite pack can have multiple sequences,
     //which can be switched using their names (keys)
