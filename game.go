@@ -1,59 +1,75 @@
 package egriden
 
 import (
-	"fmt"
-	"slices"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type EgridenAssets struct {
-	gridLayers                []*GridLayer
-	gobjectsWithUpdateScripts []Gobject
+	Levels            []Level
+	CurrentLevelIndex int
 }
 
-// Run this while initalizing the game, before adding any layers
-func (g *EgridenAssets) InitEgridenComponents() {
-	g.gridLayers = make([]*GridLayer, 0)
-	g.gobjectsWithUpdateScripts = make([]Gobject, 0)
+// Get the current level
+func (g *EgridenAssets) Level() Level {
+	return g.Levels[g.CurrentLevelIndex]
 }
 
-// Returns a GridLayer at z, panics if out of bounds
-func (g EgridenAssets) GridLayer(z int) *GridLayer {
-	if z >= len(g.gridLayers) {
-		panic(fmt.Sprintf("no grid layer %d (number of layers %d)", z, len(g.gridLayers)))
+// Get a level by it's name. Returns nil if not found.
+func (g *EgridenAssets) LevelByName(name string) Level {
+	for _, le := range g.Levels {
+		if le.Name() == name {
+			return le
+		}
 	}
-	return g.gridLayers[z]
+	return nil
+}
+
+// Append level to the end of the list and return it
+func (g *EgridenAssets) AddLevel(le Level) Level {
+	g.Levels = append(g.Levels, le)
+	idx := len(g.Levels) - 1
+	le.(*BaseLevel).index = idx
+	return g.Levels[idx]
+}
+
+// Sets the current game's level or adds it if it's not in the assets already
+func (g *EgridenAssets) SetLevelTo(le Level) {
+	for i, rangeLe := range g.Levels {
+		if rangeLe == le {
+			g.CurrentLevelIndex = i
+			return
+		}
+	}
+
+	//If not found, add that level I guess
+	g.AddLevel(le)
+	g.CurrentLevelIndex = len(g.Levels) - 1
+}
+
+// Set the next level by iterating the level index
+func (g *EgridenAssets) NextLevel() {
+	g.CurrentLevelIndex = (g.CurrentLevelIndex + 1) % len(g.Levels)
+}
+
+// Run this while initalizing the game, before adding any layers. Creates a scene called `Default`
+func (g *EgridenAssets) InitEgridenComponents() {
+	g.AddLevel(NewBaseLevel("Default"))
+}
+
+// Returns a GridLayer at z in the current level, panics if out of bounds
+func (g EgridenAssets) GridLayer(z int) *GridLayer {
+	return g.Level().GridLayer(z)
 }
 
 func (g EgridenAssets) GridLayers() []*GridLayer {
-	return g.gridLayers
+	return g.Level().GridLayers()
 }
 
-// Draw all GridLayers in their Z order. Use this in the Draw() function.
+// Draw all GridLayers of the current Level in their Z order. Use this in the Draw() function.
 func (g EgridenAssets) DrawAllLayers(screen *ebiten.Image) {
-	for _, l := range g.gridLayers {
-		l.Draw(screen)
-	}
+	g.Level().(*BaseLevel).DrawAllLayers(screen)
 }
 
-// Run all the OnUpdate() scripts of Gobjects that have them.
-// Use this in the Update() function.
 func (g *EgridenAssets) RunUpdateScripts() {
-	marked := 0
-	for _, o := range g.gobjectsWithUpdateScripts {
-		if o.isMarkedForDeletion() {
-			marked++
-			continue
-		}
-		o.OnUpdate()()
-	}
-
-	if marked > 0 {
-		g.gobjectsWithUpdateScripts = slices.DeleteFunc( //Slow, we're ranging through the slice anyway
-			g.gobjectsWithUpdateScripts,
-			func(o Gobject) bool {
-				return o.isMarkedForDeletion()
-			})
-	}
+	g.Level().(*BaseLevel).RunUpdateScripts()
 }

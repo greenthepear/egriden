@@ -69,10 +69,15 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 //
 // See drawMode constants for which one you can use,
 // but for small grids Sparce/Dense doesn't make much of a difference.
+func (le *BaseLevel) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
+	ln := len(le.gridLayers)
+	le.gridLayers = append(le.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
+	return le.gridLayers[ln]
+}
+
+// Short hand for BaseLevel.CreateGridLayerOnTop() for the current level
 func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
-	ln := len(g.gridLayers)
-	g.gridLayers = append(g.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
-	return g.gridLayers[ln]
+	return g.Level().(*BaseLevel).CreateGridLayerOnTop(name, squareLength, width, height, drawMode, XOffset, YOffset)
 }
 
 // False visibility disables drawing both the Sprites and custom draw scripts
@@ -97,7 +102,7 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 }
 
 // Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
-func (l *GridLayer) AddObject(o Gobject, x, y int) {
+func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
 	if l.mode == Sparce {
 		if l.mapMat[vec{x, y}] != nil {
