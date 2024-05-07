@@ -2,6 +2,13 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
+## v0.2.0 - WIP
+- Added **levels**
+- Gotta make **free layers**
+- Renamed `l.AddObject` to `l.AddGobject`
+- Updated to Ebitengine v2.7.3
+- Updated localization files
+
 ## v0.1.1 - 2024-04-29
 
 - Removed `Gobject.DoesDrawScriptOverwriteSprite()` and introduced `Gobject.DrawSprite()`. Use the latter inside the `Gobject.OnDraw()` for combine sprite and custom drawing.
