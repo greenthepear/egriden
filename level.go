@@ -15,6 +15,9 @@ type Level interface {
 
 	GridLayer(int) *GridLayer
 	GridLayers() []*GridLayer
+
+	FreeLayer(int) *FreeLayer
+	FreeLayers() []*FreeLayer
 }
 
 type BaseLevel struct {
@@ -23,6 +26,8 @@ type BaseLevel struct {
 
 	gridLayers                []*GridLayer
 	gobjectsWithUpdateScripts []Gobject
+
+	freeLayers []*FreeLayer
 }
 
 // Initialize by creating slices for layers

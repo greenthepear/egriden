@@ -27,7 +27,11 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 	}
 }
 
+// Refresh image of a static grid layer
 func (l *GridLayer) RefreshImage() {
+	if l.mode != Static {
+		return
+	}
 	img := ebiten.NewImage(
 		l.Width*l.SquareLength, l.Height*l.SquareLength)
 	l.drawFromSliceMat(img)
@@ -61,5 +65,18 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 		}
 		screen.DrawImage(l.staticImage,
 			createDrawImageOptionsForXY(l.XOffset*float64(l.SquareLength), l.YOffset*float64(l.SquareLength)))
+	}
+}
+
+func (fl *FreeLayer) Draw(screen *ebiten.Image){
+	for _, k := range fl.gobjects.keys {
+		k.
+	}
+}
+
+// Refresh image of a static free layer
+func (fl *FreeLayer) RefreshImage() {
+	if !fl.static {
+		return
 	}
 }

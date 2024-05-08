@@ -2,7 +2,9 @@ module github.com/greenthepear/egriden
 
 go 1.22.2
 
-require github.com/hajimehoshi/ebiten/v2 v2.7.3
+require (
+	github.com/hajimehoshi/ebiten/v2 v2.7.3
+)
 
 require (
 	github.com/ebitengine/gomobile v0.0.0-20240429094902-cf88669c3591 // indirect
