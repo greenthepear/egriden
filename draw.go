@@ -56,7 +56,7 @@ func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 }
 
 // Draw the layer
-func (l GridLayer) Draw(screen *ebiten.Image) {
+func (l GridLayer) Draw(on *ebiten.Image) {
 	if !l.Visible {
 		return
 	}
@@ -69,28 +69,24 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 			}
 
 			if o.OnDraw() != nil {
-				o.OnDraw()(screen, &l)
+				o.OnDraw()(on, &l)
 				continue
 			}
 
-			o.DrawSprite(screen, &l)
+			o.DrawSprite(on, &l)
 		}
 	case Dense:
-		l.drawFromSliceMat(screen)
+		l.drawFromSliceMat(on)
 	case Static:
 		if l.staticImage == nil {
 			l.RefreshImage()
 		}
-		screen.DrawImage(l.staticImage,
-			createDrawImageOptionsForXY(l.XOffset*float64(l.SquareLength), l.YOffset*float64(l.SquareLength)))
+		on.DrawImage(l.staticImage,
+			createDrawImageOptionsForXY(l.XOffset, l.YOffset))
 	}
 }
 
-// Draw the layer
-func (fl FreeLayer) Draw(on *ebiten.Image) {
-	if !fl.Visible {
-		return
-	}
+func (fl FreeLayer) internalDraw(on *ebiten.Image) {
 	for _, k := range fl.gobjects.keys {
 		if k.OnDraw() != nil {
 			k.OnDraw()(on, &fl)
@@ -100,10 +96,23 @@ func (fl FreeLayer) Draw(on *ebiten.Image) {
 	}
 }
 
-// Refresh image of a static free layer
+// Draw the layer
+func (fl FreeLayer) Draw(on *ebiten.Image) {
+	if !fl.Visible {
+		return
+	}
+	if fl.static {
+		on.DrawImage(fl.staticImage,
+			createDrawImageOptionsForXY(fl.XOffset, fl.YOffset))
+		return
+	}
+	fl.internalDraw(on)
+}
+
+// Refresh/create image of a static free layer
 func (fl *FreeLayer) RefreshImage() {
 	if !fl.static {
 		return
 	}
-	fl.Draw(fl.staticImage)
+	fl.internalDraw(fl.staticImage)
 }

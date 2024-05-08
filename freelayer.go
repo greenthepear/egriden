@@ -4,6 +4,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// A free layer is a layer where the default drawing position of Gobjects is only
+// determined by their XY coordinates and can be anywhere on the screen or outside of it.
 type FreeLayer struct {
 	Name string
 	Z    int
@@ -41,12 +43,16 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 	}
 }
 
+// Creates a new FreeLayer and returns a pointer to it.
 func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
 	z := len(le.freeLayers)
 	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true, nil, xOffset, yOffset))
 	return le.freeLayers[z]
 }
 
+// Creates a free layer whose image needs to to be refreshed to be updated.
+// Remember to call Refresh() at least once after populating,
+// otherwise you'll just get an empty image.
 func (le *BaseLevel) CreateStaticFreeLayerOnTop(
 	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
 	z := len(le.freeLayers)
