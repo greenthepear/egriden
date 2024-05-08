@@ -51,7 +51,7 @@ func (g *EgridenAssets) NextLevel() {
 	g.CurrentLevelIndex = (g.CurrentLevelIndex + 1) % len(g.Levels)
 }
 
-// Run this while initalizing the game, before adding any layers. Creates a scene called `Default`
+// Run this while initalizing the game, before adding any layers. Creates a level called `Default`
 func (g *EgridenAssets) InitEgridenComponents() {
 	g.AddLevel(NewBaseLevel("Default"))
 }

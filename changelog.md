@@ -3,8 +3,10 @@
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
 ## v0.2.0 - WIP
-- Added **levels**
+- Added **levels**, an interface for them and methods for `BaseLevel`. `InitEgridenComponents()` now creates a default level.
 - Gotta make **free layers**
+- Added methods for deleting and moving Gobjects within a grid layer: `l.DeleteAt()`, `l.MoveGobjectTo()`
+- Added `l.IsXYwithinBounds()`
 - Renamed `l.AddObject` to `l.AddGobject`
 - Updated to Ebitengine v2.7.3
 - Updated localization files

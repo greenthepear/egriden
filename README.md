@@ -1,11 +1,14 @@
-**egriden** is a framework for the [Ebitengine](https://ebitengine.org/) game engine, perfect for creating simple grid-based puzzle or strategy games.
+**egriden** is a framework for the [Ebitengine](https://ebitengine.org/) game engine, perfect for creating simple grid-based puzzle or strategy games. Instead of the common component approach seen in engines like Unity, it is more akin to GameMaker with how it handles object interaction.
 
 Current features:
-- A grid **layer** system
+- A **grid layer** system
+- **Levels** (aka scenes) and conventional **free layers**
 - "**Gobjects**" with custom draw and update scripts
 - Animatable **sprite** system with easy loading from PNG files
 
-***Currently unstable!*** Contributions of any kind are welcome.
+It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to create a word-based action puzzle game. *[Click here to follow development.](https://greenthepear.com)*
+
+***Currently unstable!*** Contributions of any kind are welcome. Check changelog.md for updates.
 
 # Quick boilerplate tutorial
 

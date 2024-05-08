@@ -66,7 +66,7 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 }
 
 func (l GridLayer) IsXYwithinBounds(x, y int) bool {
-	return x >= 0 && x < l.Width && y >= 0 && x < l.Height
+	return x >= 0 && x < l.Width && y >= 0 && y < l.Height
 }
 
 // Creates a grid layer at the lowest empty Z and returns a pointer to it.

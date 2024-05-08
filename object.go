@@ -171,14 +171,14 @@ func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
 	}
 
 	if l.mode == Sparce {
-		if markForDeletion {
+		if l.mapMat[vec{x, y}] != nil && markForDeletion {
 			l.mapMat[vec{x, y}].markForDeletion()
 		}
 		delete(l.mapMat, vec{x, y})
 		return
 	}
 
-	if markForDeletion {
+	if l.sliceMat[y][x] != nil && markForDeletion {
 		l.sliceMat[y][x].markForDeletion()
 	}
 	l.sliceMat[y][x] = nil
@@ -188,6 +188,9 @@ func (l *GridLayer) DeleteAt(x, y int) {
 	l.internalDeleteAt(x, y, true)
 }
 
+// Moves Gobject by first finding itself in the layer with its XY coordinates,
+// but will panic if the Gobject in that cell is not the same, so you cannot use this with
+// Gobjects that are not in the layer, obviously.
 func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
