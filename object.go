@@ -40,11 +40,14 @@ type BaseGobject struct {
 	sprites SpritePack
 
 	markedForDeletion bool
+
+	OnDrawFunc   func(*ebiten.Image, Layer)
+	OnUpdateFunc func()
 }
 
 // Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless Gobject that can be added to a layer
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
-	return BaseGobject{name, 0, 0, sprites, false}
+	return BaseGobject{name, 0, 0, sprites, false, nil, nil}
 }
 
 func (o *BaseGobject) Name() string {
@@ -102,41 +105,23 @@ func (o *BaseGobject) markForDeletion() {
 	o.markedForDeletion = true
 }
 
-type baseGobjectWithoutScripts struct {
-	BaseGobject
+func (o *BaseGobject) OnDraw() func(*ebiten.Image, Layer) {
+	return o.OnDrawFunc
 }
 
-func (o *baseGobjectWithoutScripts) OnUpdate() func() {
-	return nil
+func (o *BaseGobject) OnUpdate() func() {
+	return o.OnUpdateFunc
 }
 
-func (o *baseGobjectWithoutScripts) OnDraw() func(*ebiten.Image, Layer) {
-	return nil
-}
-
-// Default function for drawing the sprite in the grid, shouldn't be overwritten.
+// Default function for drawing the sprite in the grid.
 func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
-	x, y := o.XY()
-	gl := l.(*GridLayer)
-	if gl == nil {
-		fl := l.(*FreeLayer)
-		on.DrawImage(o.Sprite(), createDrawImageOptionsForXY(
-			float64(x)+fl.XOffset, float64(y)+fl.YOffset))
-		return
-	}
-	on.DrawImage(o.Sprite(),
-		createDrawImageOptionsForXY(
-			float64(x)*float64(gl.SquareLength)+gl.XOffset,
-			float64(y)*float64(gl.SquareLength)+gl.YOffset))
+	l.DrawSprite(o, on)
 }
 
-// Makes a BaseGobject respect Gobject interface by assigning it nil draw update etc. functions
-//
-// For Gobjects with custom scripts you must create your own build function.
+// Makes a copy of the Gobject
 func (o BaseGobject) Build() Gobject {
-	return &baseGobjectWithoutScripts{
-		BaseGobject: o,
-	}
+	copy := o
+	return &copy
 }
 
 /// Layer interactions

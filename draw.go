@@ -9,7 +9,7 @@ func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
 }
 
 type Layer interface {
-	Draw(screen *ebiten.Image)
+	DrawSprite(o Gobject, on *ebiten.Image)
 }
 
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
@@ -39,6 +39,20 @@ func (l *GridLayer) RefreshImage() {
 		l.Width*l.SquareLength, l.Height*l.SquareLength)
 	l.drawFromSliceMat(img)
 	l.staticImage = img
+}
+
+func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
+	x, y := o.XY()
+	on.DrawImage(o.Sprite(),
+		createDrawImageOptionsForXY(
+			float64(x)*float64(l.SquareLength)+l.XOffset,
+			float64(y)*float64(l.SquareLength)+l.YOffset))
+}
+
+func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
+	x, y := o.XY()
+	on.DrawImage(o.Sprite(), createDrawImageOptionsForXY(
+		float64(x)+fl.XOffset, float64(y)+fl.YOffset))
 }
 
 // Draw the layer
