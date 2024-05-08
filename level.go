@@ -62,8 +62,14 @@ func (le *BaseLevel) GridLayers() []*GridLayer {
 	return le.gridLayers
 }
 
-func (le *BaseLevel) DrawAllLayers(screen *ebiten.Image) {
+func (le *BaseLevel) DrawAllGridLayers(screen *ebiten.Image) {
 	for _, l := range le.gridLayers {
+		l.Draw(screen)
+	}
+}
+
+func (le *BaseLevel) DrawAllFreeLayers(screen *ebiten.Image) {
+	for _, l := range le.freeLayers {
 		l.Draw(screen)
 	}
 }

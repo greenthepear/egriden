@@ -8,6 +8,10 @@ func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
 	return op
 }
 
+type Layer interface {
+	Draw(screen *ebiten.Image)
+}
+
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 	for y := range l.Height {
 		for x := range l.Width {
@@ -20,7 +24,6 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 				o.OnDraw()(on, &l)
 				continue
 			}
-
 			o.DrawSprite(on, &l)
 
 		}
@@ -38,6 +41,7 @@ func (l *GridLayer) RefreshImage() {
 	l.staticImage = img
 }
 
+// Draw the layer
 func (l GridLayer) Draw(screen *ebiten.Image) {
 	if !l.Visible {
 		return
@@ -68,9 +72,17 @@ func (l GridLayer) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (fl *FreeLayer) Draw(screen *ebiten.Image){
+// Draw the layer
+func (fl FreeLayer) Draw(on *ebiten.Image) {
+	if !fl.Visible {
+		return
+	}
 	for _, k := range fl.gobjects.keys {
-		k.
+		if k.OnDraw() != nil {
+			k.OnDraw()(on, &fl)
+			continue
+		}
+		k.DrawSprite(on, &fl)
 	}
 }
 
@@ -79,4 +91,5 @@ func (fl *FreeLayer) RefreshImage() {
 	if !fl.static {
 		return
 	}
+	fl.Draw(fl.staticImage)
 }

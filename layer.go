@@ -23,10 +23,6 @@ type vec struct {
 	x, y int
 }
 
-func xyToVec(x, y int) vec {
-	return vec{x, y}
-}
-
 type GridLayer struct {
 	Name             string
 	Z                int

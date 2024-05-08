@@ -66,8 +66,12 @@ func (g EgridenAssets) GridLayers() []*GridLayer {
 }
 
 // Draw all GridLayers of the current Level in their Z order. Use this in the Draw() function.
-func (g EgridenAssets) DrawAllLayers(screen *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllLayers(screen)
+func (g EgridenAssets) DrawAllGridLayers(screen *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllGridLayers(screen)
+}
+
+func (g EgridenAssets) DrawAllFreeLayers(screen *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllFreeLayers(screen)
 }
 
 func (g *EgridenAssets) RunUpdateScripts() {

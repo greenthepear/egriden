@@ -4,12 +4,12 @@
 
 ## v0.2.0 - WIP
 - Added **levels**, an interface for them and methods for `BaseLevel`. `InitEgridenComponents()` now creates a default level.
-- Gotta make **free layers**
-- Added methods for deleting and moving Gobjects within a grid layer: `l.DeleteAt()`, `l.MoveGobjectTo()`
-- Added `l.IsXYwithinBounds()`
-- Renamed `l.AddObject` to `l.AddGobject`
-- Updated to Ebitengine v2.7.3
-- Updated localization files
+- Added **free layers** which allow you to place and draw objects anywhere on the screen according to their XY coordinates.
+- Added methods for deleting and moving Gobjects within a grid layer: `l.DeleteAt()`, `l.MoveGobjectTo()`.
+- Added `l.IsXYwithinBounds()`.
+- Renamed `l.AddObject` to `l.AddGobject`.
+- Updated to Ebitengine v2.7.3.
+- Updated localization files.
 
 ## v0.1.1 - 2024-04-29
 

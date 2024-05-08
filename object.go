@@ -22,9 +22,9 @@ type Gobject interface {
 
 	//Custom scripts
 
-	OnUpdate() func()                        //Runs every game.Update() call
-	OnDraw() func(*ebiten.Image, *GridLayer) //Runs ever game.Draw() call
-	DrawSprite(*ebiten.Image, *GridLayer)    //Default sprite drawing function
+	OnUpdate() func()                   //Runs every game.Update() call
+	OnDraw() func(*ebiten.Image, Layer) //Runs ever game.Draw() call
+	DrawSprite(*ebiten.Image, Layer)    //Default sprite drawing function
 
 	//objects are referenced outside of the grid sometimes, if they get deleted from it, these must be called and checked
 
@@ -110,17 +110,24 @@ func (o *baseGobjectWithoutScripts) OnUpdate() func() {
 	return nil
 }
 
-func (o *baseGobjectWithoutScripts) OnDraw() func(*ebiten.Image, *GridLayer) {
+func (o *baseGobjectWithoutScripts) OnDraw() func(*ebiten.Image, Layer) {
 	return nil
 }
 
 // Default function for drawing the sprite in the grid, shouldn't be overwritten.
-func (o *BaseGobject) DrawSprite(on *ebiten.Image, l *GridLayer) {
+func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
 	x, y := o.XY()
+	gl := l.(*GridLayer)
+	if gl == nil {
+		fl := l.(*FreeLayer)
+		on.DrawImage(o.Sprite(), createDrawImageOptionsForXY(
+			float64(x)+fl.XOffset, float64(y)+fl.YOffset))
+		return
+	}
 	on.DrawImage(o.Sprite(),
 		createDrawImageOptionsForXY(
-			float64(x)*float64(l.SquareLength)+l.XOffset,
-			float64(y)*float64(l.SquareLength)+l.YOffset))
+			float64(x)*float64(gl.SquareLength)+gl.XOffset,
+			float64(y)*float64(gl.SquareLength)+gl.YOffset))
 }
 
 // Makes a BaseGobject respect Gobject interface by assigning it nil draw update etc. functions

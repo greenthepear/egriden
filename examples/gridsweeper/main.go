@@ -17,7 +17,7 @@ var defGridHeight = 20
 var defGridWidth = 20
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.DrawAllLayers(screen)
+	g.DrawAllGridLayers(screen)
 }
 
 func (g *Game) Update() error {
