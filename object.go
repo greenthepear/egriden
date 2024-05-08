@@ -131,3 +131,77 @@ func (o BaseGobject) Build() Gobject {
 		BaseGobject: o,
 	}
 }
+
+/// Layer interactions
+
+// Returns Gobject at x y, nil if empty. Panics if out of bounds.
+func (l GridLayer) GobjectAt(x, y int) Gobject {
+	if !l.IsXYwithinBounds(x, y) {
+		panic("GobjectAt() panic! Out of bounds.")
+	}
+	if l.mode == Sparce {
+		return l.mapMat[vec{x, y}]
+	}
+	return l.sliceMat[y][x]
+}
+
+func (l GridLayer) IsOccupiedAt(x, y int) bool {
+	return l.GobjectAt(x, y) != nil
+}
+
+// Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
+func (l *GridLayer) AddGobject(o Gobject, x, y int) {
+	o.setXY(x, y)
+	if l.mode == Sparce {
+		if l.mapMat[vec{x, y}] != nil {
+			l.mapMat[vec{x, y}].markForDeletion()
+		}
+		l.mapMat[vec{x, y}] = o
+		return
+	}
+	if l.sliceMat[y][x] != nil {
+		l.sliceMat[y][x].markForDeletion()
+	}
+	l.sliceMat[y][x] = o
+}
+
+func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
+	if !l.IsXYwithinBounds(x, y) {
+		panic("not within layer bounds")
+	}
+
+	if l.mode == Sparce {
+		if markForDeletion {
+			l.mapMat[vec{x, y}].markForDeletion()
+		}
+		delete(l.mapMat, vec{x, y})
+		return
+	}
+
+	if markForDeletion {
+		l.sliceMat[y][x].markForDeletion()
+	}
+	l.sliceMat[y][x] = nil
+}
+
+func (l *GridLayer) DeleteAt(x, y int) {
+	l.internalDeleteAt(x, y, true)
+}
+
+func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
+	if !l.IsXYwithinBounds(x, y) {
+		panic("not within layer bounds")
+	}
+	fromX, fromY := o.XY()
+	fromGobject := l.GobjectAt(fromX, fromY)
+	if fromGobject != o {
+		panic(fmt.Sprintf(
+			`Gobject '%s' is not the same as in the layer (%p != %p).
+			Are you referencing one from another layer or one that wasn't added yet?`,
+			o.Name(), o, fromGobject,
+		))
+	}
+
+	l.internalDeleteAt(fromX, fromY, false)
+	l.AddGobject(o, x, y)
+}

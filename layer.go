@@ -65,6 +65,10 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 	}
 }
 
+func (l GridLayer) IsXYwithinBounds(x, y int) bool {
+	return x >= 0 && x < l.Width && y >= 0 && x < l.Height
+}
+
 // Creates a grid layer at the lowest empty Z and returns a pointer to it.
 //
 // See drawMode constants for which one you can use,
@@ -84,35 +88,4 @@ func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, widt
 // of all Gobjects.
 func (l *GridLayer) SetVisibility(to bool) {
 	l.Visible = to
-}
-
-// Returns Gobject at x y, nil if empty. Panics if out of bounds.
-func (l GridLayer) GobjectAt(x, y int) Gobject {
-	if x >= l.Width || y >= l.Height {
-		panic("GobjectAt() panic! Out of bounds.")
-	}
-	if l.mode == Sparce {
-		return l.mapMat[vec{x, y}]
-	}
-	return l.sliceMat[y][x]
-}
-
-func (l GridLayer) IsOccupiedAt(x, y int) bool {
-	return l.GobjectAt(x, y) != nil
-}
-
-// Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
-func (l *GridLayer) AddGobject(o Gobject, x, y int) {
-	o.setXY(x, y)
-	if l.mode == Sparce {
-		if l.mapMat[vec{x, y}] != nil {
-			l.mapMat[vec{x, y}].markForDeletion()
-		}
-		l.mapMat[vec{x, y}] = o
-		return
-	}
-	if l.sliceMat[y][x] != nil {
-		l.sliceMat[y][x].markForDeletion()
-	}
-	l.sliceMat[y][x] = o
 }
