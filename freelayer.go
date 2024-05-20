@@ -8,7 +8,7 @@ import (
 // determined by their XY coordinates and can be anywhere on the screen or outside of it.
 type FreeLayer struct {
 	Name string
-	Z    int
+	z    int
 
 	gobjects gobjectSet
 
@@ -33,7 +33,7 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 
 	return &FreeLayer{
 		Name:        name,
-		Z:           z,
+		z:           z,
 		Visible:     visible,
 		static:      paramStatic,
 		gobjects:    newGobjectSet(),
@@ -61,9 +61,10 @@ func (le *BaseLevel) CreateStaticFreeLayerOnTop(
 	return le.freeLayers[z]
 }
 
+// Retruns FreeLayer at given z layer, returns nil if out of bounds
 func (le *BaseLevel) FreeLayer(z int) *FreeLayer {
-	if z >= len(le.freeLayers) {
-		panic("layer Z out of bounds")
+	if z >= len(le.freeLayers) || z < 0 {
+		return nil
 	}
 	return le.freeLayers[z]
 }
@@ -96,4 +97,8 @@ func (fl *FreeLayer) DeleteGobject(o Gobject) {
 	}
 	o.markForDeletion()
 	fl.gobjects.Delete(o)
+}
+
+func (fl *FreeLayer) Z() int {
+	return fl.z
 }

@@ -24,8 +24,8 @@ type vec struct {
 }
 
 type GridLayer struct {
-	Name             string
-	Z                int
+	Name             string // Name of the layer, for convenience sake
+	z                int
 	SquareLength     int
 	Width, Height    int
 	Visible          bool
@@ -50,7 +50,7 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 	}
 	return &GridLayer{
 		Name:          name,
-		Z:             z,
+		z:             z,
 		SquareLength:  squareLength,
 		Width:         width,
 		Height:        height,
@@ -63,10 +63,6 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 		YOffset:       YOffset,
 		NumOfGobjects: 0,
 	}
-}
-
-func (l GridLayer) IsXYwithinBounds(x, y int) bool {
-	return x >= 0 && x < l.Width && y >= 0 && y < l.Height
 }
 
 // Creates a grid layer at the lowest empty Z and returns a pointer to it.
@@ -88,4 +84,27 @@ func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, widt
 // of all Gobjects.
 func (l *GridLayer) SetVisibility(to bool) {
 	l.Visible = to
+}
+
+// Returns the Z level
+func (l *GridLayer) Z() int {
+	return l.z
+}
+
+// Returns a GridLayer at z in the current level, panics if out of bounds
+func (g EgridenAssets) GridLayer(z int) *GridLayer {
+	return g.Level().GridLayer(z)
+}
+
+func (g EgridenAssets) GridLayers() []*GridLayer {
+	return g.Level().GridLayers()
+}
+
+// Draw all GridLayers of the current Level in their Z order. Use this in the Draw() function.
+func (g EgridenAssets) DrawAllGridLayers(screen *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllGridLayers(screen)
+}
+
+func (g EgridenAssets) DrawAllFreeLayers(screen *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllFreeLayers(screen)
 }

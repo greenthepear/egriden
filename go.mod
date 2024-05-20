@@ -1,8 +1,9 @@
 module github.com/greenthepear/egriden
 
-go 1.22.2
+go 1.22.3
 
 require (
+	github.com/greenthepear/gunc v1.1.0
 	github.com/hajimehoshi/ebiten/v2 v2.7.3
 )
 

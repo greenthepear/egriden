@@ -1,9 +1,5 @@
 package egriden
 
-import (
-	"github.com/hajimehoshi/ebiten/v2"
-)
-
 type EgridenAssets struct {
 	Levels            []Level
 	CurrentLevelIndex int
@@ -54,24 +50,6 @@ func (g *EgridenAssets) NextLevel() {
 // Run this while initalizing the game, before adding any layers. Creates a level called `Default`
 func (g *EgridenAssets) InitEgridenComponents() {
 	g.AddLevel(NewBaseLevel("Default"))
-}
-
-// Returns a GridLayer at z in the current level, panics if out of bounds
-func (g EgridenAssets) GridLayer(z int) *GridLayer {
-	return g.Level().GridLayer(z)
-}
-
-func (g EgridenAssets) GridLayers() []*GridLayer {
-	return g.Level().GridLayers()
-}
-
-// Draw all GridLayers of the current Level in their Z order. Use this in the Draw() function.
-func (g EgridenAssets) DrawAllGridLayers(screen *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllGridLayers(screen)
-}
-
-func (g EgridenAssets) DrawAllFreeLayers(screen *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllFreeLayers(screen)
 }
 
 func (g *EgridenAssets) RunUpdateScripts() {

@@ -1,9 +1,7 @@
 package egriden
 
 import (
-	"fmt"
-	"slices"
-
+	"github.com/greenthepear/gunc"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -50,27 +48,30 @@ func (le *BaseLevel) Index() int {
 	return le.index
 }
 
-// Returns a GridLayer at z, panics if out of bounds
+// Returns a GridLayer at z, returns nil if out of bounds
 func (le *BaseLevel) GridLayer(z int) *GridLayer {
-	if z >= len(le.gridLayers) {
-		panic(fmt.Sprintf("no grid layer %d (number of layers %d)", z, len(le.gridLayers)))
+	if z >= len(le.gridLayers) || z < 0 {
+		return nil
 	}
 	return le.gridLayers[z]
 }
 
+// Returns slice of all current grid layers
 func (le *BaseLevel) GridLayers() []*GridLayer {
 	return le.gridLayers
 }
 
-func (le *BaseLevel) DrawAllGridLayers(screen *ebiten.Image) {
+// Draws all grid layers according to their Z order
+func (le *BaseLevel) DrawAllGridLayers(on *ebiten.Image) {
 	for _, l := range le.gridLayers {
-		l.Draw(screen)
+		l.Draw(on)
 	}
 }
 
-func (le *BaseLevel) DrawAllFreeLayers(screen *ebiten.Image) {
+// Draws all free layers according to their Z order
+func (le *BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
 	for _, l := range le.freeLayers {
-		l.Draw(screen)
+		l.Draw(on)
 	}
 }
 
@@ -86,10 +87,10 @@ func (le *BaseLevel) RunUpdateScripts() {
 	}
 
 	if marked > 0 {
-		le.gobjectsWithUpdateScripts = slices.DeleteFunc( //Slow, we're ranging through the slice anyway
-			le.gobjectsWithUpdateScripts,
+		le.gobjectsWithUpdateScripts = gunc.Filter(le.gobjectsWithUpdateScripts,
 			func(o Gobject) bool {
 				return o.isMarkedForDeletion()
 			})
+
 	}
 }
