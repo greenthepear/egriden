@@ -8,7 +8,7 @@ Current features:
 - "**Gobjects**" with custom draw and update scripts
 - Animatable **sprite** system with easy loading from PNG files
 
-Instead of the common component approach seen in engines like Unity, it is more akin to GameMaker with how it handles object interactions
+Instead of the common component approach seen in engines like Unity, it is more akin to GameMaker with how it handles object interactions.
 
 It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to create a word-based action puzzle game. *[Click here to follow development.](https://greenthepear.com)*
 
@@ -31,7 +31,7 @@ type Game struct {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-    g.DrawAllLayers(screen) //Draw layers according to their Z order
+    g.DrawAllGridLayers(screen) //Draw layers according to their Z order
 
     // or do it your way with g.GridLayer(z).Draw()
 }

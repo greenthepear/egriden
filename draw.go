@@ -43,10 +43,14 @@ func (l *GridLayer) RefreshImage() {
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 	x, y := o.XY()
+	xoffset, yoffset := l.XOffset, l.YOffset
+	if l.mode == Static {
+		xoffset, yoffset = 0, 0
+	}
 	on.DrawImage(o.Sprite(),
 		createDrawImageOptionsForXY(
-			float64(x)*float64(l.SquareLength)+l.XOffset,
-			float64(y)*float64(l.SquareLength)+l.YOffset))
+			float64(x)*float64(l.SquareLength)+xoffset,
+			float64(y)*float64(l.SquareLength)+yoffset))
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
