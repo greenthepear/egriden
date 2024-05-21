@@ -7,7 +7,8 @@
 - Added **free layers** which allow you to place and draw objects anywhere on the screen according to their XY coordinates.
 - Added methods for deleting and moving Gobjects within a grid layer: `l.DeleteAt()`, `l.MoveGobjectTo()`.
 - Removed `baseGobjectWithoutScripts`, you can use the new `OnDrawFunc` and `OnUpdateFunc` fields to assign scripts, which are nil by default.
-- Added `l.IsXYwithinBounds()`, `l.IsScreenXYwithinBounds()` and `ScreenXYtoGrid()`
+- Made layer selection methods return nil instead of panicing if z is out of bounds.
+- Added `l.IsXYwithinBounds()`, `l.IsScreenXYwithinBounds()` and `ScreenXYtoGrid()`.
 - Renamed `l.AddObject` to `l.AddGobject`.
 - "Updated" to go v1.22.3 and Ebitengine v2.7.3.
 - Updated localization files.

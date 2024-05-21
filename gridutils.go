@@ -11,11 +11,35 @@ func (l GridLayer) IsXYwithinBounds(x, y int) bool {
 // on the screen so either check the screen bounds beforehand or grid bounds afterhand
 // before accessing grid coordinates derived from this function.
 func ScreenXYtoGrid[T, R int | float64](l GridLayer, x, y T) (R, R) {
-	return R(int(x-T(l.XOffset)) / l.SquareLength),
-		R(int(y-T(l.YOffset)) / l.SquareLength)
+	offx := int(x - T(l.XOffset))
+	if offx < 0 {
+		offx -= l.SquareLength - 1
+	}
+	offy := int(y - T(l.YOffset))
+	if offy < 0 {
+		offy -= l.SquareLength - 1
+	}
+
+	return R(offx / l.SquareLength),
+		R(offy / l.SquareLength)
 }
 
 // Checks if XY is within bounds on the screen, taking into account the layer offsets.
 func (l GridLayer) IsScreenXYwithinBounds(x, y int) bool {
 	return l.IsXYwithinBounds(ScreenXYtoGrid[int, int](l, x, y))
+}
+
+// Returns the anchor (top left point on the screen) of a cell in a grid layer according to screen's XY.
+//
+// Like [ScreenXYtoGrid] it can return positions out of grid bounds if XY is.
+//
+// To visualize:
+// ┌─┬─┬─┐          ┌─┬─┬─┐
+// │⠐│ │⠄│          │⠁│ │⠁│
+// ├─┼─┼─┤ becomes: ├─┼─┼─┤
+// │⠠│ │ │          │⠁│ │ │
+// └─┴─┴─┘          └─┴─┴─┘
+func SnapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
+	ax, ay := ScreenXYtoGrid[T, R](l, x, y)
+	return ax * R(l.SquareLength), ay * R(l.SquareLength)
 }

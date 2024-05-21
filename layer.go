@@ -91,7 +91,7 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
-// Returns a GridLayer at z in the current level, panics if out of bounds
+// Returns a GridLayer at z in the current Level, returns nil if out of bounds.
 func (g EgridenAssets) GridLayer(z int) *GridLayer {
 	return g.Level().GridLayer(z)
 }
@@ -100,11 +100,12 @@ func (g EgridenAssets) GridLayers() []*GridLayer {
 	return g.Level().GridLayers()
 }
 
-// Draw all GridLayers of the current Level in their Z order. Use this in the Draw() function.
-func (g EgridenAssets) DrawAllGridLayers(screen *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllGridLayers(screen)
+// Draw all GridLayers of the current Level in their Z order.
+func (g EgridenAssets) DrawAllGridLayers(on *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllGridLayers(on)
 }
 
-func (g EgridenAssets) DrawAllFreeLayers(screen *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllFreeLayers(screen)
+// Draw all free layers of the current Level in their Z order.
+func (g EgridenAssets) DrawAllFreeLayers(on *ebiten.Image) {
+	g.Level().(*BaseLevel).DrawAllFreeLayers(on)
 }
