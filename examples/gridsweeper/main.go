@@ -65,10 +65,16 @@ func main() {
 			lbg.AddGobject(objBacktile.Build(), x, y)
 			backtileCopy := objRevealTile.Build()
 			backtileCopy.SetFrame(rand.IntN(3))
-			//backtileCopy.SetDrawOffsets(float64(rand.IntN(6)-3), float64(rand.IntN(6)-3))
-			//op := &ebiten.DrawImageOptions{}
-			//op.GeoM.Rotate(2)
-			//backtileCopy.SetDrawOptions(*op)
+
+			/* Testing custom draw options
+			s := backtileCopy.Sprite().Bounds().Size()
+			op := &ebiten.DrawImageOptions{}
+
+			op.GeoM.Translate(-float64(s.X)/2, -float64(s.Y)/2)
+			op.GeoM.Rotate(rand.Float64())
+			op.GeoM.Translate(float64(s.X)/2, float64(s.Y)/2)
+			backtileCopy.SetDrawOptions(op)
+			*/
 			lre.AddGobject(backtileCopy, x, y)
 		}
 	}

@@ -23,10 +23,7 @@ type SpritePack struct {
 	currentSequenceKey string
 	visible            bool
 
-	//Sets custom draw options for the sprites. Keep in mind tx and ty will be overwritten by the drawing process so
-	//use the XOffset and YOffset fields.
-	DrawOptions *ebiten.DrawImageOptions
-	//Defines the offset of the sprite from the drawing coordinates set by the layer the gobject is in.
+	DrawOptions      *ebiten.DrawImageOptions
 	XOffset, YOffset float64
 }
 

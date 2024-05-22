@@ -79,7 +79,6 @@ func (le *FreeLayer) SetVisibility(to bool) {
 
 func (fl *FreeLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
-	applyDrawOptionsForNewPosition(o, fl, float64(x), float64(y))
 	fl.gobjects.Add(o)
 }
 

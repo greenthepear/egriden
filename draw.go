@@ -7,7 +7,9 @@ type Layer interface {
 	Offsets() (float64, float64)
 }
 
-func applyDrawOptionsForNewPosition(o Gobject, layer Layer, x, y float64) {
+func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten.DrawImageOptions {
+	copy := *o.SpritePack().DrawOptions
+	r := &copy
 	xoffset, yoffset := layer.Offsets()
 	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
 	switch l := layer.(type) {
@@ -15,26 +17,19 @@ func applyDrawOptionsForNewPosition(o Gobject, layer Layer, x, y float64) {
 		if l.mode == Static {
 			xoffset, yoffset = 0, 0
 		}
-		// GeoM element at [0, 2] and [1, 2] are tx and ty respectively
-		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
-			float64(x)*float64(l.SquareLength)+xoffset+spriteXoffset)
-		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
+		r.GeoM.Translate(
+			float64(x)*float64(l.SquareLength)+xoffset+spriteXoffset,
 			float64(y)*float64(l.SquareLength)+yoffset+spriteYoffset)
 	case *FreeLayer:
 		if l.static {
 			xoffset, yoffset = 0, 0
 		}
-		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
-			float64(x)+l.XOffset+spriteXoffset)
-		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
+		r.GeoM.Translate(
+			float64(x)+l.XOffset+spriteXoffset,
 			float64(y)+l.YOffset+spriteYoffset)
 	}
+	return r
 
-}
-
-func autoApplyDrawOptions(l Layer, o Gobject) {
-	x, y := o.XY()
-	applyDrawOptionsForNewPosition(o, l, float64(x), float64(y))
 }
 
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
@@ -44,7 +39,7 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 			if o == nil || !o.IsVisible() {
 				continue
 			}
-			autoApplyDrawOptions(&l, o)
+
 			if o.OnDraw() != nil {
 				o.OnDraw()(on, &l)
 				continue
@@ -67,8 +62,9 @@ func (l *GridLayer) RefreshImage() {
 }
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
+	x, y := o.XY()
 	on.DrawImage(o.Sprite(),
-		o.SpritePack().DrawOptions)
+		appliedDrawOptionsForPosition(o, &l, float64(x), float64(y)))
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
@@ -87,7 +83,6 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 			if !o.IsVisible() {
 				continue
 			}
-			autoApplyDrawOptions(&l, o)
 
 			if o.OnDraw() != nil {
 				o.OnDraw()(on, &l)

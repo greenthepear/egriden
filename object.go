@@ -17,7 +17,7 @@ type Gobject interface {
 	IsVisible() bool
 	Sprite() *ebiten.Image
 	SpritePack() SpritePack
-	SetDrawOptions(ebiten.DrawImageOptions)
+	SetDrawOptions(*ebiten.DrawImageOptions)
 	SetDrawOffsets(float64, float64)
 	SetImageSequence(string) error
 	NextFrame()
@@ -104,10 +104,13 @@ func (o *BaseGobject) SpritePack() SpritePack {
 	return o.sprites
 }
 
-func (o *BaseGobject) SetDrawOptions(op ebiten.DrawImageOptions) {
-	o.sprites.DrawOptions = &op
+// Set custom ebiten draw options. Remember that tx and ty get translated depending on the grid position
+// and layers offset.
+func (o *BaseGobject) SetDrawOptions(op *ebiten.DrawImageOptions) {
+	o.sprites.DrawOptions = op
 }
 
+// Quick way to make the sprite draw with x and y added to the screen position.
 func (o *BaseGobject) SetDrawOffsets(x, y float64) {
 	o.sprites.XOffset = x
 	o.sprites.YOffset = y
@@ -162,7 +165,6 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 // Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
-	applyDrawOptionsForNewPosition(o, l, float64(x), float64(y))
 
 	if l.mode == Sparce {
 		if l.mapMat[vec{x, y}] != nil {
