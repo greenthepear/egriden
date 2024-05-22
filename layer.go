@@ -91,6 +91,10 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
+func (l *GridLayer) Offsets() (float64, float64) {
+	return l.XOffset, l.YOffset
+}
+
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.
 func (g EgridenAssets) GridLayer(z int) *GridLayer {
 	return g.Level().GridLayer(z)

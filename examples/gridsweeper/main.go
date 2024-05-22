@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand/v2"
 
@@ -75,7 +76,13 @@ func main() {
 	ebiten.SetWindowSize(640, 640)
 	ebiten.SetWindowTitle("Gridsweeper")
 
-	//lre.SetVisibility(false)
+	lre.SetVisibility(false)
+
+	for x := range lre.Width {
+		for y := range lre.Height {
+			fmt.Printf("%v\n\t L %p\n", lre.GobjectAt(x, y), lre.GobjectAt(x, y).SpritePack().DrawOptions)
+		}
+	}
 
 	if err = ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

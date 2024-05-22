@@ -22,6 +22,8 @@ type SpritePack struct {
 
 	currentSequenceKey string
 	visible            bool
+
+	DrawOptions *ebiten.DrawImageOptions
 }
 
 // Create an ImageSequence using multiple (or just one) file paths.
@@ -54,7 +56,7 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 }
 
 func NewSpritePack() SpritePack {
-	return SpritePack{make(map[string]*ImageSequence), 0, "", true}
+	return SpritePack{make(map[string]*ImageSequence), 0, "", true, &ebiten.DrawImageOptions{}}
 }
 
 // Assigns an ImageSequence to SpritePack

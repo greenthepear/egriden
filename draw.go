@@ -2,14 +2,37 @@ package egriden
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-func createDrawImageOptionsForXY(x, y float64) *ebiten.DrawImageOptions {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(x, y)
-	return op
-}
-
 type Layer interface {
 	DrawSprite(o Gobject, on *ebiten.Image)
+	Offsets() (float64, float64)
+}
+
+func applyDrawOptionsForNewPosition(o Gobject, layer Layer, x, y float64) {
+	xoffset, yoffset := layer.Offsets()
+	switch l := layer.(type) {
+	case *GridLayer:
+		if l.mode == Static {
+			xoffset, yoffset = 0, 0
+		}
+		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
+			float64(x)*float64(l.SquareLength)+xoffset)
+		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
+			float64(y)*float64(l.SquareLength)+yoffset)
+	case *FreeLayer:
+		if l.static {
+			xoffset, yoffset = 0, 0
+		}
+		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
+			float64(x)+l.XOffset)
+		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
+			float64(y)+l.YOffset)
+	}
+
+}
+
+func autoApplyDrawOptions(l Layer, o Gobject) {
+	x, y := o.XY()
+	applyDrawOptionsForNewPosition(o, l, float64(x), float64(y))
 }
 
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
@@ -19,7 +42,7 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 			if o == nil || !o.IsVisible() {
 				continue
 			}
-
+			autoApplyDrawOptions(&l, o)
 			if o.OnDraw() != nil {
 				o.OnDraw()(on, &l)
 				continue
@@ -42,21 +65,12 @@ func (l *GridLayer) RefreshImage() {
 }
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
-	x, y := o.XY()
-	xoffset, yoffset := l.XOffset, l.YOffset
-	if l.mode == Static {
-		xoffset, yoffset = 0, 0
-	}
 	on.DrawImage(o.Sprite(),
-		createDrawImageOptionsForXY(
-			float64(x)*float64(l.SquareLength)+xoffset,
-			float64(y)*float64(l.SquareLength)+yoffset))
+		o.SpritePack().DrawOptions)
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
-	x, y := o.XY()
-	on.DrawImage(o.Sprite(), createDrawImageOptionsForXY(
-		float64(x)+fl.XOffset, float64(y)+fl.YOffset))
+	on.DrawImage(o.Sprite(), o.SpritePack().DrawOptions)
 }
 
 // Draw the layer
@@ -71,6 +85,7 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 			if !o.IsVisible() {
 				continue
 			}
+			autoApplyDrawOptions(&l, o)
 
 			if o.OnDraw() != nil {
 				o.OnDraw()(on, &l)
@@ -85,8 +100,9 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 		if l.staticImage == nil {
 			l.RefreshImage()
 		}
-		on.DrawImage(l.staticImage,
-			createDrawImageOptionsForXY(l.XOffset, l.YOffset))
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(l.XOffset, l.YOffset)
+		on.DrawImage(l.staticImage, op)
 	}
 }
 
@@ -106,8 +122,9 @@ func (fl FreeLayer) Draw(on *ebiten.Image) {
 		return
 	}
 	if fl.static {
-		on.DrawImage(fl.staticImage,
-			createDrawImageOptionsForXY(fl.XOffset, fl.YOffset))
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(fl.XOffset, fl.YOffset)
+		on.DrawImage(fl.staticImage, op)
 		return
 	}
 	fl.internalDraw(on)

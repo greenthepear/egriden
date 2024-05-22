@@ -16,6 +16,7 @@ type Gobject interface {
 
 	IsVisible() bool
 	Sprite() *ebiten.Image
+	SpritePack() SpritePack
 	SetImageSequence(string) error
 	NextFrame()
 	SetFrame(int)
@@ -97,6 +98,10 @@ func (o *BaseGobject) Sprite() *ebiten.Image {
 	return o.sprites.Sprite()
 }
 
+func (o *BaseGobject) SpritePack() SpritePack {
+	return o.sprites
+}
+
 func (o *BaseGobject) isMarkedForDeletion() bool {
 	return o.markedForDeletion
 }
@@ -121,6 +126,8 @@ func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
 // Makes a copy of the Gobject
 func (o BaseGobject) Build() Gobject {
 	copy := o
+	drawOp := *o.SpritePack().DrawOptions
+	copy.sprites.DrawOptions = &drawOp
 	return &copy
 }
 
@@ -144,6 +151,8 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 // Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
+	applyDrawOptionsForNewPosition(o, l, float64(x), float64(y))
+
 	if l.mode == Sparce {
 		if l.mapMat[vec{x, y}] != nil {
 			l.mapMat[vec{x, y}].markForDeletion()
