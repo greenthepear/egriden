@@ -23,7 +23,11 @@ type SpritePack struct {
 	currentSequenceKey string
 	visible            bool
 
+	//Sets custom draw options for the sprites. Keep in mind tx and ty will be overwritten by the drawing process so
+	//use the XOffset and YOffset fields.
 	DrawOptions *ebiten.DrawImageOptions
+	//Defines the offset of the sprite from the drawing coordinates set by the layer the gobject is in.
+	XOffset, YOffset float64
 }
 
 // Create an ImageSequence using multiple (or just one) file paths.
@@ -56,7 +60,7 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 }
 
 func NewSpritePack() SpritePack {
-	return SpritePack{make(map[string]*ImageSequence), 0, "", true, &ebiten.DrawImageOptions{}}
+	return SpritePack{make(map[string]*ImageSequence), 0, "", true, &ebiten.DrawImageOptions{}, 0, 0}
 }
 
 // Assigns an ImageSequence to SpritePack

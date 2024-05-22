@@ -65,6 +65,10 @@ func main() {
 			lbg.AddGobject(objBacktile.Build(), x, y)
 			backtileCopy := objRevealTile.Build()
 			backtileCopy.SetFrame(rand.IntN(3))
+			//backtileCopy.SetDrawOffsets(float64(rand.IntN(6)-3), float64(rand.IntN(6)-3))
+			//op := &ebiten.DrawImageOptions{}
+			//op.GeoM.Rotate(2)
+			//backtileCopy.SetDrawOptions(*op)
 			lre.AddGobject(backtileCopy, x, y)
 		}
 	}
@@ -76,7 +80,7 @@ func main() {
 	ebiten.SetWindowSize(640, 640)
 	ebiten.SetWindowTitle("Gridsweeper")
 
-	lre.SetVisibility(false)
+	//lre.SetVisibility(false)
 
 	for x := range lre.Width {
 		for y := range lre.Height {

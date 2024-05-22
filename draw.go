@@ -9,23 +9,25 @@ type Layer interface {
 
 func applyDrawOptionsForNewPosition(o Gobject, layer Layer, x, y float64) {
 	xoffset, yoffset := layer.Offsets()
+	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
 	switch l := layer.(type) {
 	case *GridLayer:
 		if l.mode == Static {
 			xoffset, yoffset = 0, 0
 		}
+		// GeoM element at [0, 2] and [1, 2] are tx and ty respectively
 		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
-			float64(x)*float64(l.SquareLength)+xoffset)
+			float64(x)*float64(l.SquareLength)+xoffset+spriteXoffset)
 		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
-			float64(y)*float64(l.SquareLength)+yoffset)
+			float64(y)*float64(l.SquareLength)+yoffset+spriteYoffset)
 	case *FreeLayer:
 		if l.static {
 			xoffset, yoffset = 0, 0
 		}
 		o.SpritePack().DrawOptions.GeoM.SetElement(0, 2,
-			float64(x)+l.XOffset)
+			float64(x)+l.XOffset+spriteXoffset)
 		o.SpritePack().DrawOptions.GeoM.SetElement(1, 2,
-			float64(y)+l.YOffset)
+			float64(y)+l.YOffset+spriteYoffset)
 	}
 
 }

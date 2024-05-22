@@ -17,6 +17,8 @@ type Gobject interface {
 	IsVisible() bool
 	Sprite() *ebiten.Image
 	SpritePack() SpritePack
+	SetDrawOptions(ebiten.DrawImageOptions)
+	SetDrawOffsets(float64, float64)
 	SetImageSequence(string) error
 	NextFrame()
 	SetFrame(int)
@@ -100,6 +102,15 @@ func (o *BaseGobject) Sprite() *ebiten.Image {
 
 func (o *BaseGobject) SpritePack() SpritePack {
 	return o.sprites
+}
+
+func (o *BaseGobject) SetDrawOptions(op ebiten.DrawImageOptions) {
+	o.sprites.DrawOptions = &op
+}
+
+func (o *BaseGobject) SetDrawOffsets(x, y float64) {
+	o.sprites.XOffset = x
+	o.sprites.YOffset = y
 }
 
 func (o *BaseGobject) isMarkedForDeletion() bool {
