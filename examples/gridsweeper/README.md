@@ -1,0 +1,1 @@
+This minesweeper clone example is not functional at this point but it does show rendering and is useful for testing.
