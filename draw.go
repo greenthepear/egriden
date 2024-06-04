@@ -1,6 +1,10 @@
 package egriden
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"log"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Layer interface {
 	DrawSprite(o Gobject, on *ebiten.Image)
@@ -27,6 +31,8 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 		r.GeoM.Translate(
 			float64(x)+xoffset+spriteXoffset,
 			float64(y)+yoffset+spriteYoffset)
+	default:
+		log.Fatalf("Bad layer type! Is %#v", l)
 	}
 	return r
 
@@ -68,7 +74,9 @@ func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
-	on.DrawImage(o.Sprite(), o.SpritePack().DrawOptions)
+	x, y := o.XY()
+	on.DrawImage(o.Sprite(),
+		appliedDrawOptionsForPosition(o, &fl, float64(x), float64(y)))
 }
 
 // Draw the layer

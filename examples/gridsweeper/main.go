@@ -74,8 +74,9 @@ func main() {
 		lbo.AddGobject(objBomb.Build(), rand.IntN(defGridWidth), rand.IntN(defGridHeight))
 	}
 
+	//Testing free layers
 	lfree := g.CreateFreeLayerOnTop("free test", 21, 21)
-	lfree.AddGobject(objBomb.Build(), 0, 0)
+	lfree.AddGobject(objBomb.Build(), 80, 0)
 
 	ebiten.SetWindowSize(640, 640)
 	ebiten.SetWindowTitle("Gridsweeper")

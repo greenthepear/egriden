@@ -46,7 +46,7 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 // Creates a new FreeLayer and returns a pointer to it.
 func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
 	z := len(le.freeLayers)
-	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, false, nil, xOffset, yOffset))
+	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true, nil, xOffset, yOffset))
 	return le.freeLayers[z]
 }
 
