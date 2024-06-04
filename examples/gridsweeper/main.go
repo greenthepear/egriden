@@ -19,6 +19,7 @@ var defGridWidth = 20
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawAllGridLayers(screen)
+	g.DrawAllFreeLayers(screen)
 }
 
 func (g *Game) Update() error {
@@ -65,16 +66,6 @@ func main() {
 			lbg.AddGobject(objBacktile.Build(), x, y)
 			backtileCopy := objRevealTile.Build()
 			backtileCopy.SetFrame(rand.IntN(3))
-
-			/* Testing custom draw options
-			s := backtileCopy.Sprite().Bounds().Size()
-			op := &ebiten.DrawImageOptions{}
-
-			op.GeoM.Translate(-float64(s.X)/2, -float64(s.Y)/2)
-			op.GeoM.Rotate(rand.Float64())
-			op.GeoM.Translate(float64(s.X)/2, float64(s.Y)/2)
-			backtileCopy.SetDrawOptions(op)
-			*/
 			lre.AddGobject(backtileCopy, x, y)
 		}
 	}
@@ -82,6 +73,9 @@ func main() {
 	for range 6 {
 		lbo.AddGobject(objBomb.Build(), rand.IntN(defGridWidth), rand.IntN(defGridHeight))
 	}
+
+	lfree := g.CreateFreeLayerOnTop("free test", 21, 21)
+	lfree.AddGobject(objBomb.Build(), 0, 0)
 
 	ebiten.SetWindowSize(640, 640)
 	ebiten.SetWindowTitle("Gridsweeper")

@@ -25,8 +25,8 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 			xoffset, yoffset = 0, 0
 		}
 		r.GeoM.Translate(
-			float64(x)+l.XOffset+spriteXoffset,
-			float64(y)+l.YOffset+spriteYoffset)
+			float64(x)+xoffset+spriteXoffset,
+			float64(y)+yoffset+spriteYoffset)
 	}
 	return r
 

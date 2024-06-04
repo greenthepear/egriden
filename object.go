@@ -140,8 +140,12 @@ func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
 // Makes a copy of the Gobject
 func (o BaseGobject) Build() Gobject {
 	copy := o
-	drawOp := *o.SpritePack().DrawOptions
-	copy.sprites.DrawOptions = &drawOp
+	if !o.SpritePack().empty {
+		drawOp := *o.SpritePack().DrawOptions
+		copy.sprites.DrawOptions = &drawOp
+	} else {
+		copy.sprites = EmptySpritePack()
+	}
 	return &copy
 }
 

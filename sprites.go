@@ -22,6 +22,7 @@ type SpritePack struct {
 
 	currentSequenceKey string
 	visible            bool
+	empty              bool
 
 	DrawOptions      *ebiten.DrawImageOptions
 	XOffset, YOffset float64
@@ -57,7 +58,7 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 }
 
 func NewSpritePack() SpritePack {
-	return SpritePack{make(map[string]*ImageSequence), 0, "", true, &ebiten.DrawImageOptions{}, 0, 0}
+	return SpritePack{make(map[string]*ImageSequence), 0, "", true, false, &ebiten.DrawImageOptions{}, 0, 0}
 }
 
 // Assigns an ImageSequence to SpritePack
@@ -70,7 +71,7 @@ func (ip *SpritePack) AddImageSequence(is ImageSequence) {
 
 // A sprite pack that will not render anything
 func EmptySpritePack() SpritePack {
-	return SpritePack{visible: false}
+	return SpritePack{visible: false, empty: true}
 }
 
 // Create SpritePack and assign sequence
