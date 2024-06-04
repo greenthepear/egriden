@@ -106,3 +106,24 @@ func (fl *FreeLayer) Z() int {
 func (fl *FreeLayer) Offsets() (float64, float64) {
 	return fl.XOffset, fl.YOffset
 }
+
+// Shortcut for g.Level().CreateFreeLayerOnTop().
+// Level implementation must have BaseLevel component.
+func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
+	bl, ok := g.Level().(*BaseLevel)
+	if !ok {
+		panic("Level does not have BaseLevel")
+	}
+	return bl.CreateFreeLayerOnTop(name, xOffset, yOffset)
+}
+
+// Shortcut for g.Level().CreateStaticFreeLayerOnTop().
+// Level implementation must have BaseLevel component.
+func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
+	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
+	bl, ok := g.Level().(*BaseLevel)
+	if !ok {
+		panic("Level does not have BaseLevel")
+	}
+	return bl.CreateStaticFreeLayerOnTop(name, imgWidth, imgHeight, xOffset, yOffset)
+}
