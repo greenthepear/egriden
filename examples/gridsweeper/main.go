@@ -74,7 +74,7 @@ func main() {
 		lbo.AddGobject(objBomb.Build(), rand.IntN(defGridWidth), rand.IntN(defGridHeight))
 	}
 
-	lfree := g.CreateFreeLayerOnTop("free test", 21, 21)
+	lfree := g.CreateFreeLayerOnTop("free test", 0, 0)
 	lfree.AddGobject(objBomb.Build(), 0, 0)
 
 	ebiten.SetWindowSize(640, 640)
