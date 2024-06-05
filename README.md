@@ -61,7 +61,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func main(){
     //Initialize
     g := &Game{}
-    g.InitEgridenComponents()
+    g.InitEgridenAssets()
 
     layer0 := g.CreateGridLayerOnTop(
         "Background", //Name

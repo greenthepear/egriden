@@ -75,7 +75,7 @@ func (le *BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
 	}
 }
 
-// Run all the onUpdate() functions of Gobjects that have them
+// UNTESTED! Run all the onUpdate() functions of Gobjects that have them
 func (le *BaseLevel) RunUpdateScripts() {
 	marked := 0
 	for _, o := range le.gobjectsWithUpdateScripts {

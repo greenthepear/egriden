@@ -1,5 +1,8 @@
 package egriden
 
+// Egriden components to be embedded in your Game{} struct.
+//
+// You need to run []
 type EgridenAssets struct {
 	Levels            []Level
 	CurrentLevelIndex int
@@ -48,10 +51,11 @@ func (g *EgridenAssets) NextLevel() {
 }
 
 // Run this while initializing the game, before adding any layers. Creates a level called `Default`
-func (g *EgridenAssets) InitEgridenComponents() {
+func (g *EgridenAssets) InitEgridenAssets() {
 	g.AddLevel(NewBaseLevel("Default"))
 }
 
+// UNTESTED! Run all the onUpdate() functions of Gobjects that have them within the current level
 func (g *EgridenAssets) RunUpdateScripts() {
 	g.Level().(*BaseLevel).RunUpdateScripts()
 }

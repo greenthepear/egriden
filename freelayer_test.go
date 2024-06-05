@@ -6,7 +6,7 @@ import (
 
 func TestFreeLayers(t *testing.T) {
 	g := EgridenAssets{}
-	g.InitEgridenComponents()
+	g.InitEgridenAssets()
 
 	testoffx, testoffy := 10.0, 20.0
 	fl1 := g.CreateFreeLayerOnTop("freelayer1", testoffx, testoffy)

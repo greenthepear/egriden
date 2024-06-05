@@ -6,7 +6,7 @@ import (
 
 func TestLevelsLayersGobjects(t *testing.T) {
 	g := &EgridenAssets{}
-	g.InitEgridenComponents()
+	g.InitEgridenAssets()
 
 	l := g.CreateGridLayerOnTop("test", 16, 10, 12, Sparce, 0, 0)
 	if l != g.GridLayer(0) {
