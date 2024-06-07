@@ -41,15 +41,13 @@ func (g *Game) Layout(_, _ int) (int, int) {
 
 type BouncyGopher struct {
 	egriden.BaseGobject
-	goingUp   bool
-	goingLeft bool
+	goingUp bool
 }
 
 func NewBouncyGopher() egriden.Gobject {
 	o := &BouncyGopher{
 		BaseGobject: egriden.NewBaseGobject("mr bounce", gopherPack),
 		goingUp:     true,
-		goingLeft:   true,
 	}
 
 	//To be able to access BouncyGopher's fields we use the original
@@ -70,19 +68,6 @@ func NewBouncyGopher() egriden.Gobject {
 		} else {
 			y++
 		}
-
-		/*
-			if x < 0 || x >= scrWidth-4 {
-				o.NextFrame()
-				o.goingLeft = !o.goingLeft
-			}
-
-			if o.goingLeft {
-				x--
-			} else {
-				y++
-			}
-		*/
 
 		l.(*egriden.FreeLayer).MoveGobjectTo(o, x, y)
 	}

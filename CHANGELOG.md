@@ -2,8 +2,24 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
+## v0.2.1 - WIP
+- Changed signature of [`(Gobject).OnDrawFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnDrawFunc) and [`(Gobject).OnUpdateFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnUpdateFunc) functions by adding a `self Gobject` parameter. This removes confusing pointer stuff that happens when you want to make a `BaseGobject` with custom functions like so:
+    ```go
+    o := NewBaseGobject(...)
+    o.OnDrawFunc = func (i *ebiten.Image, l Layer) {
+        o.NextFrame() //Won't do anything!
+        //Just changes the frame of the original gobject 'template' which will
+        //not be running in the game, since that's what o points to.
+        o.DrawSprite(i, l)
+    }
+    l.AddGobject(o.Build(), 0, 0)
+    ```
+    - Also added a `l Layer` parameter to `(Gobject).OnUpdateFunc` for convenience. Getting the object's layer pointer into the `OnUpdate` function was tricky beforehand.
+- Fixed the small issue that `(Gobject).OnUpdate` would never run ever.
+- Added a new simple example [gopher-party](./examples/gopher-party/) to showcase many things added in v0.2.0 and this patch.
+
 ## v0.2.0 "Liberty" - 2024-05-06
-- Added [**free layers**](ttps://pkg.go.dev/github.com/greenthepear/egriden#FreeLayer) which allow you to place and draw objects anywhere on the screen according to their XY coordinates.
+- Added [**free layers**](https://pkg.go.dev/github.com/greenthepear/egriden#FreeLayer) which allow you to place and draw objects anywhere on the screen according to their XY coordinates.
 - Added **levels**, an interface for them and methods for [`BaseLevel`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseLevel). [`(*EgridenAssets).InitEgridenAssets()`](https://pkg.go.dev/github.com/greenthepear/egriden#EgridenAssets.InitEgridenAssets) now creates a default level.
     - `(*EgridenAssets).InitEgridenAssets()` was renamed from `(*EgridenAssets).InitEgridenComponents()`.
 - Added methods for deleting and moving Gobjects within a grid layer: [`(*GridLayer).DeleteAt()`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.DeleteAt), [`(*GridLayer).MoveGobjectTo()`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.MoveGobjectTo).
