@@ -47,7 +47,7 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 			}
 
 			if o.OnDraw() != nil {
-				o.OnDraw()(on, &l)
+				o.OnDraw()(o, on, &l)
 				continue
 			}
 			o.DrawSprite(on, &l)
@@ -93,7 +93,7 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 			}
 
 			if o.OnDraw() != nil {
-				o.OnDraw()(on, &l)
+				o.OnDraw()(o, on, &l)
 				continue
 			}
 
@@ -114,7 +114,7 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 func (fl FreeLayer) internalDraw(on *ebiten.Image) {
 	for _, k := range fl.gobjects.keys {
 		if k.OnDraw() != nil {
-			k.OnDraw()(on, &fl)
+			k.OnDraw()(k, on, &fl)
 			continue
 		}
 		k.DrawSprite(on, &fl)

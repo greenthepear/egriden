@@ -25,9 +25,9 @@ type Gobject interface {
 
 	//Custom scripts
 
-	OnUpdate() func()                   //Runs every game.Update() call
-	OnDraw() func(*ebiten.Image, Layer) //Runs ever game.Draw() call
-	DrawSprite(*ebiten.Image, Layer)    //Default sprite drawing function
+	OnUpdate() func(self Gobject, l Layer)                //Runs every game.Update() call
+	OnDraw() func(self Gobject, i *ebiten.Image, l Layer) //Runs ever game.Draw() call
+	DrawSprite(*ebiten.Image, Layer)                      //Default sprite drawing function
 
 	//objects are referenced outside of the grid sometimes, if they get deleted from it, these must be called and checked
 
@@ -44,8 +44,8 @@ type BaseGobject struct {
 
 	markedForDeletion bool
 
-	OnDrawFunc   func(*ebiten.Image, Layer)
-	OnUpdateFunc func()
+	OnDrawFunc   func(self Gobject, i *ebiten.Image, l Layer)
+	OnUpdateFunc func(self Gobject, l Layer)
 }
 
 // Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless Gobject that can be added to a layer
@@ -124,11 +124,11 @@ func (o *BaseGobject) markForDeletion() {
 	o.markedForDeletion = true
 }
 
-func (o *BaseGobject) OnDraw() func(*ebiten.Image, Layer) {
+func (o *BaseGobject) OnDraw() func(Gobject, *ebiten.Image, Layer) {
 	return o.OnDrawFunc
 }
 
-func (o *BaseGobject) OnUpdate() func() {
+func (o *BaseGobject) OnUpdate() func(Gobject, Layer) {
 	return o.OnUpdateFunc
 }
 
@@ -169,6 +169,10 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 // Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
+
+	if o.OnUpdate() != nil {
+		l.level.addGobjectWithOnUpdate(o, l)
+	}
 
 	if l.mode == Sparce {
 		if l.mapMat[vec{x, y}] != nil {

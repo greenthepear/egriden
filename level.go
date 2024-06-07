@@ -16,6 +16,13 @@ type Level interface {
 
 	FreeLayer(int) *FreeLayer
 	FreeLayers() []*FreeLayer
+
+	addGobjectWithOnUpdate(o Gobject, l Layer)
+}
+
+type gobjectWithLayer struct {
+	o Gobject
+	l Layer
 }
 
 type BaseLevel struct {
@@ -23,7 +30,7 @@ type BaseLevel struct {
 	index int
 
 	gridLayers                []*GridLayer
-	gobjectsWithUpdateScripts []Gobject
+	gobjectsWithUpdateScripts []gobjectWithLayer
 
 	freeLayers []*FreeLayer
 }
@@ -31,7 +38,7 @@ type BaseLevel struct {
 // Initialize by creating slices for layers
 func (le *BaseLevel) Init() {
 	le.gridLayers = make([]*GridLayer, 0)
-	le.gobjectsWithUpdateScripts = make([]Gobject, 0)
+	le.gobjectsWithUpdateScripts = make([]gobjectWithLayer, 0)
 }
 
 func NewBaseLevel(name string) *BaseLevel {
@@ -75,21 +82,26 @@ func (le *BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
 	}
 }
 
+func (le *BaseLevel) addGobjectWithOnUpdate(o Gobject, l Layer) {
+	le.gobjectsWithUpdateScripts =
+		append(le.gobjectsWithUpdateScripts, gobjectWithLayer{o, l})
+}
+
 // UNTESTED! Run all the onUpdate() functions of Gobjects that have them
 func (le *BaseLevel) RunUpdateScripts() {
 	marked := 0
-	for _, o := range le.gobjectsWithUpdateScripts {
-		if o.isMarkedForDeletion() {
+	for _, elem := range le.gobjectsWithUpdateScripts {
+		if elem.o.isMarkedForDeletion() {
 			marked++
 			continue
 		}
-		o.OnUpdate()()
+		elem.o.OnUpdate()(elem.o, elem.l)
 	}
 
 	if marked > 0 {
 		le.gobjectsWithUpdateScripts = gunc.Filter(le.gobjectsWithUpdateScripts,
-			func(o Gobject) bool {
-				return o.isMarkedForDeletion()
+			func(ol gobjectWithLayer) bool {
+				return ol.o.isMarkedForDeletion()
 			})
 
 	}

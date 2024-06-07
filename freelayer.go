@@ -16,6 +16,8 @@ type FreeLayer struct {
 	static           bool
 	staticImage      *ebiten.Image
 	XOffset, YOffset float64
+
+	level Level
 }
 
 // Options for a static free layer
@@ -46,7 +48,9 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 // Creates a new FreeLayer and returns a pointer to it.
 func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
 	z := len(le.freeLayers)
-	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true, nil, xOffset, yOffset))
+	newLayer := newFreeLayer(name, z, true, nil, xOffset, yOffset)
+	le.freeLayers = append(le.freeLayers, newLayer)
+	newLayer.level = le
 	return le.freeLayers[z]
 }
 
@@ -79,6 +83,9 @@ func (le *FreeLayer) SetVisibility(to bool) {
 
 func (fl *FreeLayer) AddGobject(o Gobject, x, y int) {
 	o.setXY(x, y)
+	if o.OnUpdate() != nil {
+		fl.level.addGobjectWithOnUpdate(o, fl)
+	}
 	fl.gobjects.Add(o)
 }
 

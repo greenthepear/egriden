@@ -35,6 +35,8 @@ type GridLayer struct {
 	staticImage      *ebiten.Image
 	XOffset, YOffset float64
 	NumOfGobjects    int
+
+	level Level
 }
 
 func newGridLayer(name string, z int, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
@@ -71,7 +73,9 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 // but for small grids Sparce/Dense doesn't make much of a difference.
 func (le *BaseLevel) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
 	ln := len(le.gridLayers)
-	le.gridLayers = append(le.gridLayers, newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset))
+	newLayer := newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset)
+	le.gridLayers = append(le.gridLayers, newLayer)
+	newLayer.level = le
 	return le.gridLayers[ln]
 }
 
