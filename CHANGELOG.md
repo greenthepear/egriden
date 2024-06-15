@@ -2,7 +2,7 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
-## v0.2.1 - WIP
+## v0.2.1 - 2024-06-15
 - Changed signature of [`(Gobject).OnDrawFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnDrawFunc) and [`(Gobject).OnUpdateFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnUpdateFunc) functions by adding a `self Gobject` parameter. This removes confusing pointer stuff that happens when you want to make a `BaseGobject` with custom functions like so:
     ```go
     o := NewBaseGobject(...)
@@ -17,8 +17,10 @@
     - Also added a `l Layer` parameter to `(Gobject).OnUpdateFunc` for convenience. Getting the object's layer pointer into the `OnUpdate` function was tricky beforehand.
 - Fixed the small issue that `(Gobject).OnUpdate` would never run ever.
 - Added a new simple example [gopher-party](./examples/gopher-party/) to showcase many things added in v0.2.0 and this patch.
+- Updated Ebitengine to v2.7.5.
+- Updated localization files.
 
-## v0.2.0 "Liberty" - 2024-05-06
+## v0.2.0 "Liberty" - 2024-06-05
 - Added [**free layers**](https://pkg.go.dev/github.com/greenthepear/egriden#FreeLayer) which allow you to place and draw objects anywhere on the screen according to their XY coordinates.
 - Added **levels**, an interface for them and methods for [`BaseLevel`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseLevel). [`(*EgridenAssets).InitEgridenAssets()`](https://pkg.go.dev/github.com/greenthepear/egriden#EgridenAssets.InitEgridenAssets) now creates a default level.
     - `(*EgridenAssets).InitEgridenAssets()` was renamed from `(*EgridenAssets).InitEgridenComponents()`.
