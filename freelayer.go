@@ -1,6 +1,8 @@
 package egriden
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,10 +14,10 @@ type FreeLayer struct {
 
 	gobjects gobjectSet
 
-	Visible          bool
-	static           bool
-	staticImage      *ebiten.Image
-	XOffset, YOffset float64
+	Visible     bool
+	static      bool
+	staticImage *ebiten.Image
+	AnchorPt    image.Point
 
 	level Level
 }
@@ -25,7 +27,7 @@ type StaticFreeLayerOp struct {
 	width, height int
 }
 
-func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLayerOp, xOffset, yOffset float64) *FreeLayer {
+func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLayerOp, xOffset, yOffset int) *FreeLayer {
 	paramStatic := false
 	var img *ebiten.Image
 	if staticOptions != nil {
@@ -40,13 +42,12 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 		static:      paramStatic,
 		gobjects:    newGobjectSet(),
 		staticImage: img,
-		XOffset:     xOffset,
-		YOffset:     yOffset,
+		AnchorPt:    image.Point{xOffset, yOffset},
 	}
 }
 
 // Creates a new FreeLayer and returns a pointer to it.
-func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
+func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset int) *FreeLayer {
 	z := len(le.freeLayers)
 	newLayer := newFreeLayer(name, z, true, nil, xOffset, yOffset)
 	le.freeLayers = append(le.freeLayers, newLayer)
@@ -58,7 +59,7 @@ func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64)
 // Remember to call Refresh() at least once after populating,
 // otherwise you'll just get an empty image.
 func (le *BaseLevel) CreateStaticFreeLayerOnTop(
-	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
+	name string, imgWidth, imgHeight int, xOffset, yOffset int) *FreeLayer {
 	z := len(le.freeLayers)
 	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true,
 		&StaticFreeLayerOp{imgWidth, imgHeight}, xOffset, yOffset))
@@ -75,6 +76,10 @@ func (le *BaseLevel) FreeLayer(z int) *FreeLayer {
 
 func (le *BaseLevel) FreeLayers() []*FreeLayer {
 	return le.freeLayers
+}
+
+func (le *FreeLayer) Anchor() image.Point {
+	return le.AnchorPt
 }
 
 func (le *FreeLayer) SetVisibility(to bool) {
@@ -110,13 +115,13 @@ func (fl *FreeLayer) Z() int {
 	return fl.z
 }
 
-func (fl *FreeLayer) Offsets() (float64, float64) {
-	return fl.XOffset, fl.YOffset
+func (fl *FreeLayer) AnchorXYf() (float64, float64) {
+	return float64(fl.AnchorPt.X), float64(fl.AnchorPt.Y)
 }
 
 // Shortcut for g.Level().CreateFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
-func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
+func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset int) *FreeLayer {
 	bl, ok := g.Level().(*BaseLevel)
 	if !ok {
 		panic("Level does not have BaseLevel")
@@ -127,7 +132,7 @@ func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset float
 // Shortcut for g.Level().CreateStaticFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
 func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
-	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
+	name string, imgWidth, imgHeight int, xOffset, yOffset int) *FreeLayer {
 	bl, ok := g.Level().(*BaseLevel)
 	if !ok {
 		panic("Level does not have BaseLevel")

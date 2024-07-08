@@ -33,11 +33,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func main() {
 	g := &Game{}
 	g.InitEgridenAssets()
-	lbg := g.CreateGridLayerOnTop("Background",
+	lbg := g.CreateSimpleGridLayerOnTop("Background",
 		defGridLen, defGridWidth, defGridHeight, egriden.Static, 0, 0)
-	lbo := g.CreateGridLayerOnTop("Bombs",
+	lbo := g.CreateSimpleGridLayerOnTop("Bombs",
 		defGridLen, defGridWidth, defGridHeight, egriden.Sparce, 0, 0)
-	lre := g.CreateGridLayerOnTop("Reveal tiles",
+	lre := g.CreateSimpleGridLayerOnTop("Reveal tiles",
 		defGridLen, defGridWidth, defGridHeight, egriden.Dense, 0, 0)
 
 	seq, err := egriden.CreateImageSequenceFromPaths("backtile", "Graphics/backtile.png")
@@ -82,9 +82,9 @@ func main() {
 	ebiten.SetWindowTitle("Gridsweeper")
 
 	//lre.SetVisibility(false)
-
-	for x := range lre.Width {
-		for y := range lre.Height {
+	w, h := lre.Dimensions()
+	for x := range w {
+		for y := range h {
 			fmt.Printf("%v\n\t L %p\n", lre.GobjectAt(x, y), lre.GobjectAt(x, y).SpritePack().DrawOptions)
 		}
 	}

@@ -8,12 +8,12 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	g := &EgridenAssets{}
 	g.InitEgridenAssets()
 
-	l := g.CreateGridLayerOnTop("test", 16, 10, 12, Sparce, 0, 0)
+	l := g.CreateSimpleGridLayerOnTop("test", 16, 10, 12, Sparce, 0, 0)
 	if l != g.GridLayer(0) {
 		t.Errorf("returned layer not the same as retrieved (%p != %p)", l, g.GridLayer(0))
 	}
 
-	w, h := l.Width, l.Height
+	w, h := l.layerDimensions.width, l.layerDimensions.height
 	if w != 10 || h != 12 {
 		t.Errorf("wrong layer dimensions (%d x %d != %d x %d)", w, h, 10, 12)
 	}
@@ -41,7 +41,7 @@ func TestLevelsLayersGobjects(t *testing.T) {
 		t.Errorf("level assignment and iteration failed (name is `%s`)", g.Level().Name())
 	}
 
-	l2l := g.CreateGridLayerOnTop("level 2 layer", 10, 2, 2, Dense, 0, 0)
+	l2l := g.CreateSimpleGridLayerOnTop("level 2 layer", 10, 2, 2, Dense, 0, 0)
 	testGobjCopy := testGobj.Build()
 	l2l.AddGobject(testGobjCopy, 0, 1)
 	if !l2l.IsOccupiedAt(0, 1) {

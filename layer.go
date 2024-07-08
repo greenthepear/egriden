@@ -1,6 +1,8 @@
 package egriden
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -23,47 +25,51 @@ type vec struct {
 	x, y int
 }
 
+type Dimensions struct {
+	width, height int
+}
+
 type GridLayer struct {
-	Name             string // Name of the layer, for convenience sake
-	z                int
-	SquareLength     int
-	Width, Height    int
-	Visible          bool
-	mode             drawMode
-	mapMat           map[vec]Gobject
-	sliceMat         [][]Gobject
-	staticImage      *ebiten.Image
-	XOffset, YOffset float64
-	NumOfGobjects    int
+	Name            string // Name of the layer, for convenience sake
+	z               int
+	cellDimensions  Dimensions
+	layerDimensions Dimensions
+	Visible         bool
+	mode            drawMode
+	mapMat          map[vec]Gobject
+	sliceMat        [][]Gobject
+	staticImage     *ebiten.Image
+	AnchorPt        image.Point
+	numOfGobjects   int
 
 	level Level
 }
 
-func newGridLayer(name string, z int, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
+func newGridLayer(
+	name string, z int, cellWidth int, cellHeight int, lwidth, lheight int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
+
 	var mapMat map[vec]Gobject = nil
 	var sliceMat [][]Gobject = nil
 	if drawMode == Sparce {
-		mapMat = make(map[vec]Gobject, width*height)
+		mapMat = make(map[vec]Gobject, lwidth*lheight)
 	} else {
-		sliceMat = make([][]Gobject, height)
+		sliceMat = make([][]Gobject, lheight)
 		for i := range sliceMat {
-			sliceMat[i] = make([]Gobject, width)
+			sliceMat[i] = make([]Gobject, lwidth)
 		}
 	}
 	return &GridLayer{
-		Name:          name,
-		z:             z,
-		SquareLength:  squareLength,
-		Width:         width,
-		Height:        height,
-		Visible:       true,
-		mode:          drawMode,
-		mapMat:        mapMat,
-		sliceMat:      sliceMat,
-		staticImage:   nil,
-		XOffset:       XOffset,
-		YOffset:       YOffset,
-		NumOfGobjects: 0,
+		Name:            name,
+		z:               z,
+		cellDimensions:  Dimensions{cellWidth, cellHeight},
+		layerDimensions: Dimensions{lwidth, lheight},
+		Visible:         true,
+		mode:            drawMode,
+		mapMat:          mapMat,
+		sliceMat:        sliceMat,
+		staticImage:     nil,
+		AnchorPt:        image.Point{int(XOffset), int(YOffset)},
+		numOfGobjects:   0,
 	}
 }
 
@@ -71,17 +77,19 @@ func newGridLayer(name string, z int, squareLength int, width, height int, drawM
 //
 // See drawMode constants for which one you can use,
 // but for small grids Sparce/Dense doesn't make much of a difference.
-func (le *BaseLevel) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
+func (le *BaseLevel) CreateSimpleGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
 	ln := len(le.gridLayers)
-	newLayer := newGridLayer(name, ln, squareLength, width, height, drawMode, XOffset, YOffset)
+	newLayer := newGridLayer(
+		name, ln, squareLength, squareLength,
+		width, height, drawMode, XOffset, YOffset)
 	le.gridLayers = append(le.gridLayers, newLayer)
 	newLayer.level = le
 	return le.gridLayers[ln]
 }
 
-// Short hand for BaseLevel.CreateGridLayerOnTop() for the current level
-func (g *EgridenAssets) CreateGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset float64) *GridLayer {
-	return g.Level().(*BaseLevel).CreateGridLayerOnTop(name, squareLength, width, height, drawMode, XOffset, YOffset)
+// Short hand for BaseLevel.CreateSimpleGridLayerOnTop() for the current level
+func (g *EgridenAssets) CreateSimpleGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
+	return g.Level().(*BaseLevel).CreateSimpleGridLayerOnTop(name, squareLength, width, height, drawMode, XOffset, YOffset)
 }
 
 // False visibility disables drawing both the Sprites and custom draw scripts
@@ -95,8 +103,16 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
-func (l *GridLayer) Offsets() (float64, float64) {
-	return l.XOffset, l.YOffset
+func (l *GridLayer) Anchor() image.Point {
+	return l.AnchorPt
+}
+
+func (l *GridLayer) AnchorXYf() (float64, float64) {
+	return float64(l.AnchorPt.X), float64(l.AnchorPt.Y)
+}
+
+func (l *GridLayer) Dimensions() (int, int) {
+	return l.layerDimensions.width, l.layerDimensions.height
 }
 
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.

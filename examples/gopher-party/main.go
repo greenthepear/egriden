@@ -79,7 +79,7 @@ func main() {
 	g := &Game{}
 	g.InitEgridenAssets()
 
-	gopherGridL := g.CreateGridLayerOnTop(
+	gopherGridL := g.CreateSimpleGridLayerOnTop(
 		"gopher grid", 10, 3, 3, egriden.Dense, 0, 0)
 	shakyGopher := egriden.NewBaseGobject("mr shake", gopherPack)
 	shakyGopher.OnDrawFunc =
