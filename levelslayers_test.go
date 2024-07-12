@@ -13,7 +13,7 @@ func TestLevelsLayersGobjects(t *testing.T) {
 		t.Errorf("returned layer not the same as retrieved (%p != %p)", l, g.GridLayer(0))
 	}
 
-	w, h := l.layerDimensions.width, l.layerDimensions.height
+	w, h := l.layerDimensions.WH()
 	if w != 10 || h != 12 {
 		t.Errorf("wrong layer dimensions (%d x %d != %d x %d)", w, h, 10, 12)
 	}

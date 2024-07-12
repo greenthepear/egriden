@@ -9,11 +9,11 @@ import (
 // For optimization there are a couple of ways a grid layer can be draw depending if it
 // changes frequently (Static or not) and if it has many (Dense) or few (Sparce)
 // gobjects most of the time.
-type drawMode int
+type DrawMode int
 
 const (
 	//Used for sparcely populated grids, ranges over a map for drawing
-	Sparce drawMode = iota
+	Sparce DrawMode = iota
 	//Used for thickly populated grids, ranges over a slice for drawing
 	Dense
 	//Used for layers that don't get updated often, creates ebiten.Image of the the entire layer.
@@ -30,6 +30,11 @@ type Dimensions struct {
 	Width, Height int
 }
 
+// Width and height as ints
+func (d Dimensions) WH() (int, int) {
+	return d.Width, d.Height
+}
+
 type GridLayer struct {
 	Name            string // Name of the layer, for convenience sake
 	z               int
@@ -37,7 +42,7 @@ type GridLayer struct {
 	layerDimensions Dimensions
 	padding         image.Point
 	Visible         bool
-	mode            drawMode
+	mode            DrawMode
 	mapMat          map[vec]Gobject
 	sliceMat        [][]Gobject
 	staticImage     *ebiten.Image
@@ -51,50 +56,100 @@ type GridLayer struct {
 }
 
 func newGridLayer(
-	name string, z int, cellWidth int, cellHeight int, lwidth, lheight int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
+	name string, z int, cellDims Dimensions, gridDims Dimensions,
+	drawMode DrawMode, anchor image.Point, padding image.Point) *GridLayer {
 
 	var mapMat map[vec]Gobject = nil
 	var sliceMat [][]Gobject = nil
 	if drawMode == Sparce {
-		mapMat = make(map[vec]Gobject, lwidth*lheight)
+		mapMat = make(map[vec]Gobject, gridDims.Width*gridDims.Height)
 	} else {
-		sliceMat = make([][]Gobject, lheight)
+		sliceMat = make([][]Gobject, gridDims.Height)
 		for i := range sliceMat {
-			sliceMat[i] = make([]Gobject, lwidth)
+			sliceMat[i] = make([]Gobject, gridDims.Width)
 		}
 	}
 	return &GridLayer{
 		Name:            name,
 		z:               z,
-		cellDimensions:  Dimensions{cellWidth, cellHeight},
-		layerDimensions: Dimensions{lwidth, lheight},
+		cellDimensions:  cellDims,
+		layerDimensions: gridDims,
 		Visible:         true,
 		mode:            drawMode,
 		mapMat:          mapMat,
 		sliceMat:        sliceMat,
 		staticImage:     nil,
-		Anchor:          image.Point{int(XOffset), int(YOffset)},
+		Anchor:          anchor,
 		numOfGobjects:   0,
+		padding:         padding,
 	}
 }
 
-// Creates a grid layer at the lowest empty Z and returns a pointer to it.
-//
-// See drawMode constants for which one you can use,
-// but for small grids Sparce/Dense doesn't make much of a difference.
-func (le *BaseLevel) CreateSimpleGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
+func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
 	ln := len(le.gridLayers)
-	newLayer := newGridLayer(
-		name, ln, squareLength, squareLength,
-		width, height, drawMode, XOffset, YOffset)
-	le.gridLayers = append(le.gridLayers, newLayer)
-	newLayer.level = le
+	l.z = ln
+	le.gridLayers = append(le.gridLayers, l)
+	l.level = le
 	return le.gridLayers[ln]
 }
 
-// Short hand for BaseLevel.CreateSimpleGridLayerOnTop() for the current level
-func (g *EgridenAssets) CreateSimpleGridLayerOnTop(name string, squareLength int, width, height int, drawMode drawMode, XOffset, YOffset int) *GridLayer {
-	return g.Level().(*BaseLevel).CreateSimpleGridLayerOnTop(name, squareLength, width, height, drawMode, XOffset, YOffset)
+// Creates a grid layer with square cells and no padding within the level.
+// Also returns the pointer to it.
+func (le *BaseLevel) CreateSimpleGridLayerOnTop(
+	name string, squareLength int, width, height int,
+	drawMode DrawMode, XOffset, YOffset int) *GridLayer {
+
+	return le.addGridLayer(
+		newGridLayer(
+			name, 0,
+			Dimensions{squareLength, squareLength},
+			Dimensions{width, height},
+			drawMode,
+			image.Point{XOffset, YOffset},
+			image.Point{0, 0}))
+}
+
+// Short hand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
+// for the current level
+func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
+	name string, squareLength int, width, height int,
+	drawMode DrawMode, XOffset, YOffset int) *GridLayer {
+
+	return g.Level().(*BaseLevel).CreateSimpleGridLayerOnTop(
+		name, squareLength, width, height, drawMode, XOffset, YOffset)
+}
+
+type GridLayerParameters struct {
+	// Width and height of the layer's grid
+	GridDimensions Dimensions
+
+	// Width and height of individual cells
+	CellDimensions Dimensions
+	// Defines the "gaps" between cells:
+	// point's X for horizontal gaps length and Y for vertical.
+	PaddingVector image.Point
+
+	// Layer's [(GridLayer).Anchor]
+	Anchor image.Point
+	// Layer's [DrawMode]
+	Mode DrawMode
+}
+
+// Creates a grid layer with custom parameters within the level and returns the pointer to it.
+// If you want a simple square grid layer use [(*BaseLevel).CreateSimpleGridLayerOnTop].
+func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
+	//name string, z int, cellWidth int, cellHeight int, lwidth, lheight int,
+	//DrawMode DrawMode, XOffset, YOffset int, xpad, ypad int)
+	return le.addGridLayer(
+		newGridLayer(
+			name, 0,
+			params.CellDimensions,
+			params.GridDimensions,
+			params.Mode,
+			params.Anchor,
+			params.PaddingVector,
+		))
+
 }
 
 // False visibility disables drawing both the Sprites and custom draw scripts
