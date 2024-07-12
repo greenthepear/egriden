@@ -18,7 +18,7 @@ is:\t\t%d %d
 should be:\t%d %d`,
 				int(l1.AnchorPt.X), x, y, x, shouldbe[i])
 		}
-		ax, ay := SnapScreenXYtoCellAnchor[int, int](*l1, 0, i*10)
+		ax, ay := snapScreenXYtoCellAnchor[int, int](*l1, 0, i*10)
 		if ay != shouldbe[i]*l1.cellDimensions.height {
 			t.Errorf(`Wrong anchor point calculation!
 is:\t\t%d %d

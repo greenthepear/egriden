@@ -133,6 +133,7 @@ func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset int) 
 // Level implementation must have BaseLevel component.
 func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
 	name string, imgWidth, imgHeight int, xOffset, yOffset int) *FreeLayer {
+
 	bl, ok := g.Level().(*BaseLevel)
 	if !ok {
 		panic("Level does not have BaseLevel")

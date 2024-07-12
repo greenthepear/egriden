@@ -2,7 +2,8 @@ package egriden
 
 // Egriden components to be embedded in your Game{} struct.
 //
-// You need to run []
+// You need to run [InitEgridenAssets()] in the main function before
+// your game starts.
 type EgridenAssets struct {
 	Levels            []Level
 	CurrentLevelIndex int

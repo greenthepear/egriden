@@ -4,26 +4,36 @@ import "image"
 
 // A cell is a place on a grid layer
 type Cell struct {
+	// Coordinate of the cell as a point. Can be out of layer bounds.
 	Coordinate image.Point
 	layerPtr   *GridLayer
 }
 
+// Cell.Coordinate's X and Y as ints
 func (c Cell) XY() (int, int) {
 	return c.Coordinate.X, c.Coordinate.Y
 }
 
+// Cell.Coordinate's X and Y as two floats
 func (c Cell) XYf() (float64, float64) {
 	return float64(c.Coordinate.X), float64(c.Coordinate.Y)
 }
 
+// Pointer to the grid layer which the cell is in
 func (c Cell) Layer() *GridLayer {
 	return c.layerPtr
 }
 
-// Returns true if cell coordinate is within width and height of the grid layer
+// Returns true if cell coordinate is within width and height of the gridlayer
 func (l GridLayer) IsXYwithinBounds(x, y int) bool {
 	return x >= 0 && x < l.layerDimensions.width &&
 		y >= 0 && y < l.layerDimensions.height
+}
+
+// A cell can have negative coordinates or one's beyond the width and height,
+// this checks if that is not the case.
+func (c Cell) IsWithinBounds() bool {
+	return c.layerPtr.IsXYwithinBounds(c.XY())
 }
 
 // Returns the layer's grid position corresponding to the given XY on the screen.
@@ -45,6 +55,8 @@ func screenXYtoGrid[T, R int | float64](l GridLayer, x, y T) (R, R) {
 		R(offy / l.cellDimensions.height)
 }
 
+// Returns a cell at the given screen position, taking into accout the layer
+// anchor. Also returns is it within bounds.
 func (l *GridLayer) CellAtScreenPos(x, y int) (Cell, bool) {
 	foundx, foundy := screenXYtoGrid[int, int](*l, x, y)
 	return Cell{
@@ -58,17 +70,27 @@ func (l GridLayer) IsScreenXYwithinBounds(x, y int) bool {
 	return l.IsXYwithinBounds(screenXYtoGrid[int, int](l, x, y))
 }
 
-// Returns the anchor (top left point on the screen) of a cell in a grid layer according to screen's XY.
-//
-// Like [ScreenXYtoGrid] it can return positions out of grid bounds if XY is.
-//
-// To visualize:
-// ┌─┬─┬─┐          ┌─┬─┬─┐
-// │⠐│ │⠄│          │⠁│ │⠁│
-// ├─┼─┼─┤ becomes: ├─┼─┼─┤
-// │⠠│ │ │          │⠁│ │ │
-// └─┴─┴─┘          └─┴─┴─┘
-func SnapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
+func snapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
 	ax, ay := screenXYtoGrid[T, R](l, x, y)
 	return ax * R(l.cellDimensions.width), ay * R(l.cellDimensions.height)
+}
+
+// Returns the top left point of the cell on the screen, aka the anchor or
+// the draw point if the cell has a object with a sprite
+// (sprite draw offset is irrelevant here).
+func (c Cell) Anchor() image.Point {
+	return image.Pt(
+		snapScreenXYtoCellAnchor[int, int](
+			*c.layerPtr, c.Coordinate.X, c.Coordinate.Y))
+}
+
+// Cell's bounds on the screen as a rectangle.
+//
+// Think of it as a rectangular area on the screen where any screen point
+// put into [(*GridLayer).CellAtScreenPos] would return this cell c.
+func (c Cell) Bounds() image.Rectangle {
+	w, h := c.layerPtr.Dimensions()
+	return image.Rectangle{
+		c.Anchor(),
+		c.Anchor().Add(image.Pt(w-1, h-1))}
 }
