@@ -9,13 +9,13 @@ import (
 
 type Layer interface {
 	DrawSprite(o Gobject, on *ebiten.Image)
-	Anchor() image.Point
+	anchor() image.Point
 }
 
 func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten.DrawImageOptions {
 	copy := *o.SpritePack().DrawOptions
 	r := &copy
-	xoffset, yoffset := float64(layer.Anchor().X), float64(layer.Anchor().Y)
+	xoffset, yoffset := float64(layer.anchor().X), float64(layer.anchor().Y)
 	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
 	switch l := layer.(type) {
 	case *GridLayer:
@@ -23,8 +23,8 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 			xoffset, yoffset = 0, 0
 		}
 		r.GeoM.Translate(
-			float64(x)*float64(l.cellDimensions.width)+xoffset+spriteXoffset,
-			float64(y)*float64(l.cellDimensions.height)+yoffset+spriteYoffset)
+			float64(x)*float64(l.cellDimensions.Width)+xoffset+spriteXoffset,
+			float64(y)*float64(l.cellDimensions.Height)+yoffset+spriteYoffset)
 	case *FreeLayer:
 		if l.static {
 			xoffset, yoffset = 0, 0
@@ -40,8 +40,8 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 }
 
 func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
-	for y := range l.layerDimensions.height {
-		for x := range l.layerDimensions.width {
+	for y := range l.layerDimensions.Height {
+		for x := range l.layerDimensions.Width {
 			o := l.sliceMat[y][x]
 			if o == nil || !o.IsVisible() {
 				continue
@@ -63,8 +63,8 @@ func (l *GridLayer) RefreshImage() {
 		return
 	}
 	img := ebiten.NewImage(
-		l.layerDimensions.width*l.cellDimensions.width,
-		l.layerDimensions.height*l.cellDimensions.height)
+		l.layerDimensions.Width*l.cellDimensions.Width,
+		l.layerDimensions.Height*l.cellDimensions.Height)
 	l.drawFromSliceMat(img)
 	l.staticImage = img
 }
@@ -108,7 +108,7 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 			l.RefreshImage()
 		}
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(l.AnchorPt.X), float64(l.AnchorPt.Y))
+		op.GeoM.Translate(float64(l.Anchor.X), float64(l.Anchor.Y))
 		on.DrawImage(l.staticImage, op)
 	}
 }
@@ -130,7 +130,7 @@ func (fl FreeLayer) Draw(on *ebiten.Image) {
 	}
 	if fl.static {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(fl.AnchorPt.X), float64(fl.AnchorPt.Y))
+		op.GeoM.Translate(float64(fl.Anchor.X), float64(fl.Anchor.Y))
 		on.DrawImage(fl.staticImage, op)
 		return
 	}

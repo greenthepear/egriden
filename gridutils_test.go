@@ -16,14 +16,14 @@ func TestGridUtilities(t *testing.T) {
 			t.Errorf(`Wrong screen XY to grid conversion with yoffset %d!
 is:\t\t%d %d
 should be:\t%d %d`,
-				int(l1.AnchorPt.X), x, y, x, shouldbe[i])
+				int(l1.Anchor.X), x, y, x, shouldbe[i])
 		}
 		ax, ay := snapScreenXYtoCellAnchor[int, int](*l1, 0, i*10)
-		if ay != shouldbe[i]*l1.cellDimensions.height {
+		if ay != shouldbe[i]*l1.cellDimensions.Height {
 			t.Errorf(`Wrong anchor point calculation!
 is:\t\t%d %d
 should be:\t%d %d`,
-				ax, ay, ax, shouldbe[i]*l1.cellDimensions.height)
+				ax, ay, ax, shouldbe[i]*l1.cellDimensions.Height)
 		}
 	}
 

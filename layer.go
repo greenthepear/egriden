@@ -21,12 +21,13 @@ const (
 	Static
 )
 
+// TODO: replace with image.Point maybe?
 type vec struct {
 	x, y int
 }
 
 type Dimensions struct {
-	width, height int
+	Width, Height int
 }
 
 type GridLayer struct {
@@ -34,13 +35,17 @@ type GridLayer struct {
 	z               int
 	cellDimensions  Dimensions
 	layerDimensions Dimensions
+	padding         image.Point
 	Visible         bool
 	mode            drawMode
 	mapMat          map[vec]Gobject
 	sliceMat        [][]Gobject
 	staticImage     *ebiten.Image
-	AnchorPt        image.Point
-	numOfGobjects   int
+
+	// Anchor is the top left point from which the layer is drawn,
+	// default being (0,0). Can be anywhere, off screen or not.
+	Anchor        image.Point
+	numOfGobjects int
 
 	level Level
 }
@@ -68,7 +73,7 @@ func newGridLayer(
 		mapMat:          mapMat,
 		sliceMat:        sliceMat,
 		staticImage:     nil,
-		AnchorPt:        image.Point{int(XOffset), int(YOffset)},
+		Anchor:          image.Point{int(XOffset), int(YOffset)},
 		numOfGobjects:   0,
 	}
 }
@@ -103,16 +108,18 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
-func (l *GridLayer) Anchor() image.Point {
-	return l.AnchorPt
+func (l *GridLayer) anchor() image.Point {
+	return l.Anchor
 }
 
+// Layer's anchor point as two floats.
 func (l *GridLayer) AnchorXYf() (float64, float64) {
-	return float64(l.AnchorPt.X), float64(l.AnchorPt.Y)
+	return float64(l.Anchor.X), float64(l.Anchor.Y)
 }
 
+// Width and height of the grid.
 func (l *GridLayer) Dimensions() (int, int) {
-	return l.layerDimensions.width, l.layerDimensions.height
+	return l.layerDimensions.Width, l.layerDimensions.Height
 }
 
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.

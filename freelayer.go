@@ -17,17 +17,17 @@ type FreeLayer struct {
 	Visible     bool
 	static      bool
 	staticImage *ebiten.Image
-	AnchorPt    image.Point
+	Anchor      image.Point
 
 	level Level
 }
 
 // Options for a static free layer
-type StaticFreeLayerOp struct {
+type staticFreeLayerOp struct {
 	width, height int
 }
 
-func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLayerOp, xOffset, yOffset int) *FreeLayer {
+func newFreeLayer(name string, z int, visible bool, staticOptions *staticFreeLayerOp, xOffset, yOffset int) *FreeLayer {
 	paramStatic := false
 	var img *ebiten.Image
 	if staticOptions != nil {
@@ -42,7 +42,7 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *StaticFreeLay
 		static:      paramStatic,
 		gobjects:    newGobjectSet(),
 		staticImage: img,
-		AnchorPt:    image.Point{xOffset, yOffset},
+		Anchor:      image.Point{xOffset, yOffset},
 	}
 }
 
@@ -62,7 +62,7 @@ func (le *BaseLevel) CreateStaticFreeLayerOnTop(
 	name string, imgWidth, imgHeight int, xOffset, yOffset int) *FreeLayer {
 	z := len(le.freeLayers)
 	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true,
-		&StaticFreeLayerOp{imgWidth, imgHeight}, xOffset, yOffset))
+		&staticFreeLayerOp{imgWidth, imgHeight}, xOffset, yOffset))
 	return le.freeLayers[z]
 }
 
@@ -78,8 +78,8 @@ func (le *BaseLevel) FreeLayers() []*FreeLayer {
 	return le.freeLayers
 }
 
-func (le *FreeLayer) Anchor() image.Point {
-	return le.AnchorPt
+func (le *FreeLayer) anchor() image.Point {
+	return le.Anchor
 }
 
 func (le *FreeLayer) SetVisibility(to bool) {
@@ -116,7 +116,7 @@ func (fl *FreeLayer) Z() int {
 }
 
 func (fl *FreeLayer) AnchorXYf() (float64, float64) {
-	return float64(fl.AnchorPt.X), float64(fl.AnchorPt.Y)
+	return float64(fl.Anchor.X), float64(fl.Anchor.Y)
 }
 
 // Shortcut for g.Level().CreateFreeLayerOnTop().

@@ -10,7 +10,7 @@ func TestFreeLayers(t *testing.T) {
 
 	testoffx, testoffy := 10, 20
 	fl1 := g.CreateFreeLayerOnTop("freelayer1", testoffx, testoffy)
-	offx, offy := fl1.AnchorPt.X, fl1.AnchorPt.Y
+	offx, offy := fl1.Anchor.X, fl1.Anchor.Y
 	if offx != testoffx || offy != testoffy {
 		t.Errorf("Offsets didn't get applied! (%d, %d) != (%d, %d)",
 			testoffx, testoffy, offx, offy)

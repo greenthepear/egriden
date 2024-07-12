@@ -26,8 +26,8 @@ func (c Cell) Layer() *GridLayer {
 
 // Returns true if cell coordinate is within width and height of the gridlayer
 func (l GridLayer) IsXYwithinBounds(x, y int) bool {
-	return x >= 0 && x < l.layerDimensions.width &&
-		y >= 0 && y < l.layerDimensions.height
+	return x >= 0 && x < l.layerDimensions.Width &&
+		y >= 0 && y < l.layerDimensions.Height
 }
 
 // A cell can have negative coordinates or one's beyond the width and height,
@@ -42,17 +42,17 @@ func (c Cell) IsWithinBounds() bool {
 // on the screen so either check the screen bounds beforehand or grid bounds afterhand
 // before accessing grid coordinates derived from this function.
 func screenXYtoGrid[T, R int | float64](l GridLayer, x, y T) (R, R) {
-	offx := int(x - T(l.AnchorPt.X))
+	offx := int(x - T(l.Anchor.X))
 	if offx < 0 {
-		offx -= l.cellDimensions.width - 1
+		offx -= l.cellDimensions.Width - 1
 	}
-	offy := int(y - T(l.AnchorPt.Y))
+	offy := int(y - T(l.Anchor.Y))
 	if offy < 0 {
-		offy -= l.cellDimensions.height - 1
+		offy -= l.cellDimensions.Height - 1
 	}
 
-	return R(offx / l.cellDimensions.width),
-		R(offy / l.cellDimensions.height)
+	return R(offx / l.cellDimensions.Width),
+		R(offy / l.cellDimensions.Height)
 }
 
 // Returns a cell at the given screen position, taking into accout the layer
@@ -65,14 +65,15 @@ func (l *GridLayer) CellAtScreenPos(x, y int) (Cell, bool) {
 		l.IsXYwithinBounds(foundx, foundy)
 }
 
-// Checks if XY is within bounds on the screen, taking into account the layer offsets.
+// Checks if XY is within bounds on the screen, taking into account
+// the layer anchor.
 func (l GridLayer) IsScreenXYwithinBounds(x, y int) bool {
 	return l.IsXYwithinBounds(screenXYtoGrid[int, int](l, x, y))
 }
 
 func snapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
 	ax, ay := screenXYtoGrid[T, R](l, x, y)
-	return ax * R(l.cellDimensions.width), ay * R(l.cellDimensions.height)
+	return ax * R(l.cellDimensions.Width), ay * R(l.cellDimensions.Height)
 }
 
 // Returns the top left point of the cell on the screen, aka the anchor or
