@@ -9,6 +9,13 @@ type Cell struct {
 	layerPtr   *GridLayer
 }
 
+func (l *GridLayer) CellAt(x, y int) Cell {
+	return Cell{
+		image.Point{x, y},
+		l,
+	}
+}
+
 // Cell.Coordinate's X and Y as ints
 func (c Cell) XY() (int, int) {
 	return c.Coordinate.X, c.Coordinate.Y
@@ -80,18 +87,19 @@ func snapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
 // the draw point if the cell has a object with a sprite
 // (sprite draw offset is irrelevant here).
 func (c Cell) Anchor() image.Point {
-	return image.Pt(
-		snapScreenXYtoCellAnchor[int, int](
-			*c.layerPtr, c.Coordinate.X, c.Coordinate.Y))
+	return image.Point{
+		c.Coordinate.X*c.layerPtr.cellDimensions.Width + c.layerPtr.Anchor.X,
+		c.Coordinate.Y*c.layerPtr.cellDimensions.Height + c.layerPtr.Anchor.Y,
+	}
 }
 
 // Cell's bounds on the screen as a rectangle.
 //
 // Think of it as a rectangular area on the screen where any screen point
 // put into [(*GridLayer).CellAtScreenPos] would return this cell c.
-func (c Cell) Bounds() image.Rectangle {
-	w, h := c.layerPtr.Dimensions()
+func (c Cell) BoundsRectangle() image.Rectangle {
+	w, h := c.layerPtr.cellDimensions.WH()
 	return image.Rectangle{
 		c.Anchor(),
-		c.Anchor().Add(image.Pt(w-1, h-1))}
+		c.Anchor().Add(image.Pt(w, h))}
 }

@@ -109,7 +109,7 @@ func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 			image.Point{0, 0}))
 }
 
-// Short hand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
+// Shorthand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
 // for the current level
 func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
@@ -138,8 +138,6 @@ type GridLayerParameters struct {
 // Creates a grid layer with custom parameters within the level and returns the pointer to it.
 // If you want a simple square grid layer use [(*BaseLevel).CreateSimpleGridLayerOnTop].
 func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
-	//name string, z int, cellWidth int, cellHeight int, lwidth, lheight int,
-	//DrawMode DrawMode, XOffset, YOffset int, xpad, ypad int)
 	return le.addGridLayer(
 		newGridLayer(
 			name, 0,
@@ -149,7 +147,12 @@ func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameter
 			params.Anchor,
 			params.PaddingVector,
 		))
+}
 
+// Shorthand for [(*BaseLevel).CreateGridLayerOnTop]
+// for the current level
+func (g *EgridenAssets) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
+	return g.Level().(*BaseLevel).CreateGridLayerOnTop(name, params)
 }
 
 // False visibility disables drawing both the Sprites and custom draw scripts

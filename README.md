@@ -63,7 +63,7 @@ func main(){
     g := &Game{}
     g.InitEgridenAssets()
 
-    layer0 := g.CreateGridLayerOnTop(
+    layer0 := g.CreateSimpleGridLayerOnTop(
         "Background", //Name
         16, //Pixel size of a tile in the grid
         10, 10, //Width and height of the grid
