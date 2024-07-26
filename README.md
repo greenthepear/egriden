@@ -28,6 +28,15 @@ or to get the latest development version of this repo:
 $ go get github.com/greenthepear/egriden@main
 ```
 
+# Guide
+
+A simple guide of egriden's game structure for drawing based on the [gridsweeper](./examples/gridsweeper/) example:
+
+![guide](./docs/layersguide.png)
+
+Essentially: 
+**Levels ∋ Layers ∋ Gobjects ∋ SpritePacks ∋ ImageSequences ∋ Frames**
+
 # Quick boilerplate tutorial
 
 ```go

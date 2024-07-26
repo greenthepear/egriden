@@ -30,5 +30,4 @@ should be:	%d %d`,
 				ax, ay, ax, shouldbe[i]*l1.cellDimensions.Height)
 		}
 	}
-
 }
