@@ -7,6 +7,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
+// Draws a checkerboard pattern with specified colors that represents
+// the cells of the GridLayer
 func (l *GridLayer) DebugDrawCheckerBoard(c1, c2 color.Color, on *ebiten.Image) {
 	w, h := l.layerDimensions.WH()
 	currentColor := c1

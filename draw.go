@@ -12,6 +12,8 @@ type Layer interface {
 	anchor() image.Point
 }
 
+// Returns ebiten.DrawImageOptions of a Gobject's SpritePack applied
+// to the layer
 func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten.DrawImageOptions {
 	copy := *o.SpritePack().DrawOptions
 	r := &copy
@@ -23,8 +25,10 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 			xoffset, yoffset = 0, 0
 		}
 		r.GeoM.Translate(
-			float64(x)*float64(l.cellDimensions.Width)+xoffset+spriteXoffset,
-			float64(y)*float64(l.cellDimensions.Height)+yoffset+spriteYoffset)
+			float64(x)*float64(l.cellDimensions.Width+l.Padding.X)+
+				xoffset+spriteXoffset,
+			float64(y)*float64(l.cellDimensions.Height+l.Padding.Y)+
+				yoffset+spriteYoffset)
 	case *FreeLayer:
 		if l.static {
 			xoffset, yoffset = 0, 0

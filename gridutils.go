@@ -88,8 +88,12 @@ func snapScreenXYtoCellAnchor[T, R int | float64](l GridLayer, x, y T) (R, R) {
 // (sprite draw offset is irrelevant here).
 func (c Cell) Anchor() image.Point {
 	return image.Point{
-		c.Coordinate.X*c.layerPtr.cellDimensions.Width + c.layerPtr.Anchor.X,
-		c.Coordinate.Y*c.layerPtr.cellDimensions.Height + c.layerPtr.Anchor.Y,
+		c.Coordinate.X*
+			(c.layerPtr.cellDimensions.Width+c.layerPtr.Padding.X) +
+			c.layerPtr.Anchor.X,
+		c.Coordinate.Y*
+			(c.layerPtr.cellDimensions.Height+c.layerPtr.Padding.Y) +
+			c.layerPtr.Anchor.Y,
 	}
 }
 

@@ -40,7 +40,7 @@ type GridLayer struct {
 	z               int
 	cellDimensions  Dimensions
 	layerDimensions Dimensions
-	padding         image.Point
+	Padding         image.Point
 	Visible         bool
 	mode            DrawMode
 	mapMat          map[vec]Gobject
@@ -81,7 +81,7 @@ func newGridLayer(
 		staticImage:     nil,
 		Anchor:          anchor,
 		numOfGobjects:   0,
-		padding:         padding,
+		Padding:         padding,
 	}
 }
 

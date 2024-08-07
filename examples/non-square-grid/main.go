@@ -34,8 +34,8 @@ func main() {
 		GridDimensions: egriden.Dimensions{
 			Width: 8, Height: 10},
 		CellDimensions: egriden.Dimensions{
-			Width: 10, Height: 6},
-		PaddingVector: image.Point{10, 10},
+			Width: 20, Height: 12},
+		PaddingVector: image.Point{0, 0},
 	})
 
 	//Run the game
