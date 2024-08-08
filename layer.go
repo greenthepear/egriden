@@ -40,12 +40,17 @@ type GridLayer struct {
 	z               int
 	cellDimensions  Dimensions
 	layerDimensions Dimensions
-	Padding         image.Point
-	Visible         bool
-	mode            DrawMode
-	mapMat          map[vec]Gobject
-	sliceMat        [][]Gobject
-	staticImage     *ebiten.Image
+
+	// Defines the "gaps" between cells:
+	// point's X for horizontal gaps length and Y for vertical.
+	Padding image.Point
+	// If false no sprite will be drawn, nor layers' gobjects draw scripts
+	// executed.
+	Visible     bool
+	mode        DrawMode
+	mapMat      map[vec]Gobject
+	sliceMat    [][]Gobject
+	staticImage *ebiten.Image
 
 	// Anchor is the top left point from which the layer is drawn,
 	// default being (0,0). Can be anywhere, off screen or not.
