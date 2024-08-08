@@ -2,6 +2,14 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
+## v0.3.0 - WIP
+- GridLayer cells can now be **rectangles** of any side lengths, not only squares.
+- Added **padding** which creates gaps between cells.
+- Added a new `Cell` type and associated methods to make GridLayer interactions more clear. It's closely integrated with the standard `image` package, so for example [`Cell.BoundsRectangle`] returns a `image.Rectangle` and the cells coordinate is an `image.Point`.
+    - Neighbors
+    - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`] and [`Cell.Anchor`].
+- Debug
+
 ## v0.2.1 - 2024-06-15
 - Changed signature of [`(Gobject).OnDrawFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnDrawFunc) and [`(Gobject).OnUpdateFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnUpdateFunc) functions by adding a `self Gobject` parameter. This removes confusing pointer stuff that happens when you want to make a `BaseGobject` with custom functions like so:
     ```go
@@ -28,7 +36,7 @@
 - Added [`(SpritePack).DrawOptions`](https://pkg.go.dev/github.com/greenthepear/egriden#SpritePack.DrawOptions) field and [`(Gobject).SetDrawOptions`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.SetDrawOptions) method, allowing you to customize rendering of sprites using `ebiten.DrawImageOptions`. You can now also apply offsets for sprites with the new [`(Gobject).SetDrawOffsets()`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.SetDrawOffsets) method.
 - Added [`(GridLayer).IsXYwithinBounds()`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.IsXYwithinBounds), [`(GridLayer).IsScreenXYwithinBounds()`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.IsScreenXYwithinBounds), [`ScreenXYtoGrid()`](https://pkg.go.dev/github.com/greenthepear/egriden#ScreenXYtoGrid) and [`SnapScreenXYtoCellAnchor()`](https://pkg.go.dev/github.com/greenthepear/egriden#SnapScreenXYtoCellAnchor) to make interactions between the screen (cursor) and grid layers easier.
 - Removed `baseGobjectWithoutScripts`, you can use the new [`(BaseGobject).OnDrawFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseGobject.OnDrawFunc) and [`(BaseGobject).OnUpdateFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseGobject.OnUpdateFunc) fields to assign scripts, which are nil by default.
-- Made layer selection methods return nil instead of panicing if z is out of bounds.
+- Made layer selection methods return nil instead of panicking if z is out of bounds.
 - Renamed `(*GridLayer).AddObject` to [`(*GridLayer).AddGobject`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.AddGobject).
 - More tests and bug fixes.
 - "Updated" to go v1.22.3 and Ebitengine v2.7.3.

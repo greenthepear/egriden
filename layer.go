@@ -7,13 +7,13 @@ import (
 )
 
 // For optimization there are a couple of ways a grid layer can be draw depending if it
-// changes frequently (Static or not) and if it has many (Dense) or few (Sparce)
+// changes frequently (Static or not) and if it has many (Dense) or few (Sparse)
 // gobjects most of the time.
 type DrawMode int
 
 const (
 	//Used for sparcely populated grids, ranges over a map for drawing
-	Sparce DrawMode = iota
+	Sparse DrawMode = iota
 	//Used for thickly populated grids, ranges over a slice for drawing
 	Dense
 	//Used for layers that don't get updated often, creates ebiten.Image of the the entire layer.
@@ -66,7 +66,7 @@ func newGridLayer(
 
 	var mapMat map[vec]Gobject = nil
 	var sliceMat [][]Gobject = nil
-	if drawMode == Sparce {
+	if drawMode == Sparse {
 		mapMat = make(map[vec]Gobject, gridDims.Width*gridDims.Height)
 	} else {
 		sliceMat = make([][]Gobject, gridDims.Height)

@@ -92,7 +92,7 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 	}
 
 	switch l.mode {
-	case Sparce:
+	case Sparse:
 		for _, o := range l.mapMat {
 			if !o.IsVisible() {
 				continue

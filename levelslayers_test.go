@@ -8,7 +8,7 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	g := &EgridenAssets{}
 	g.InitEgridenAssets()
 
-	l := g.CreateSimpleGridLayerOnTop("test", 16, 10, 12, Sparce, 0, 0)
+	l := g.CreateSimpleGridLayerOnTop("test", 16, 10, 12, Sparse, 0, 0)
 	if l != g.GridLayer(0) {
 		t.Errorf("returned layer not the same as retrieved (%p != %p)", l, g.GridLayer(0))
 	}

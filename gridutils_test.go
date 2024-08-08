@@ -7,7 +7,7 @@ import (
 
 func TestGridUtilities(t *testing.T) {
 	lv := NewBaseLevel("test")
-	l1 := lv.CreateSimpleGridLayerOnTop("test", 20, 12, 6, Sparce, 0, 50)
+	l1 := lv.CreateSimpleGridLayerOnTop("test", 20, 12, 6, Sparse, 0, 50)
 
 	if l1.Anchor.Y != 50 {
 		t.Errorf("Anchor is not 50, instead %d!", l1.Anchor.Y)

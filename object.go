@@ -156,7 +156,7 @@ func (l GridLayer) GobjectAt(x, y int) Gobject {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("GobjectAt() panic! Out of bounds.")
 	}
-	if l.mode == Sparce {
+	if l.mode == Sparse {
 		return l.mapMat[vec{x, y}]
 	}
 	return l.sliceMat[y][x]
@@ -174,7 +174,7 @@ func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 		l.level.addGobjectWithOnUpdate(o, l)
 	}
 
-	if l.mode == Sparce {
+	if l.mode == Sparse {
 		if l.mapMat[vec{x, y}] != nil {
 			l.mapMat[vec{x, y}].markForDeletion()
 		}
@@ -192,7 +192,7 @@ func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
 		panic("not within layer bounds")
 	}
 
-	if l.mode == Sparce {
+	if l.mode == Sparse {
 		if l.mapMat[vec{x, y}] != nil && markForDeletion {
 			l.mapMat[vec{x, y}].markForDeletion()
 		}

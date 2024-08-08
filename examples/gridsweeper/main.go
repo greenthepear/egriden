@@ -38,7 +38,7 @@ func main() {
 	lbg := g.CreateSimpleGridLayerOnTop("Background",
 		defGridLen, defGridWidth, defGridHeight, egriden.Static, offx, offy)
 	lbo := g.CreateSimpleGridLayerOnTop("Bombs",
-		defGridLen, defGridWidth, defGridHeight, egriden.Sparce, offx, offy)
+		defGridLen, defGridWidth, defGridHeight, egriden.Sparse, offx, offy)
 	lre := g.CreateSimpleGridLayerOnTop("Reveal tiles",
 		defGridLen, defGridWidth, defGridHeight, egriden.Dense, offx, offy)
 	lui := g.CreateFreeLayerOnTop("UI", 0, 0)

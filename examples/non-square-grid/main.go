@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"log"
 
 	"github.com/greenthepear/egriden"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct {
@@ -14,10 +16,18 @@ type Game struct {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.GridLayer(0).DebugDrawCheckerBoard(color.Black, color.White, screen)
+	l0 := g.GridLayer(0)
+	l0.DebugDrawCheckerBoard(
+		color.White,
+		color.RGBA{0x99, 0x99, 0x99, 0xff}, screen)
+
+	c, b := l0.CellAtScreenPosWithPadding(ebiten.CursorPosition())
+	s := fmt.Sprintf("Pointing at %v, is outside gap: %v", c.Coordinate, b)
+	ebitenutil.DebugPrint(screen, s)
 }
 
 func (g *Game) Update() error {
+
 	return nil
 }
 
@@ -35,9 +45,11 @@ func main() {
 			Width: 8, Height: 10},
 		CellDimensions: egriden.Dimensions{
 			Width: 20, Height: 12},
-		PaddingVector: image.Point{0, 0},
+		PaddingVector: image.Point{4, 4},
+		Anchor:        image.Point{60, 76},
 	})
 
+	ebiten.SetWindowSize(640, 640)
 	//Run the game
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

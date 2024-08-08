@@ -76,7 +76,7 @@ func main(){
         "Background", //Name
         16, //Pixel size of a tile in the grid
         10, 10, //Width and height of the grid
-        egriden.Sparce, //Draw mode
+        egriden.Sparse, //Draw mode
         0, 0) //Draw offset from the top left corner
 
     //Create an image sequence from all the PNGs in a folder
