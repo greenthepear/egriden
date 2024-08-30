@@ -107,6 +107,4 @@ func main(){
 ```
 
 # License
-BSD-3-Clause license
-
-*Ebitengine by Hajime Hoshi is licensed under the Apache License 2.0*
+Licensed under the Apache License 2.0 and uses components of Ebitengine by Hajime Hoshi, also licensed under the Apache License 2.0.

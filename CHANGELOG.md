@@ -8,6 +8,7 @@
 - Added a new `Cell` type and associated methods to make GridLayer interactions more clear. It's closely integrated with the standard `image` package, so for example [`Cell.BoundsRectangle`] returns a `image.Rectangle` and the cells coordinate is an `image.Point`.
     - Neighbors
     - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`] and [`Cell.Anchor`].
+- Changed to the Apache License 2.0 to be uniform with Ebitengine.
 - Debug
 
 ## v0.2.1 - 2024-06-15
