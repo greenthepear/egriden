@@ -2,7 +2,6 @@ package egriden
 
 import (
 	"image"
-	"log"
 )
 
 func mod(a, b int) int {
@@ -96,7 +95,6 @@ func (l *GridLayer) CellAtScreenPos(x, y int) Cell {
 func (l *GridLayer) CellAtScreenPosWithPadding(x, y int) (Cell, bool) {
 	withinx := mod(x-l.Anchor.X, l.cellDimensions.Width+l.Padding.X)
 	withiny := mod(y-l.Anchor.Y, l.cellDimensions.Height+l.Padding.Y)
-	log.Printf("%d %d -> %d %d", x, y, withinx, withiny)
 	return l.CellAtScreenPos(x, y),
 		withinx <= l.cellDimensions.Width &&
 			withiny <= l.cellDimensions.Height

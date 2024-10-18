@@ -1,5 +1,6 @@
 # General
 - [ ] Finish gridsweeper example
+- [ ] Built-in imagesequence animation scripting
 
 # For v0.3.0
 ## High priority
@@ -8,6 +9,7 @@
 - [ ] "Move towards" system, utility to simplify visible moving of gobjects between squares
 ## Low priority
 - [ ] Add sprite loading from image.Image
+    - [ ] Add aseprite file support
 - [ ] Add layer image options
 - [ ] Add grid layer draw limiter bounds
 - [ ] Replace vec with imggg.Point?
