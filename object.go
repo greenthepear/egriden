@@ -2,6 +2,7 @@ package egriden
 
 import (
 	"fmt"
+	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -229,4 +230,12 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 
 	l.internalDeleteAt(fromX, fromY, false)
 	l.AddGobject(o, x, y)
+}
+
+// Point where the gobject's sprite is drawn
+//
+// TODO: Use imggg and unify with draw function
+func (l *GridLayer) DrawAnchor(o Gobject) image.Point {
+	return l.CellOfGobject(o).Coordinate.Add(
+		image.Pt(o.(*BaseGobject).sprites.OffsetXY()))
 }

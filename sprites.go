@@ -97,3 +97,7 @@ func (sp SpritePack) Sprite() *ebiten.Image {
 
 	return sp.sequences[sp.currentSequenceKey].frames[sp.frameIndex]
 }
+
+func (sp SpritePack) OffsetXY() (int, int) {
+	return int(sp.XOffset), int(sp.YOffset)
+}

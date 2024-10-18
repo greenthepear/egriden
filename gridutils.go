@@ -30,6 +30,10 @@ func (l *GridLayer) CellAt(x, y int) Cell {
 	}
 }
 
+func (l *GridLayer) CellOfGobject(o Gobject) Cell {
+	return l.CellAt(o.XY())
+}
+
 // Cell.Coordinate's X and Y as ints
 func (c Cell) XY() (int, int) {
 	return c.Coordinate.X, c.Coordinate.Y
@@ -133,4 +137,9 @@ func (c Cell) BoundsRectangle() image.Rectangle {
 	return image.Rectangle{
 		c.Anchor(),
 		c.Anchor().Add(image.Pt(w, h))}
+}
+
+// Gobject within the cell, simply calls [GridLayer.GobjectAt], so it can be nil.
+func (c Cell) Gobject() Gobject {
+	return c.Layer().GobjectAt(c.XY())
 }
