@@ -5,12 +5,16 @@
 ## v0.3.0 - WIP
 - GridLayer cells can now be **rectangles** of any side lengths, not only squares.
 - Added **padding** which creates gaps between cells.
-- Added a new `Cell` type and associated methods to make GridLayer interactions clearer. It's closely integrated with the standard `image` package, so for example [`Cell.BoundsRectangle`] returns a `image.Rectangle` and the cells coordinate is an `image.Point`.
+- Added `examples/non-square-grid` example to showcase the above changes.
+- XY of Gobjects have been split into [`(*BaseGobject).GridPos`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseGobject.GridPos) and [`(*BaseGobject).ScreenPos`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseGobject.ScreenPos), the latter using floats.
+- Added a new [`Cell`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell) type and associated methods to make GridLayer interactions clearer. Uses the [imggg](https://github.com/greenthepear/imggg) reimplementation of the standard `image` package to use data structures such as `Point` and `Rectangle`.
     - Neighbors
-    - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`] and [`Cell.Anchor`].
-- Added [`CreateImageSequenceFromImages`] to allow making image sequences from image.Image. Also made the ImageSequence fields (`Name` and `Frames`) public so you can create them however you want.
+    - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.CellAtScreenPos) and [`Cell.Anchor`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.Anchor).
+- Replaced most instances of `image.Point` with `imggg.Point`.
+- Added [`CreateImageSequenceFromImages`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromImages) to allow making image sequences from image.Image. Also made the ImageSequence fields (`Name` and `Frames`) public so you can create them however you want.
+- Added [`(*GridLayer).DebugDrawCheckerBoard`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.DebugDrawCheckerBoard) which draws a checkerboard pattern of the grid's cells for debugging purposes.
+- [`(*BaseLevel).CreateGridLayerOnTop`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseLevel.CreateGridLayerOnTop) now takes in a new [`GridLayerParameters`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayerParameters) structure so the signature isn't so long and unreadable.
 - Changed to the Apache License 2.0 to be uniform with Ebitengine.
-- Debug
 
 ## v0.2.1 - 2024-06-15
 - Changed signature of [`(Gobject).OnDrawFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnDrawFunc) and [`(Gobject).OnUpdateFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Gobject.OnUpdateFunc) functions by adding a `self Gobject` parameter. This removes confusing pointer stuff that happens when you want to make a `BaseGobject` with custom functions like so:

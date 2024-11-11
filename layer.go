@@ -11,9 +11,9 @@ import (
 type DrawMode int
 
 const (
-	//Used for sparcely populated grids, ranges over a map for drawing
+	//Used for sparcely populated grids, ranges over a map for drawing.
 	Sparse DrawMode = iota
-	//Used for thickly populated grids, ranges over a slice for drawing
+	//Used for thickly populated grids, ranges over a slice for drawing.
 	Dense
 	//Used for layers that don't get updated often, creates ebiten.Image of the the entire layer.
 	//Can be refreshed with GridLayer.RefreshImage().
@@ -124,6 +124,7 @@ func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
 		name, squareLength, width, height, drawMode, XOffset, YOffset)
 }
 
+// Parameters for [(*BaseLevel).CreateGridLayerOnTop].
 type GridLayerParameters struct {
 	// Width and height of the layer's grid
 	GridDimensions Dimensions

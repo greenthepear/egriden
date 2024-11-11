@@ -1,8 +1,6 @@
 package egriden
 
 import (
-	"image"
-
 	"github.com/greenthepear/imggg"
 )
 
@@ -126,15 +124,17 @@ func (c Cell) Anchor() imggg.Point[float64] {
 	)
 }
 
-// Cell's bounds on the screen as a rectangle.
+// Cell's bounds on the screen as a rectangle, without padding.
 //
 // Think of it as a rectangular area on the screen where any screen point
-// put into [(*GridLayer).CellAtScreenPos] would return this cell c.
-func (c Cell) BoundsRectangle() image.Rectangle {
+// put into [(*GridLayer).CellAtScreenPosWithPadding] would return this cell c
+// and true, as the bounds rectangle doesn't feature padding gaps.
+func (c Cell) BoundsRectangle() imggg.Rectangle[float64] {
 	w, h := c.layerPtr.cellDimensions.WH()
-	return image.Rectangle{
-		c.Anchor().Std(),
-		c.Anchor().Std().Add(image.Pt(w, h))}
+	return imggg.Rectangle[float64]{
+		Min: c.Anchor(),
+		Max: c.Anchor().Add(imggg.Pt(float64(w), float64(h))),
+	}
 }
 
 // Gobject within the cell, simply calls [GridLayer.GobjectAt], so it can be nil.

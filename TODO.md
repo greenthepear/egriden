@@ -4,12 +4,13 @@
 
 # For v0.3.0
 ## High priority
-- [ ] Make gobject XY be floats, use imggg
-    - [ ] Use imggg for grid utils
-- [ ] "Move towards" system, utility to simplify visible moving of gobjects between squares
+- [x] Make gobject XY be floats, use imggg
+    - [x] Use imggg for grid utils
+- [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
+- [ ] Neighbor cell grid utilities
 ## Low priority
 - [x] Add sprite loading from image.Image
     - [ ] Add aseprite file support
 - [ ] Add layer image options
 - [ ] Add grid layer draw limiter bounds
-- [ ] Replace vec with imggg.Point?
+- [x] Replace vec with imggg.Point?

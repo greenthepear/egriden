@@ -114,10 +114,6 @@ func (fl *FreeLayer) Z() int {
 	return fl.z
 }
 
-func (fl *FreeLayer) AnchorXYf() (float64, float64) {
-	return float64(fl.Anchor.X), float64(fl.Anchor.Y)
-}
-
 func (fl *FreeLayer) Static() bool {
 	return fl.static
 }

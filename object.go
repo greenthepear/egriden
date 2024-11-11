@@ -63,6 +63,7 @@ func (o *BaseGobject) Name() string {
 	return o.name
 }
 
+// Grid coordinate in a GridLayer, returns (0, 0) for free layer objects.
 func (o *BaseGobject) GridPos() imggg.Point[int] {
 	return o.gridPos
 }
@@ -101,7 +102,7 @@ func (o *BaseGobject) SetSpritePack(sp SpritePack) {
 	o.sprites = sp
 }
 
-// Sets Image Sequence under name, returns error if the name key is not present
+// Sets Image Sequence under name, returns error if the name key is not present.
 func (o *BaseGobject) SetImageSequence(name string) error {
 	_, ok := o.sprites.sequences[name]
 	if !ok {
@@ -168,7 +169,7 @@ func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
 	l.DrawSprite(o, on)
 }
 
-// Makes a copy of the Gobject
+// Makes a copy of the Gobject.
 func (o BaseGobject) Build() Gobject {
 	copy := o
 	if !o.SpritePack().empty {
