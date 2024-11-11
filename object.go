@@ -249,7 +249,7 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
 	}
-	fromX, fromY := o.GridPos().X, o.GridPos().Y
+	fromX, fromY := o.GridPos().XY()
 	fromGobject := l.GobjectAt(fromX, fromY)
 	if fromGobject != o {
 		panic(fmt.Sprintf(

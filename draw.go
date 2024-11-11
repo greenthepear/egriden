@@ -2,13 +2,13 @@ package egriden
 
 import (
 	"image"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Layer interface {
 	DrawSprite(o Gobject, on *ebiten.Image)
+	Static() bool
 	anchor() image.Point
 }
 
@@ -17,28 +17,19 @@ type Layer interface {
 func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten.DrawImageOptions {
 	copy := *o.SpritePack().DrawOptions
 	r := &copy
-	xoffset, yoffset := float64(layer.anchor().X), float64(layer.anchor().Y)
-	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
-	switch l := layer.(type) {
-	case *GridLayer:
-		if l.mode == Static {
-			xoffset, yoffset = 0, 0
-		}
+	drawX, drawY := o.ScreenPos(layer).XY()
+
+	// In static layers, the layer anchor offsets are handled in the draw
+	// function itself, so they need to be subtracted here
+	if layer.Static() {
+		xRealign, yRealign := layer.anchor().X, layer.anchor().Y
 		r.GeoM.Translate(
-			float64(x)*float64(l.cellDimensions.Width+l.Padding.X)+
-				xoffset+spriteXoffset,
-			float64(y)*float64(l.cellDimensions.Height+l.Padding.Y)+
-				yoffset+spriteYoffset)
-	case *FreeLayer:
-		if l.static {
-			xoffset, yoffset = 0, 0
-		}
+			drawX-float64(xRealign), drawY-float64(yRealign))
+	} else {
 		r.GeoM.Translate(
-			float64(x)+xoffset+spriteXoffset,
-			float64(y)+yoffset+spriteYoffset)
-	default:
-		log.Fatalf("Bad layer type! Is %#v", l)
+			drawX, drawY)
 	}
+
 	return r
 
 }
@@ -74,13 +65,13 @@ func (l *GridLayer) RefreshImage() {
 }
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
-	x, y := o.XY()
+	x, y := o.GridPos().XY()
 	on.DrawImage(o.Sprite(),
 		appliedDrawOptionsForPosition(o, &l, float64(x), float64(y)))
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
-	x, y := o.XY()
+	x, y := o.GridPos().XY()
 	on.DrawImage(o.Sprite(),
 		appliedDrawOptionsForPosition(o, &fl, float64(x), float64(y)))
 }

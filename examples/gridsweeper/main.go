@@ -86,7 +86,7 @@ func main() {
 		lbo.AddGobject(objBomb.Build(), rand.IntN(defGridWidth), rand.IntN(defGridHeight))
 	}
 
-	ebiten.SetWindowSize(680/2, 720/2)
+	ebiten.SetWindowSize(680, 720)
 	ebiten.SetWindowTitle("Gridsweeper")
 
 	lre.Visible = false

@@ -30,7 +30,7 @@ func (l *GridLayer) CellAt(x, y int) Cell {
 }
 
 func (l *GridLayer) CellOfGobject(o Gobject) Cell {
-	return l.CellAt(o.XY())
+	return l.CellAt(o.GridPos().XY())
 }
 
 // Cell.Coordinate's X and Y as ints

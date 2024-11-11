@@ -119,6 +119,10 @@ func (fl *FreeLayer) AnchorXYf() (float64, float64) {
 	return float64(fl.Anchor.X), float64(fl.Anchor.Y)
 }
 
+func (fl *FreeLayer) Static() bool {
+	return fl.static
+}
+
 // Shortcut for g.Level().CreateFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
 func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset int) *FreeLayer {

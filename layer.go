@@ -90,6 +90,10 @@ func newGridLayer(
 	}
 }
 
+func (l *GridLayer) Static() bool {
+	return l.mode == Static
+}
+
 func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
 	ln := len(le.gridLayers)
 	l.z = ln

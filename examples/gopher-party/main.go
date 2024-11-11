@@ -56,7 +56,7 @@ func NewBouncyGopher() egriden.Gobject {
 	//created at the top. If you're using NewBaseGobject with .Build(),
 	//use the `self` parameter instead.
 	o.OnUpdateFunc = func(self egriden.Gobject, l egriden.Layer) {
-		x, y := o.XY()
+		x, y := o.ScreenPos(l).XY()
 
 		if y < 0 || y >= scrHeight-8 {
 			o.NextFrame()
