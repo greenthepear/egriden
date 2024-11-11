@@ -8,7 +8,7 @@
     - [ ] Use imggg for grid utils
 - [ ] "Move towards" system, utility to simplify visible moving of gobjects between squares
 ## Low priority
-- [ ] Add sprite loading from image.Image
+- [x] Add sprite loading from image.Image
     - [ ] Add aseprite file support
 - [ ] Add layer image options
 - [ ] Add grid layer draw limiter bounds

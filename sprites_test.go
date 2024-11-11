@@ -17,7 +17,7 @@ func TestSequenceAndPackCreation(t *testing.T) {
 		t.Errorf("normal error while creating image sequence: %v", err)
 	}
 
-	if len(goodSeq.frames) != 3 {
+	if len(goodSeq.Frames) != 3 {
 		t.Errorf("wrong number of frames loaded")
 	}
 

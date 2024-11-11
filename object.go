@@ -84,7 +84,7 @@ func (o *BaseGobject) SetImageSequence(name string) error {
 // Sets the frame to `i % len(frames)`
 func (o *BaseGobject) SetFrame(i int) {
 	o.sprites.frameIndex =
-		i % len(o.sprites.sequences[o.sprites.currentSequenceKey].frames)
+		i % len(o.sprites.sequences[o.sprites.currentSequenceKey].Frames)
 }
 
 // Increments frame by one. Wraps back to 0 if out of range.

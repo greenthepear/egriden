@@ -2,6 +2,7 @@ package egriden
 
 import (
 	"fmt"
+	"image"
 	_ "image/png"
 	"path/filepath"
 
@@ -11,8 +12,8 @@ import (
 
 // ImageSequence is a sequence of images aka frames.
 type ImageSequence struct {
-	name   string
-	frames []*ebiten.Image
+	Name   string
+	Frames []*ebiten.Image
 }
 
 // SpritePack is a collection of ImageSequences and controls things like the frame index.
@@ -41,7 +42,7 @@ func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, 
 		}
 		frameSlice = append(frameSlice, img)
 	}
-	return ImageSequence{name: name, frames: frameSlice}, nil
+	return ImageSequence{name, frameSlice}, nil
 }
 
 // Searches for PNG files in the folder and creates an ImageSequence, with frame order
@@ -57,15 +58,31 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 	return CreateImageSequenceFromPaths(name, found...)
 }
 
+// Creates image sequence from std's image.Image using ebiten.NewImageFromImage
+func CreateImageSequenceFromImages(
+	name string, images ...image.Image) (ImageSequence, error) {
+
+	if len(images) < 1 {
+		return ImageSequence{}, fmt.Errorf("no images provided")
+	}
+	frameSlice := make([]*ebiten.Image, 0, len(images))
+
+	for _, img := range images {
+		frameSlice = append(frameSlice, ebiten.NewImageFromImage(img))
+	}
+
+	return ImageSequence{name, frameSlice}, nil
+}
+
 func NewSpritePack() SpritePack {
 	return SpritePack{make(map[string]*ImageSequence), 0, "", true, false, &ebiten.DrawImageOptions{}, 0, 0}
 }
 
 // Assigns an ImageSequence to SpritePack
 func (ip *SpritePack) AddImageSequence(is ImageSequence) {
-	ip.sequences[is.name] = &is
+	ip.sequences[is.Name] = &is
 	if ip.currentSequenceKey == "" {
-		ip.currentSequenceKey = is.name
+		ip.currentSequenceKey = is.Name
 	}
 }
 
@@ -95,7 +112,7 @@ func (sp SpritePack) Sprite() *ebiten.Image {
 		return nil
 	}
 
-	return sp.sequences[sp.currentSequenceKey].frames[sp.frameIndex]
+	return sp.sequences[sp.currentSequenceKey].Frames[sp.frameIndex]
 }
 
 func (sp SpritePack) OffsetXY() (int, int) {

@@ -5,9 +5,10 @@
 ## v0.3.0 - WIP
 - GridLayer cells can now be **rectangles** of any side lengths, not only squares.
 - Added **padding** which creates gaps between cells.
-- Added a new `Cell` type and associated methods to make GridLayer interactions more clear. It's closely integrated with the standard `image` package, so for example [`Cell.BoundsRectangle`] returns a `image.Rectangle` and the cells coordinate is an `image.Point`.
+- Added a new `Cell` type and associated methods to make GridLayer interactions clearer. It's closely integrated with the standard `image` package, so for example [`Cell.BoundsRectangle`] returns a `image.Rectangle` and the cells coordinate is an `image.Point`.
     - Neighbors
     - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`] and [`Cell.Anchor`].
+- Added [`CreateImageSequenceFromImages`] to allow making image sequences from image.Image. Also made the ImageSequence fields (`Name` and `Frames`) public so you can create them however you want.
 - Changed to the Apache License 2.0 to be uniform with Ebitengine.
 - Debug
 
