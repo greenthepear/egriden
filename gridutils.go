@@ -104,6 +104,7 @@ func (l GridLayer) IsScreenXYwithinBounds(x, y float64) bool {
 	return l.IsXYwithinBounds(screenXYtoGrid(l, x, y))
 }
 
+//lint:ignore U1000 used for tests
 func snapScreenXYtoCellAnchor(l GridLayer, x, y float64) (float64, float64) {
 	ax, ay := screenXYtoGrid(l, x, y)
 	return float64(ax*l.cellDimensions.Width) + l.Padding.X,
@@ -140,4 +141,9 @@ func (c Cell) BoundsRectangle() imggg.Rectangle[float64] {
 // Gobject within the cell, simply calls [GridLayer.GobjectAt], so it can be nil.
 func (c Cell) Gobject() Gobject {
 	return c.Layer().GobjectAt(c.XY())
+}
+
+// Returns whenever the cell is empty or not
+func (c Cell) HasGobject() bool {
+	return c.Gobject() != nil
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/greenthepear/egriden"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Game struct {
@@ -23,7 +24,33 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawAllFreeLayers(screen)
 }
 
+const revealZ = 2
+
+func (g *Game) handleInput() {
+	lReveal := g.Level().GridLayer(revealZ)
+	c1, c2 := ebiten.CursorPosition()
+	clickCell := lReveal.CellAtScreenPos(float64(c1), float64(c2))
+	if !clickCell.IsWithinBounds() {
+		return
+	}
+	if !clickCell.HasGobject() {
+		return
+	}
+	neighborhood := clickCell.GetNeighborsSetFunc(egriden.King, true, true,
+		func(c egriden.Cell) bool {
+			return c.HasGobject()
+		},
+	)
+
+	for neighbor := range neighborhood {
+		lReveal.DeleteAt(neighbor.XY())
+	}
+}
+
 func (g *Game) Update() error {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		g.handleInput()
+	}
 	return nil
 }
 
@@ -89,8 +116,8 @@ func main() {
 	ebiten.SetWindowSize(680, 720)
 	ebiten.SetWindowTitle("Gridsweeper")
 
-	lre.Visible = false
-	lbo.Visible = false
+	//lre.Visible = false
+	//lbo.Visible = false
 
 	if err = ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

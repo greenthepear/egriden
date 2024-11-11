@@ -7,7 +7,8 @@
 - [x] Make gobject XY be floats, use imggg
     - [x] Use imggg for grid utils
 - [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
-- [ ] Neighbor cell grid utilities
+- [x] Neighbor cell grid utilities
+    - [ ] Test recursive functionality and maybe make utilities for it
 ## Low priority
 - [x] Add sprite loading from image.Image
     - [ ] Add aseprite file support
