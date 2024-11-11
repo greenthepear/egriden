@@ -2,7 +2,6 @@ package egriden
 
 import (
 	"fmt"
-	"image"
 
 	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -81,9 +80,9 @@ func (o *BaseGobject) ScreenPos(layer Layer) imggg.Point[float64] {
 	case *GridLayer:
 		x, y := o.gridPos.X, o.gridPos.Y
 		return imggg.Point[float64]{
-			X: float64(x)*float64(l.cellDimensions.Width+l.Padding.X) +
+			X: float64(x)*(float64(l.cellDimensions.Width)+l.Padding.X) +
 				xoffset + spriteXoffset,
-			Y: float64(y)*float64(l.cellDimensions.Height+l.Padding.Y) +
+			Y: float64(y)*(float64(l.cellDimensions.Height)+l.Padding.Y) +
 				yoffset + spriteYoffset,
 		}
 	case *FreeLayer:
@@ -189,7 +188,7 @@ func (l GridLayer) GobjectAt(x, y int) Gobject {
 		panic("GobjectAt() panic! Out of bounds.")
 	}
 	if l.mode == Sparse {
-		return l.mapMat[vec{x, y}]
+		return l.mapMat[imggg.Point[int]{X: x, Y: y}]
 	}
 	return l.sliceMat[y][x]
 }
@@ -207,10 +206,10 @@ func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	}
 
 	if l.mode == Sparse {
-		if l.mapMat[vec{x, y}] != nil {
-			l.mapMat[vec{x, y}].markForDeletion()
+		if l.mapMat[imggg.Pt(x, y)] != nil {
+			l.mapMat[imggg.Pt(x, y)].markForDeletion()
 		}
-		l.mapMat[vec{x, y}] = o
+		l.mapMat[imggg.Pt(x, y)] = o
 		return
 	}
 	if l.sliceMat[y][x] != nil {
@@ -225,10 +224,10 @@ func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
 	}
 
 	if l.mode == Sparse {
-		if l.mapMat[vec{x, y}] != nil && markForDeletion {
-			l.mapMat[vec{x, y}].markForDeletion()
+		if l.mapMat[imggg.Pt(x, y)] != nil && markForDeletion {
+			l.mapMat[imggg.Pt(x, y)].markForDeletion()
 		}
-		delete(l.mapMat, vec{x, y})
+		delete(l.mapMat, imggg.Pt(x, y))
 		return
 	}
 
@@ -261,12 +260,4 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 
 	l.internalDeleteAt(fromX, fromY, false)
 	l.AddGobject(o, x, y)
-}
-
-// Point where the gobject's sprite is drawn
-//
-// TODO: Use imggg and unify with draw function
-func (l *GridLayer) DrawAnchor(o Gobject) image.Point {
-	return l.CellOfGobject(o).Coordinate.Add(
-		image.Pt(o.(*BaseGobject).sprites.OffsetXY()))
 }

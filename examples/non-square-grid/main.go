@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"image/color"
 	"log"
 
 	"github.com/greenthepear/egriden"
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -21,7 +21,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		color.White,
 		color.RGBA{0x99, 0x99, 0x99, 0xff}, screen)
 
-	c, b := l0.CellAtScreenPosWithPadding(ebiten.CursorPosition())
+	cx, cy := ebiten.CursorPosition()
+	c, b := l0.CellAtScreenPosWithPadding(float64(cx), float64(cy))
 	s := fmt.Sprintf("Pointing at %v, is outside gap: %v", c.Coordinate, b)
 	ebitenutil.DebugPrint(screen, s)
 }
@@ -45,8 +46,8 @@ func main() {
 			Width: 8, Height: 10},
 		CellDimensions: egriden.Dimensions{
 			Width: 20, Height: 12},
-		PaddingVector: image.Point{4, 4},
-		Anchor:        image.Point{60, 76},
+		PaddingVector: imggg.Pt(4.0, 4.0),
+		Anchor:        imggg.Pt(60.0, 76.0),
 	})
 
 	ebiten.SetWindowSize(640, 640)

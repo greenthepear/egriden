@@ -1,8 +1,9 @@
 package egriden
 
 import (
-	"image"
 	"testing"
+
+	"github.com/greenthepear/imggg"
 )
 
 func TestGridUtilities(t *testing.T) {
@@ -10,45 +11,45 @@ func TestGridUtilities(t *testing.T) {
 	l1 := lv.CreateSimpleGridLayerOnTop("test", 20, 12, 6, Sparse, 0, 50)
 
 	if l1.Anchor.Y != 50 {
-		t.Errorf("Anchor is not 50, instead %d!", l1.Anchor.Y)
+		t.Errorf("Anchor is not 50, instead %v!", l1.Anchor.Y)
 	}
 
 	// Testing associated cells with the anchor
 	shouldbe := [...]int{-3, -2, -2, -1, -1, 0, 0, 1, 1, 2}
 	for i, s := range shouldbe {
-		x, y := screenXYtoGrid(*l1, 0, i*10)
+		x, y := screenXYtoGrid(*l1, 0, float64(i*10))
 		if y != s {
-			t.Errorf(`Wrong screen XY to grid conversion with yoffset %d!
-is:		%d %d
-should be:	%d %d`,
+			t.Errorf(`Wrong screen XY to grid conversion with yoffset %v!
+is:		%v %v
+should be:	%v %v`,
 				int(l1.Anchor.Y), x, y, x, s)
 		}
-		ax, ay := snapScreenXYtoCellAnchor(*l1, 0, i*10)
-		if ay != s*l1.cellDimensions.Height {
+		ax, ay := snapScreenXYtoCellAnchor(*l1, 0, float64(i*10))
+		if ay != float64(s*l1.cellDimensions.Height) {
 			t.Errorf(`Wrong anchor point calculation!
-is:		%d %d
-should be:	%d %d`,
-				ax, ay, ax, s*l1.cellDimensions.Height)
+is:		%v %v
+should be:	%v %v`,
+				ax, ay, ax, float64(s*l1.cellDimensions.Height))
 		}
 	}
 
 	l2 := lv.CreateGridLayerOnTop("test2", GridLayerParameters{
 		GridDimensions: Dimensions{5, 5},
 		CellDimensions: Dimensions{5, 5},
-		PaddingVector:  image.Point{2, 1},
-		Anchor:         image.Point{-5, -5},
+		PaddingVector:  imggg.Pt(2.0, 1.0),
+		Anchor:         imggg.Pt(-5.0, -5.0),
 	})
 
 	type gapTest struct {
-		screenpos  image.Point
-		gridpos    image.Point
+		screenpos  imggg.Point[float64]
+		gridpos    imggg.Point[int]
 		outsideGap bool
 	}
 	forTest := [...]gapTest{
-		{image.Pt(0, 0), image.Pt(0, 0), true},
-		{image.Pt(1, 0), image.Pt(0, 0), false},
-		{image.Pt(2, 0), image.Pt(1, 0), true},
-		{image.Pt(-1, -1), image.Pt(0, 0), true},
+		{imggg.Pt(0.0, 0.0), imggg.Pt(0, 0), true},
+		{imggg.Pt(1.0, 0.0), imggg.Pt(0, 0), false},
+		{imggg.Pt(2.0, 0.0), imggg.Pt(1, 0), true},
+		{imggg.Pt(-1.0, -1.0), imggg.Pt(0, 0), true},
 	}
 	for _, e := range forTest {
 		c, b := l2.CellAtScreenPosWithPadding(e.screenpos.X, e.screenpos.Y)

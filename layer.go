@@ -1,8 +1,7 @@
 package egriden
 
 import (
-	"image"
-
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -21,11 +20,6 @@ const (
 	Static
 )
 
-// TODO: replace with image.Point maybe?
-type vec struct {
-	x, y int
-}
-
 type Dimensions struct {
 	Width, Height int
 }
@@ -43,18 +37,18 @@ type GridLayer struct {
 
 	// Defines the "gaps" between cells:
 	// point's X for horizontal gaps length and Y for vertical.
-	Padding image.Point
+	Padding imggg.Point[float64]
 	// If false no sprite will be drawn, nor layers' gobjects draw scripts
 	// executed.
 	Visible     bool
 	mode        DrawMode
-	mapMat      map[vec]Gobject
+	mapMat      map[imggg.Point[int]]Gobject
 	sliceMat    [][]Gobject
 	staticImage *ebiten.Image
 
 	// Anchor is the top left point from which the layer is drawn,
 	// default being (0,0). Can be anywhere, off screen or not.
-	Anchor        image.Point
+	Anchor        imggg.Point[float64]
 	numOfGobjects int
 
 	level Level
@@ -62,12 +56,12 @@ type GridLayer struct {
 
 func newGridLayer(
 	name string, z int, cellDims Dimensions, gridDims Dimensions,
-	drawMode DrawMode, anchor image.Point, padding image.Point) *GridLayer {
+	drawMode DrawMode, anchor imggg.Point[float64], padding imggg.Point[float64]) *GridLayer {
 
-	var mapMat map[vec]Gobject = nil
+	var mapMat map[imggg.Point[int]]Gobject = nil
 	var sliceMat [][]Gobject = nil
 	if drawMode == Sparse {
-		mapMat = make(map[vec]Gobject, gridDims.Width*gridDims.Height)
+		mapMat = make(map[imggg.Point[int]]Gobject, gridDims.Width*gridDims.Height)
 	} else {
 		sliceMat = make([][]Gobject, gridDims.Height)
 		for i := range sliceMat {
@@ -106,7 +100,7 @@ func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
 // Also returns the pointer to it.
 func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
-	drawMode DrawMode, XOffset, YOffset int) *GridLayer {
+	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
 
 	return le.addGridLayer(
 		newGridLayer(
@@ -114,15 +108,17 @@ func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 			Dimensions{squareLength, squareLength},
 			Dimensions{width, height},
 			drawMode,
-			image.Point{XOffset, YOffset},
-			image.Point{0, 0}))
+			imggg.Pt(XOffset, YOffset),
+			imggg.Pt(0.0, 0.0),
+		),
+	)
 }
 
 // Shorthand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
 // for the current level
 func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
-	drawMode DrawMode, XOffset, YOffset int) *GridLayer {
+	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
 
 	return g.Level().(*BaseLevel).CreateSimpleGridLayerOnTop(
 		name, squareLength, width, height, drawMode, XOffset, YOffset)
@@ -136,10 +132,10 @@ type GridLayerParameters struct {
 	CellDimensions Dimensions
 	// Defines the "gaps" between cells:
 	// point's X for horizontal gaps length and Y for vertical.
-	PaddingVector image.Point
+	PaddingVector imggg.Point[float64]
 
 	// Layer's [(GridLayer).Anchor]
-	Anchor image.Point
+	Anchor imggg.Point[float64]
 	// Layer's [DrawMode]
 	Mode DrawMode
 }
@@ -175,7 +171,7 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
-func (l *GridLayer) anchor() image.Point {
+func (l *GridLayer) anchor() imggg.Point[float64] {
 	return l.Anchor
 }
 

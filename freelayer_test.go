@@ -8,11 +8,11 @@ func TestFreeLayers(t *testing.T) {
 	g := EgridenAssets{}
 	g.InitEgridenAssets()
 
-	testoffx, testoffy := 10, 20
+	testoffx, testoffy := 10.0, 20.0
 	fl1 := g.CreateFreeLayerOnTop("freelayer1", testoffx, testoffy)
 	offx, offy := fl1.Anchor.X, fl1.Anchor.Y
 	if offx != testoffx || offy != testoffy {
-		t.Errorf("Offsets didn't get applied! (%d, %d) != (%d, %d)",
+		t.Errorf("Offsets didn't get applied! (%v, %v) != (%v, %v)",
 			testoffx, testoffy, offx, offy)
 	}
 	if fl1.static {

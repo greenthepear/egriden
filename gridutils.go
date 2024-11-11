@@ -2,29 +2,32 @@ package egriden
 
 import (
 	"image"
+
+	"github.com/greenthepear/imggg"
 )
 
-func mod(a, b int) int {
-	m := a % b
-	if a < 0 && b < 0 {
-		m -= b
+func mod(a, b float64) float64 {
+	ai, bi := int(a), int(b)
+	m := ai % bi
+	if ai < 0 && bi < 0 {
+		m -= bi
 	}
-	if a < 0 && b > 0 {
-		m += b
+	if ai < 0 && bi > 0 {
+		m += bi
 	}
-	return m
+	return float64(m)
 }
 
 // A cell is a place on a GridLayer
 type Cell struct {
 	// Coordinate of the cell as a point. Can be out of layer bounds.
-	Coordinate image.Point
+	Coordinate imggg.Point[int]
 	layerPtr   *GridLayer
 }
 
 func (l *GridLayer) CellAt(x, y int) Cell {
 	return Cell{
-		image.Point{x, y},
+		imggg.Pt(x, y),
 		l,
 	}
 }
@@ -36,11 +39,6 @@ func (l *GridLayer) CellOfGobject(o Gobject) Cell {
 // Cell.Coordinate's X and Y as ints
 func (c Cell) XY() (int, int) {
 	return c.Coordinate.X, c.Coordinate.Y
-}
-
-// Cell.Coordinate's X and Y as two floats
-func (c Cell) XYf() (float64, float64) {
-	return float64(c.Coordinate.X), float64(c.Coordinate.Y)
 }
 
 // Pointer to the grid layer which the cell is in
@@ -65,65 +63,67 @@ func (c Cell) IsWithinBounds() bool {
 // Will return negative or otherwise out of bounds positions if XY is not within the grid
 // on the screen so either check the screen bounds beforehand or grid bounds afterhand
 // before accessing grid coordinates derived from this function.
-func screenXYtoGrid(l GridLayer, x, y int) (int, int) {
+func screenXYtoGrid(l GridLayer, x, y float64) (int, int) {
 	offx := x - l.Anchor.X
 	if offx < 0 {
-		offx -= l.cellDimensions.Width - 1
+		offx -= float64(l.cellDimensions.Width) - 1
 	}
 	offy := y - l.Anchor.Y
 	if offy < 0 {
-		offy -= l.cellDimensions.Height - 1
+		offy -= float64(l.cellDimensions.Height) - 1
 	}
 
-	return offx / (l.cellDimensions.Width + l.Padding.X),
-		offy / (l.cellDimensions.Height + l.Padding.Y)
+	return int(offx) / (l.cellDimensions.Width + int(l.Padding.X)),
+		int(offy) / (l.cellDimensions.Height + int(l.Padding.Y))
 }
 
 // Returns a cell at the given screen position, taking into account the layer
 // anchor. Ignores padding, gaps are seen here as extensions to the right and bottom of
 // the returned cell. To check for padding use [(*GridLayer).CellAtScreenPosWithPadding].
-func (l *GridLayer) CellAtScreenPos(x, y int) Cell {
+func (l *GridLayer) CellAtScreenPos(x, y float64) Cell {
 	foundx, foundy := screenXYtoGrid(*l, x, y)
 	return Cell{
-		Coordinate: image.Pt(foundx, foundy),
+		Coordinate: imggg.Pt(foundx, foundy),
 		layerPtr:   l}
 }
 
 // Like [(*GridLayer).CellAtScreenPos] but also returns a bool as true if
 // the point is NOT within a padding gap. Even if it is, the returned cell works like in
 // [(*GridLayer).CellAtScreenPos].
-func (l *GridLayer) CellAtScreenPosWithPadding(x, y int) (Cell, bool) {
-	withinx := mod(x-l.Anchor.X, l.cellDimensions.Width+l.Padding.X)
-	withiny := mod(y-l.Anchor.Y, l.cellDimensions.Height+l.Padding.Y)
+func (l *GridLayer) CellAtScreenPosWithPadding(x, y float64) (Cell, bool) {
+	withinx := mod(
+		x-l.Anchor.X, float64(l.cellDimensions.Width)+l.Padding.X)
+	withiny := mod(
+		y-l.Anchor.Y, float64(l.cellDimensions.Height)+l.Padding.Y)
 	return l.CellAtScreenPos(x, y),
-		withinx <= l.cellDimensions.Width &&
-			withiny <= l.cellDimensions.Height
+		withinx <= float64(l.cellDimensions.Width) &&
+			withiny <= float64(l.cellDimensions.Height)
 }
 
 // Checks if XY is within bounds on the screen, taking into account
 // the layer anchor.
-func (l GridLayer) IsScreenXYwithinBounds(x, y int) bool {
+func (l GridLayer) IsScreenXYwithinBounds(x, y float64) bool {
 	return l.IsXYwithinBounds(screenXYtoGrid(l, x, y))
 }
 
-func snapScreenXYtoCellAnchor(l GridLayer, x, y int) (int, int) {
+func snapScreenXYtoCellAnchor(l GridLayer, x, y float64) (float64, float64) {
 	ax, ay := screenXYtoGrid(l, x, y)
-	return ax * (l.cellDimensions.Width + l.Padding.X),
-		ay * (l.cellDimensions.Height + l.Padding.Y)
+	return float64(ax*l.cellDimensions.Width) + l.Padding.X,
+		float64(ay*l.cellDimensions.Height) + l.Padding.Y
 }
 
 // Returns the top left point of the cell on the screen, aka the anchor or
 // the draw point if the cell has a object with a sprite
 // (sprite draw offset is irrelevant here).
-func (c Cell) Anchor() image.Point {
-	return image.Point{
-		c.Coordinate.X*
-			(c.layerPtr.cellDimensions.Width+c.layerPtr.Padding.X) +
+func (c Cell) Anchor() imggg.Point[float64] {
+	return imggg.Pt[float64](
+		float64(c.Coordinate.X)*
+			(float64(c.layerPtr.cellDimensions.Width)+c.layerPtr.Padding.X)+
 			c.layerPtr.Anchor.X,
-		c.Coordinate.Y*
-			(c.layerPtr.cellDimensions.Height+c.layerPtr.Padding.Y) +
+		float64(c.Coordinate.Y)*
+			(float64(c.layerPtr.cellDimensions.Height)+c.layerPtr.Padding.Y)+
 			c.layerPtr.Anchor.Y,
-	}
+	)
 }
 
 // Cell's bounds on the screen as a rectangle.
@@ -133,8 +133,8 @@ func (c Cell) Anchor() image.Point {
 func (c Cell) BoundsRectangle() image.Rectangle {
 	w, h := c.layerPtr.cellDimensions.WH()
 	return image.Rectangle{
-		c.Anchor(),
-		c.Anchor().Add(image.Pt(w, h))}
+		c.Anchor().Std(),
+		c.Anchor().Std().Add(image.Pt(w, h))}
 }
 
 // Gobject within the cell, simply calls [GridLayer.GobjectAt], so it can be nil.

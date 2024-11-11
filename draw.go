@@ -1,15 +1,14 @@
 package egriden
 
 import (
-	"image"
-
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Layer interface {
 	DrawSprite(o Gobject, on *ebiten.Image)
 	Static() bool
-	anchor() image.Point
+	anchor() imggg.Point[float64]
 }
 
 // Returns ebiten.DrawImageOptions of a Gobject's SpritePack applied
