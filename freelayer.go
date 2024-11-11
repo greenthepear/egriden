@@ -86,20 +86,20 @@ func (le *FreeLayer) SetVisibility(to bool) {
 	le.Visible = to
 }
 
-func (fl *FreeLayer) AddGobject(o Gobject, x, y int) {
-	o.setXY(x, y)
+func (fl *FreeLayer) AddGobject(o Gobject, x, y float64) {
+	o.setScreenPos(x, y)
 	if o.OnUpdate() != nil {
 		fl.level.addGobjectWithOnUpdate(o, fl)
 	}
 	fl.gobjects.Add(o)
 }
 
-func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y int) {
+func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y float64) {
 	_, ok := fl.gobjects.m[o]
 	if !ok {
 		panic("Gobject does not exist in layer")
 	}
-	o.setXY(x, y)
+	o.setScreenPos(x, y)
 }
 
 func (fl *FreeLayer) DeleteGobject(o Gobject) {

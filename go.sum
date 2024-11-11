@@ -10,12 +10,16 @@ github.com/ebitengine/purego v0.8.0 h1:JbqvnEzRvPpxhCJzJJ2y0RbiZ8nyjccVUrSM3q+Gv
 github.com/ebitengine/purego v0.8.0/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/greenthepear/gunc v1.1.0 h1:q5vC3b8AOrqyyk1TRHzKDPc+nZS8RamtE3B/1rzfOQQ=
 github.com/greenthepear/gunc v1.1.0/go.mod h1:m4OnoIsN/nmyCqj6t4bq6Jut1PeYYiSlnlP613wPq0Q=
+github.com/greenthepear/imggg v0.0.0-20241018092610-287a4af853c1 h1:YMONZAhgCoFapsDzaL9BiZcdMOZz6oM66Qw9+2Cg59A=
+github.com/greenthepear/imggg v0.0.0-20241018092610-287a4af853c1/go.mod h1:OvWqCYoJ1EJi9lpI+hcYdDPxVitA/0MG9eStju/WT78=
 github.com/hajimehoshi/ebiten/v2 v2.7.5 h1:jN6FnhCd9NGYCsm5GtrweuikrlyVGCSUpH5YgL+7UKA=
 github.com/hajimehoshi/ebiten/v2 v2.7.5/go.mod h1:H2pHVgq29rfm5yeQ7jzWOM3VHsjo7/AyucODNLOhsVY=
 github.com/hajimehoshi/ebiten/v2 v2.8.1 h1:6n6ZXnbeSCZccdqrH7s9Ut+dll9TEostUqbc72Tis/g=
 github.com/hajimehoshi/ebiten/v2 v2.8.1/go.mod h1:SXx/whkvpfsavGo6lvZykprerakl+8Uo1X8d2U5aAnA=
 github.com/jezek/xgb v1.1.1 h1:bE/r8ZZtSv7l9gk6nU0mYx51aXrvnyb44892TwSaqS4=
 github.com/jezek/xgb v1.1.1/go.mod h1:nrhwO0FX/enq75I7Y7G8iN1ubpSGZEiA3v9e9GyRFlk=
+golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c h1:7dEasQXItcW1xKJ2+gg5VOiBnqWrJc+rq0DPKyvvdbY=
+golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c/go.mod h1:NQtJDoLvd6faHhE7m4T/1IY708gDefGGjR/iUW8yQQ8=
 golang.org/x/image v0.16.0 h1:9kloLAKhUufZhA12l5fwnx2NZW39/we1UhBesW433jw=
 golang.org/x/image v0.16.0/go.mod h1:ugSZItdV4nOxyqp56HmXwH0Ry0nBCpjnZdpDaIHdoPs=
 golang.org/x/image v0.20.0 h1:7cVCUjQwfL18gyBJOmYvptfSHS8Fb3YUDtfLIZ7Nbpw=

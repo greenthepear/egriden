@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"image"
 
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Gobject is an object that exists in a layer
 type Gobject interface {
 	Name() string
-	XY() (int, int)
-	setXY(int, int)
+	GridPos() imggg.Point[int]
+	setGridPos(int, int)
+	ScreenPos(Layer) imggg.Point[float64]
+	setScreenPos(float64, float64)
 
 	//Sprite stuff
 
@@ -38,8 +41,9 @@ type Gobject interface {
 
 // The BaseGobject. Use it for simple Gobjects or implement your own Gobject by embedding this struct in your own.
 type BaseGobject struct {
-	name string
-	x, y int
+	name      string
+	gridPos   imggg.Point[int]
+	screenPos imggg.Point[float64]
 
 	sprites SpritePack
 
@@ -51,19 +55,46 @@ type BaseGobject struct {
 
 // Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless Gobject that can be added to a layer
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
-	return BaseGobject{name, 0, 0, sprites, false, nil, nil}
+	return BaseGobject{name,
+		imggg.Pt[int](0, 0),
+		imggg.Pt[float64](0, 0), sprites, false, nil, nil}
 }
 
 func (o *BaseGobject) Name() string {
 	return o.name
 }
 
-func (o *BaseGobject) XY() (int, int) {
-	return o.x, o.y
+func (o *BaseGobject) GridPos() imggg.Point[int] {
+	return o.gridPos
 }
 
-func (o *BaseGobject) setXY(x, y int) {
-	o.x, o.y = x, y
+func (o *BaseGobject) setGridPos(x, y int) {
+	o.gridPos.X, o.gridPos.Y = x, y
+}
+
+// Position on the screen, in a FreeLayer it's just the position, for
+// GridLayer it's the draw anchor.
+func (o *BaseGobject) ScreenPos(layer Layer) imggg.Point[float64] {
+	xoffset, yoffset := float64(layer.anchor().X), float64(layer.anchor().Y)
+	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
+	switch l := layer.(type) {
+	case *GridLayer:
+		x, y := o.gridPos.X, o.gridPos.Y
+		return imggg.Point[float64]{
+			X: float64(x)*float64(l.cellDimensions.Width+l.Padding.X) +
+				xoffset + spriteXoffset,
+			Y: float64(y)*float64(l.cellDimensions.Height+l.Padding.Y) +
+				yoffset + spriteYoffset,
+		}
+	case *FreeLayer:
+		return o.screenPos
+	default:
+		panic("layer is not GridLayer or FreeLayer somehow")
+	}
+}
+
+func (o *BaseGobject) setScreenPos(x, y float64) {
+	o.screenPos.X, o.screenPos.Y = x, y
 }
 
 // Assigns Sprite Pack. Should not be used during game updates.
@@ -169,7 +200,7 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 
 // Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
-	o.setXY(x, y)
+	o.setGridPos(x, y)
 
 	if o.OnUpdate() != nil {
 		l.level.addGobjectWithOnUpdate(o, l)
@@ -218,7 +249,7 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
 	}
-	fromX, fromY := o.XY()
+	fromX, fromY := o.GridPos().X, o.GridPos().Y
 	fromGobject := l.GobjectAt(fromX, fromY)
 	if fromGobject != o {
 		panic(fmt.Sprintf(

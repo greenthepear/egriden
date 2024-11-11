@@ -25,7 +25,8 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	l.AddGobject(testGobj.Build(), 1, 1)
 	if l.GobjectAt(1, 1) == nil {
 		t.Errorf("goboject not present at added location")
-		if gx, gy := l.GobjectAt(1, 1).XY(); gx != 1 || gy != 1 {
+		gx, gy := l.GobjectAt(1, 1).GridPos().X, l.GobjectAt(1, 1).GridPos().Y
+		if gx != 1 || gy != 1 {
 			t.Errorf("gobject xy not applied (%d, %d) != (%d, %d)",
 				gx, gy, 1, 1)
 		}
