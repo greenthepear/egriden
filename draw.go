@@ -21,9 +21,9 @@ func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten
 	// In static layers, the layer anchor offsets are handled in the draw
 	// function itself, so they need to be subtracted here
 	if layer.Static() {
-		xRealign, yRealign := layer.anchor().X, layer.anchor().Y
+		xRealign, yRealign := layer.anchor().XY()
 		r.GeoM.Translate(
-			drawX-float64(xRealign), drawY-float64(yRealign))
+			drawX-xRealign, drawY-yRealign)
 	} else {
 		r.GeoM.Translate(
 			drawX, drawY)

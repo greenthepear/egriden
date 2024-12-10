@@ -75,8 +75,8 @@ func (o *BaseGobject) setGridPos(x, y int) {
 // Position on the screen, in a FreeLayer it's just the position, for
 // GridLayer it's the draw anchor.
 func (o *BaseGobject) ScreenPos(layer Layer) imggg.Point[float64] {
-	xoffset, yoffset := float64(layer.anchor().X), float64(layer.anchor().Y)
-	spriteXoffset, spriteYoffset := o.SpritePack().XOffset, o.SpritePack().YOffset
+	xoffset, yoffset := layer.anchor().XY()
+	spriteXoffset, spriteYoffset := o.SpritePack().Offset.XY()
 	switch l := layer.(type) {
 	case *GridLayer:
 		x, y := o.gridPos.X, o.gridPos.Y
@@ -144,8 +144,7 @@ func (o *BaseGobject) SetDrawOptions(op *ebiten.DrawImageOptions) {
 
 // Quick way to make the sprite draw with x and y added to the screen position.
 func (o *BaseGobject) SetDrawOffsets(x, y float64) {
-	o.sprites.XOffset = x
-	o.sprites.YOffset = y
+	o.sprites.Offset = imggg.Pt(x, y)
 }
 
 func (o *BaseGobject) isMarkedForDeletion() bool {

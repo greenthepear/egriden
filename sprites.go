@@ -6,6 +6,7 @@ import (
 	_ "image/png"
 	"path/filepath"
 
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -25,8 +26,8 @@ type SpritePack struct {
 	visible            bool
 	empty              bool
 
-	DrawOptions      *ebiten.DrawImageOptions
-	XOffset, YOffset float64
+	DrawOptions *ebiten.DrawImageOptions
+	Offset      imggg.Point[float64]
 }
 
 // Create an ImageSequence using multiple (or just one) file paths.
@@ -75,7 +76,7 @@ func CreateImageSequenceFromImages(
 }
 
 func NewSpritePack() SpritePack {
-	return SpritePack{make(map[string]*ImageSequence), 0, "", true, false, &ebiten.DrawImageOptions{}, 0, 0}
+	return SpritePack{make(map[string]*ImageSequence), 0, "", true, false, &ebiten.DrawImageOptions{}, imggg.Point[float64]{}}
 }
 
 // Assigns an ImageSequence to SpritePack
@@ -113,8 +114,4 @@ func (sp SpritePack) Sprite() *ebiten.Image {
 	}
 
 	return sp.sequences[sp.currentSequenceKey].Frames[sp.frameIndex]
-}
-
-func (sp SpritePack) OffsetXY() (int, int) {
-	return int(sp.XOffset), int(sp.YOffset)
 }
