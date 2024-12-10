@@ -181,9 +181,24 @@ func (l *GridLayer) AnchorXYf() (float64, float64) {
 	return float64(l.Anchor.X), float64(l.Anchor.Y)
 }
 
-// Width and height of the grid.
+// Logical width and height of the grid.
 func (l *GridLayer) Dimensions() (int, int) {
 	return l.layerDimensions.Width, l.layerDimensions.Height
+}
+
+// Logical width and height of the grid as a point.
+func (l *GridLayer) DimensionsPt() imggg.Point[int] {
+	return imggg.Pt(l.layerDimensions.Width, l.layerDimensions.Height)
+}
+
+// Dimensions of the cell within the grid.
+func (l *GridLayer) CellDimensions() (int, int) {
+	return l.cellDimensions.Width, l.cellDimensions.Height
+}
+
+// Dimensions of the cell within the grid as a point.
+func (l *GridLayer) CellDimensionsPt() imggg.Point[int] {
+	return imggg.Pt(l.cellDimensions.Width, l.cellDimensions.Height)
 }
 
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.
