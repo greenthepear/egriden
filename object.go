@@ -102,20 +102,23 @@ func (o *BaseGobject) SetSpritePack(sp SpritePack) {
 	o.sprites = sp
 }
 
+// Sets the frame to `i % len(frames)`
+func (o *BaseGobject) SetFrame(i int) {
+	o.sprites.frameIndex =
+		i % len(o.sprites.sequences[o.sprites.currentSequenceKey].Frames)
+}
+
 // Sets Image Sequence under name, returns error if the name key is not present.
+//
+// Resets frame to 0.
 func (o *BaseGobject) SetImageSequence(name string) error {
 	_, ok := o.sprites.sequences[name]
 	if !ok {
 		return fmt.Errorf("ImageSequence '%v' doesn't exist", name)
 	}
 	o.sprites.currentSequenceKey = name
+	o.SetFrame(0)
 	return nil
-}
-
-// Sets the frame to `i % len(frames)`
-func (o *BaseGobject) SetFrame(i int) {
-	o.sprites.frameIndex =
-		i % len(o.sprites.sequences[o.sprites.currentSequenceKey].Frames)
 }
 
 // Increments frame by one. Wraps back to 0 if out of range.
