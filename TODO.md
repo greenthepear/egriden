@@ -10,6 +10,7 @@
 - [x] Neighbor cell grid utilities
     - [ ] Test recursive functionality and maybe make utilities for it
 ## Low priority
+- [ ] More public Sprite/SpritePack information
 - [x] Add sprite loading from image.Image
     - [ ] Add aseprite file support
 - [ ] Add layer image options

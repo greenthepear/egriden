@@ -17,7 +17,7 @@ var gopherPack egriden.SpritePack
 func init() {
 	seq, err := egriden.CreateImageSequenceFromFolder("gopher", "./Graphics/Gopher")
 	if err != nil {
-		log.Fatal(seq)
+		log.Fatal(err)
 	}
 	gopherPack = egriden.NewSpritePackWithSequence(seq)
 }
