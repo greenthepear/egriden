@@ -101,7 +101,7 @@ func (le *BaseLevel) RunUpdateScripts() {
 	if marked > 0 {
 		le.gobjectsWithUpdateScripts = gunc.Filter(le.gobjectsWithUpdateScripts,
 			func(ol gobjectWithLayer) bool {
-				return ol.o.isMarkedForDeletion()
+				return !ol.o.isMarkedForDeletion()
 			})
 
 	}
