@@ -14,8 +14,15 @@ type Level interface {
 	GridLayer(int) *GridLayer
 	GridLayers() []*GridLayer
 
+	CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer
+	CreateSimpleGridLayerOnTop(
+		name string, squareLength int, width, height int,
+		drawMode DrawMode, XOffset, YOffset float64) *GridLayer
+
 	FreeLayer(int) *FreeLayer
 	FreeLayers() []*FreeLayer
+
+	CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer
 
 	addGobjectWithOnUpdate(o Gobject, l Layer)
 }
