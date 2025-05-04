@@ -188,7 +188,7 @@ func (o BaseGobject) Build() Gobject {
 // Returns Gobject at x y, nil if empty. Panics if out of bounds.
 func (l GridLayer) GobjectAt(x, y int) Gobject {
 	if !l.IsXYwithinBounds(x, y) {
-		panic("GobjectAt() panic! Out of bounds.")
+		panic(fmt.Sprintf("GobjectAt() panic! (%d , %d) Out of bounds.", x, y))
 	}
 	if l.mode == Sparse {
 		return l.mapMat[imggg.Point[int]{X: x, Y: y}]
