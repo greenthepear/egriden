@@ -7,11 +7,11 @@ Current features:
 - A **grid layer** system
 - **Levels** (aka scenes) and conventional **free layers**
 - "**Gobjects**" with custom draw and update scripts
-- Animatable **sprite** system with easy loading from PNG files
+- Animatable **sprite** system with pipelined loading from files
 
-Instead of the common component approach seen in engines like Unity, it is more akin to GameMaker with how it handles object interactions.
+There's no abstract grid container for arranging objects to determine the state of your game, instead **the grid is the state**.
 
-It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to create a word-based action puzzle game. *[Click here to follow development.](https://greenthepear.com)*
+It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to [create games](https://madeby.green).
 
 ***Currently unstable!*** Contributions of any kind are welcome. Check [the changelog](CHANGELOG.md) for updates.
 
@@ -35,7 +35,7 @@ A simple guide of egriden's game structure for drawing based on the [gridsweeper
 ![guide](./docs/layersguide.png)
 
 Essentially: 
-**Levels ∋ Layers ∋ Gobjects ∋ SpritePacks ∋ ImageSequences ∋ Frames**
+**Levels ∋ Layers ∋ Gobjects ∋ SpritePacks ∋ ImageSequences ∋ Frames** - **Levels** consist of different **layers** which are populated with **Gobjects** which use **SpritePacks** to organize **ImageSequences**, the **frames** of which get shown on the screen.
 
 # Quick boilerplate tutorial
 
