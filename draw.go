@@ -6,9 +6,10 @@ import (
 )
 
 type Layer interface {
+	// Draw the Gobject's sprite based on the position in the layer and offset
 	DrawSprite(o Gobject, on *ebiten.Image)
 
-	// Draw any ebiten.Image with applied position of a Gobject's sprite
+	// Draw any ebiten.Image with applied position of the Gobject within the layer
 	DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image)
 	Static() bool
 	anchor() imggg.Point[float64]
@@ -16,7 +17,7 @@ type Layer interface {
 
 // Returns ebiten.DrawImageOptions of a Gobject's SpritePack applied
 // to the layer
-func appliedDrawOptionsForPosition(o Gobject, layer Layer, x, y float64) *ebiten.DrawImageOptions {
+func appliedDrawOptionsForPosition(o Gobject, layer Layer) *ebiten.DrawImageOptions {
 	copy := *o.SpritePack().DrawOptions
 	r := &copy
 	drawX, drawY := o.ScreenPos(layer).XY()
@@ -67,9 +68,8 @@ func (l *GridLayer) RefreshImage() {
 }
 
 func (l GridLayer) DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image) {
-	x, y := o.GridPos().XY()
 	on.DrawImage(img,
-		appliedDrawOptionsForPosition(o, &l, float64(x), float64(y)))
+		appliedDrawOptionsForPosition(o, &l))
 }
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
@@ -77,9 +77,8 @@ func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 }
 
 func (fl FreeLayer) DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image) {
-	x, y := o.GridPos().XY()
 	on.DrawImage(img,
-		appliedDrawOptionsForPosition(o, &fl, float64(x), float64(y)))
+		appliedDrawOptionsForPosition(o, &fl))
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {

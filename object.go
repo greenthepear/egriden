@@ -10,8 +10,12 @@ import (
 // Gobject is an object that exists in a layer
 type Gobject interface {
 	Name() string
+	// Coordinates within a GridLayer, if Gobject is in a FreeLayer
+	// this should be always (0, 0)
 	GridPos() imggg.Point[int]
 	setGridPos(int, int)
+	// Position on the screen, in a FreeLayer it's just the position, for
+	// GridLayer it's the draw anchor.
 	ScreenPos(Layer) imggg.Point[float64]
 	setScreenPos(float64, float64)
 
@@ -28,8 +32,8 @@ type Gobject interface {
 
 	//Custom scripts
 
-	OnUpdate() func(self Gobject, l Layer)                //Runs every game.Update() call
-	OnDraw() func(self Gobject, i *ebiten.Image, l Layer) //Runs ever game.Draw() call
+	OnUpdate() func(self Gobject, l Layer)                //Runs during game.RunUpdateScripts() call
+	OnDraw() func(self Gobject, i *ebiten.Image, l Layer) //Runs every game.Draw() call
 	DrawSprite(*ebiten.Image, Layer)                      //Default sprite drawing function
 
 	//objects are referenced outside of the grid sometimes, if they get deleted from it, these must be called and checked
