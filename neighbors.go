@@ -34,7 +34,7 @@ func (c Cell) GetNeighborsFunc(
 // Get a slice of neighboring cells dictated by steps vectors. A step to the left by one
 // would be Pt(-1, 0), a step to the top right by two would be Pt(2, 2) etc.
 //
-// includeSelf will add the origin cell at the first positon.
+// includeSelf will add the origin cell at the first position.
 // If inbounds is true, the method discards any cell that would be out of bounds in the grid.
 func (c Cell) GetNeighbors(
 	steps []imggg.Point[int], includeSelf bool, inbounds bool) []Cell {

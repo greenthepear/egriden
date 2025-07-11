@@ -108,10 +108,16 @@ func NewSpritePackWithSequences(is ...ImageSequence) SpritePack {
 	return ip
 }
 
+// Return specific sprite in a seqence and frame
+func (sp SpritePack) SpriteAt(sequenceKey string, frame int) *ebiten.Image {
+	return sp.sequences[sequenceKey].Frames[frame]
+}
+
+// Return the current sprite
 func (sp SpritePack) Sprite() *ebiten.Image {
 	if !sp.visible {
 		return nil
 	}
 
-	return sp.sequences[sp.currentSequenceKey].Frames[sp.frameIndex]
+	return sp.SpriteAt(sp.currentSequenceKey, sp.frameIndex)
 }
