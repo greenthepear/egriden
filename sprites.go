@@ -35,13 +35,13 @@ func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, 
 	if len(paths) < 1 {
 		return ImageSequence{}, fmt.Errorf("no paths provided")
 	}
-	frameSlice := make([]*ebiten.Image, 0, len(paths))
-	for _, p := range paths {
+	frameSlice := make([]*ebiten.Image, len(paths))
+	for i, p := range paths {
 		img, _, err := ebitenutil.NewImageFromFile(p)
 		if err != nil {
 			return ImageSequence{}, fmt.Errorf("while importing file from path `%v`: %v", p, err)
 		}
-		frameSlice = append(frameSlice, img)
+		frameSlice[i] = img
 	}
 	return ImageSequence{name, frameSlice}, nil
 }
@@ -66,10 +66,10 @@ func CreateImageSequenceFromImages(
 	if len(images) < 1 {
 		return ImageSequence{}, fmt.Errorf("no images provided")
 	}
-	frameSlice := make([]*ebiten.Image, 0, len(images))
+	frameSlice := make([]*ebiten.Image, len(images))
 
-	for _, img := range images {
-		frameSlice = append(frameSlice, ebiten.NewImageFromImage(img))
+	for i, img := range images {
+		frameSlice[i] = ebiten.NewImageFromImage(img)
 	}
 
 	return ImageSequence{name, frameSlice}, nil
