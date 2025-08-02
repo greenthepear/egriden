@@ -6,8 +6,8 @@
 Current features:
 - A **grid layer** system
 - **Levels** (aka scenes) and conventional **free layers**
-- "**Gobjects**" with custom draw and update scripts
-- Animatable **sprite** system with pipelined loading from files
+- Expandable "**gobjects**" with assignable draw and update scripts, which populate the two layer types
+- Animatable **sprite** system with streamlined image loading using glob patterns or yaml files
 
 There's no abstract grid container for arranging objects to determine the state of your game, instead **the grid is the state**.
 
@@ -68,30 +68,32 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main(){
-    //Initialize
+    // Initialize
     g := &Game{}
     g.InitEgridenAssets()
 
-    layer0 := g.CreateSimpleGridLayerOnTop(
-        "Background", //Name
-        16, //Pixel size of a tile in the grid
-        10, 10, //Width and height of the grid
-        egriden.Sparse, //Draw mode
-        0, 0) //Draw offset from the top left corner
+    layer0 := g.CreateGridLayerOnTop(
+		"Background", // Layer name
+		GridLayerParameters{
+			GridDimensions: Dimensions{10, 12}, // Logical width and heigh of the grid
+			CellDimensions: Dimensions{16, 16}, // Cell size in pixels
+			Mode:           Sparse, // Draw mode which determines iteration method while drawing
+		},
+	)
 
-    //Create an image sequence from all the PNGs in a folder
-    //Image sequences are made of frames, controlled by the frame index
-    seq, err := egriden.CreateImageSequenceFromFolder("idle", "./Graphics/player/idle/")
+    // Create an image sequence from all the PNGs in a folder
+    // Image sequences are made of frames, controlled by the frame index
+    seq, err := egriden.CreateImageSequenceFromGlob("idle", "./Graphics/player/idle/*.png")
     if err != nil {
         log.Fatal(err)
     }
 
-    //Create SpritePack with the sequence. A sprite pack can have multiple sequences,
-    //which can be switched using their names (keys)
+    // Create SpritePack with the sequence. A sprite pack can have multiple sequences,
+    // which can be switched using their names (keys)
     playerSprites := egriden.NewSpritePackWithSequence(seq)
 
-    //Create Gobject (short for grid object or go object or game object or whatever
-    //you like) with the ImagePack
+    // Create Gobject (short for grid object or go object or game object or whatever
+    // you like) with the ImageSequence
     goPlayer := egriden.NewBaseGobject("player", playerSprites)
 
     //Add to layer, Build() method needed for a baseGobject, otherwise create your own

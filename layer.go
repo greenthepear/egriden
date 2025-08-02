@@ -98,6 +98,8 @@ func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
 
 // Creates a grid layer with square cells and no padding within the level.
 // Also returns the pointer to it.
+//
+// Deprecated: Just use CreateGridLayerOnTop.
 func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
 	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
@@ -115,7 +117,9 @@ func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 }
 
 // Shorthand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
-// for the current level
+// for the current level/
+//
+// Deprecated: Just use CreateGridLayerOnTop.
 func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
 	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {

@@ -11,7 +11,7 @@
     - `ScreenXYtoGrid()` and `SnapScreenXYtoCellAnchor()` have been replaced with [`(*GridLayer).CellAtScreenPos`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.CellAtScreenPos) and [`Cell.Anchor`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.Anchor).
 - Added **neighbor** utilities to easily get slices/sets of neighboring cells: [`(Cell).GetNeighbors`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighbors), [`(Cell).GetNeighborsFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsFunc), [`(Cell).GetNeighborsSet`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsSet), [`(Cell).GetNeighborsSetFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsSetFunc). Also contains predefined neighborhoods.
 - Made multiple changes for initializing and managing SpritePacks.
-    - Added [`CreateSpritePacksFromYaml`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateSpritePacksFromYaml) which allows for **creating SpritePacks from yaml data and embeded files** (`embed.FS`)
+    - Added [`CreateSpritePacksFromYaml`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateSpritePacksFromYaml) which allows for **creating SpritePacks from yaml data and embedded files** (`embed.FS`)
     - Added [`CreateImageSequenceFromImages`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromImages) to allow making image sequences from image.Image.
     - Deprecated [`CreateImageSequenceFromFolder`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromFolder), replacing it with a more general [`CreateImageSequenceFromGlob`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromGlob).
     - Made the ImageSequence fields (`Name` and `Frames`) public so you can create them however you want, if you don't like the above options.
@@ -19,6 +19,7 @@
 - Replaced most instances of `image.Point` with `imggg.Point`.
 - Added [`(*GridLayer).DebugDrawCheckerBoard`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.DebugDrawCheckerBoard) which draws a checkerboard pattern of the grid's cells for debugging purposes.
 - [`(*BaseLevel).CreateGridLayerOnTop`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseLevel.CreateGridLayerOnTop) now takes in a new [`GridLayerParameters`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayerParameters) structure so the signature isn't so long and unreadable.
+    - Deprecated [`(*BaseLevel).CreateSimpleGridLayerOnTop`](https://pkg.go.dev/github.com/greenthepear/egriden#BaseLevel.CreateSimpleGridLayerOnTop) for this reason.
 - Changed to the Apache License 2.0 to be uniform with Ebitengine.
 - Updated localization files.
 

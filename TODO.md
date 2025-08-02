@@ -6,11 +6,12 @@
 ## High priority
 - [x] Make gobject XY be floats, use imggg
     - [x] Use imggg for grid utils
-- [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
 - [x] Neighbor cell grid utilities
     - [ ] Test recursive functionality and maybe make utilities for it
+- [ ] Add SwapObjects
 ## Low priority
-- [ ] More public Sprite/SpritePack information
+- [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
+- [x] More public Sprite/SpritePack information
 - [x] Add sprite loading from image.Image
     - [ ] Add aseprite file support
 - [ ] Add layer image options
