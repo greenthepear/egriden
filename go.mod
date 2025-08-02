@@ -6,6 +6,7 @@ require (
 	github.com/greenthepear/gunc v1.1.0
 	github.com/greenthepear/imggg v0.0.0-20241111085519-7d799ff1f2bb
 	github.com/hajimehoshi/ebiten/v2 v2.8.4
+	github.com/goccy/go-yaml v1.18.0
 )
 
 require (

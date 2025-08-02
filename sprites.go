@@ -1,11 +1,12 @@
 package egriden
 
 import (
+	"embed"
 	"fmt"
 	"image"
-	_ "image/png"
 	"path/filepath"
 
+	"github.com/goccy/go-yaml"
 	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -31,6 +32,8 @@ type SpritePack struct {
 }
 
 // Create an ImageSequence using multiple (or just one) file paths.
+//
+// Uses [ebitenutil.NewImageFromFile], which means you might need to import decoders like `import _ "image/png"`
 func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, error) {
 	if len(paths) < 1 {
 		return ImageSequence{}, fmt.Errorf("no paths provided")
@@ -48,6 +51,8 @@ func CreateImageSequenceFromPaths(name string, paths ...string) (ImageSequence, 
 
 // Searches for PNG files in the folder and creates an ImageSequence, with frame order
 // based on the alphabetical order of the file names.
+//
+// Deprecated: Use [CreateImageSequenceFromGlob]
 func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, error) {
 	found, err := filepath.Glob(folderPath + "/*.png")
 	if err != nil {
@@ -55,6 +60,19 @@ func CreateImageSequenceFromFolder(name, folderPath string) (ImageSequence, erro
 	}
 	if len(found) == 0 {
 		return ImageSequence{}, fmt.Errorf("no PNG files found in `%v`", folderPath)
+	}
+	return CreateImageSequenceFromPaths(name, found...)
+}
+
+// Searches for files using a glob pattern (such as `Graphics/*.png`) with [filepath.Glob].
+// Uses [ebitenutil.NewImageFromFile], which means you might need to import decoders like `import _ "image/png"`
+func CreateImageSequenceFromGlob(name, globPattern string) (ImageSequence, error) {
+	found, err := filepath.Glob(globPattern)
+	if err != nil {
+		return ImageSequence{}, fmt.Errorf("while searching for files using pattern `%v`: %v", globPattern, err)
+	}
+	if len(found) == 0 {
+		return ImageSequence{}, fmt.Errorf("no PNG files found using `%v`", globPattern)
 	}
 	return CreateImageSequenceFromPaths(name, found...)
 }
@@ -73,6 +91,82 @@ func CreateImageSequenceFromImages(
 	}
 
 	return ImageSequence{name, frameSlice}, nil
+}
+
+func openAndDecode(in embed.FS, path string) (image.Image, error) {
+	f, err := in.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	return img, err
+}
+
+func openAndDecodeMany(in embed.FS, paths ...string) ([]image.Image, error) {
+	r := make([]image.Image, len(paths))
+
+	for i, path := range paths {
+		img, err := openAndDecode(in, path)
+		if err != nil {
+			return nil, err
+		}
+		r[i] = img
+	}
+
+	return r, nil
+}
+
+// Generate a map in which names of SpritePacks point to a built SpritePacs populated with ImageSequences/frames from
+// [embed.FS] `fs` embedded files, based on yaml file data. Requires a specific structure, example of which:
+//
+//	spritepacks:
+//	- name: card bases
+//	  sequences:
+//	    - name: back
+//	      paths:
+//	        - "Graphics/card_base_back.png"
+//	    - name: front
+//	      paths:
+//	        - "Graphics/CardsBase/card_front_base_pink.png"
+//	        - "Graphics/CardsBase/card_front_base_green.png"
+//	        - "Graphics/CardsBase/card_front_base_blue.png"
+//	        - "Graphics/CardsBase/card_front_base_orange.png"
+//	- name: card patterns
+//	...
+func CreateSpritePacksFromYaml(yamlBytes []byte, fs embed.FS) (map[string]SpritePack, error) {
+	var data struct {
+		Spritepacks []struct {
+			Name      string
+			Sequences []struct {
+				Name  string
+				Paths []string
+			}
+		}
+	}
+	err := yaml.Unmarshal(yamlBytes, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	spritemap := make(map[string]SpritePack, len(data.Spritepacks))
+	for _, spritepack := range data.Spritepacks {
+		finalSequences := make([]ImageSequence, len(spritepack.Sequences))
+		for i, sequence := range spritepack.Sequences {
+			images, err := openAndDecodeMany(fs, sequence.Paths...)
+			if err != nil {
+				return nil, err
+			}
+			createdSequence, err := CreateImageSequenceFromImages(sequence.Name, images...)
+			if err != nil {
+				return nil, err
+			}
+			finalSequences[i] = createdSequence
+		}
+		spritemap[spritepack.Name] = NewSpritePackWithSequences(finalSequences...)
+	}
+	return spritemap, nil
 }
 
 func NewSpritePack() SpritePack {
@@ -108,7 +202,7 @@ func NewSpritePackWithSequences(is ...ImageSequence) SpritePack {
 	return ip
 }
 
-// Return specific sprite in a seqence and frame
+// Return specific sprite in a sequence and frame
 func (sp SpritePack) SpriteAt(sequenceKey string, frame int) *ebiten.Image {
 	return sp.sequences[sequenceKey].Frames[frame]
 }

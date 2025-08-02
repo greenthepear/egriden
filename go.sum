@@ -8,6 +8,8 @@ github.com/go-text/typesetting v0.2.0 h1:fbzsgbmk04KiWtE+c3ZD4W2nmCRzBqrqQOvYlwA
 github.com/go-text/typesetting v0.2.0/go.mod h1:2+owI/sxa73XA581LAzVuEBZ3WEEV2pXeDswCH/3i1I=
 github.com/go-text/typesetting-utils v0.0.0-20240317173224-1986cbe96c66 h1:GUrm65PQPlhFSKjLPGOZNPNxLCybjzjYBzjfoBGaDUY=
 github.com/go-text/typesetting-utils v0.0.0-20240317173224-1986cbe96c66/go.mod h1:DDxDdQEnB70R8owOx3LVpEFvpMK9eeH1o2r0yZhFI9o=
+github.com/goccy/go-yaml v1.18.0 h1:8W7wMFS12Pcas7KU+VVkaiCng+kG8QiFeFwzFb+rwuw=
+github.com/goccy/go-yaml v1.18.0/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
 github.com/greenthepear/gunc v1.1.0 h1:q5vC3b8AOrqyyk1TRHzKDPc+nZS8RamtE3B/1rzfOQQ=
 github.com/greenthepear/gunc v1.1.0/go.mod h1:m4OnoIsN/nmyCqj6t4bq6Jut1PeYYiSlnlP613wPq0Q=
 github.com/greenthepear/imggg v0.0.0-20241111085519-7d799ff1f2bb h1:U4RbcTAkLyGqwpR0i+cdP+kWZ+1Btp21WRjig1ZaI2k=
