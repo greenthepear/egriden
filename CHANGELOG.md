@@ -2,7 +2,7 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
-## v0.3.0 - WIP
+## v0.3.0 - 2025-08-03
 - GridLayer cells can now be **rectangles** of any side lengths, not only squares.
 - Added **padding** which creates gaps between cells.
     - Added `examples/non-square-grid` example to showcase the above changes.
@@ -12,7 +12,7 @@
 - Added **neighbor** utilities to easily get slices/sets of neighboring cells: [`(Cell).GetNeighbors`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighbors), [`(Cell).GetNeighborsFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsFunc), [`(Cell).GetNeighborsSet`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsSet), [`(Cell).GetNeighborsSetFunc`](https://pkg.go.dev/github.com/greenthepear/egriden#Cell.GetNeighborsSetFunc). Also contains predefined neighborhoods.
 - Made multiple changes for initializing and managing SpritePacks.
     - Added [`CreateSpritePacksFromYaml`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateSpritePacksFromYaml) which allows for **creating SpritePacks from yaml data and embedded files** (`embed.FS`).
-    - Added [`CreateImageSequenceFromImages`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromImages) to allow making image sequences from image.Image.
+    - Added [`CreateImageSequenceFromImages`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromImages) to allow making image sequences from `image.Image`.
     - Deprecated [`CreateImageSequenceFromFolder`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromFolder), replacing it with a more general [`CreateImageSequenceFromGlob`](https://pkg.go.dev/github.com/greenthepear/egriden#CreateImageSequenceFromGlob).
     - Made the ImageSequence fields (`Name` and `Frames`) public so you can create them however you want, if you don't like the above options.
     - Added [`(SpritePack).FrameAt`](https://pkg.go.dev/github.com/greenthepear/egriden#SpritePack.FrameAt) to quickly get a frame of a specific ImageSequence.
@@ -21,6 +21,7 @@
 - Added [`(*GridLayer).SwapGobjectsAt`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.SwapGobjectsAt) and [`(*GridLayer).SwapGobjectsAtCells`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.SwapGobjectsAtCells) which lets you easily swap objects in grid layers.
 - Replaced most instances of `image.Point` with `imggg.Point`.
 - Added [`(*GridLayer).DebugDrawCheckerBoard`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.DebugDrawCheckerBoard) which draws a checkerboard pattern of the grid's cells for debugging purposes.
+- Updated Ebitengine to v2.8.8.
 - Changed to the Apache License 2.0 to be uniform with Ebitengine.
 - Updated localization files.
 
