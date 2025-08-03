@@ -268,3 +268,32 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	l.internalDeleteAt(fromX, fromY, false)
 	l.AddGobject(o, x, y)
 }
+
+// Swaps objects between two grid positions, if either is empty it will be basically the same as
+// moving the object. Panics if out of bounds.
+func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
+	o1 := l.GobjectAt(x1, y1)
+	o2 := l.GobjectAt(x2, y2)
+
+	if o1 != nil {
+		l.AddGobject(o1, x2, y2)
+		if o2 == nil {
+			l.internalDeleteAt(x1, y1, false)
+		}
+	}
+
+	if o2 != nil {
+		l.AddGobject(o2, x1, y1)
+		if o1 == nil {
+			l.internalDeleteAt(x2, y2, false)
+		}
+	}
+}
+
+// Swaps objects between two cells, if either is empty it will be basically the same as
+// moving the object. Panics if out of bounds.
+func (l *GridLayer) SwapObjectsAtCells(cell1, cell2 Cell) {
+	x1, y1 := cell1.XY()
+	x2, y2 := cell2.XY()
+	l.SwapGobjectsAt(x1, y1, x2, y2)
+}

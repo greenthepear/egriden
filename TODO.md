@@ -8,7 +8,7 @@
     - [x] Use imggg for grid utils
 - [x] Neighbor cell grid utilities
     - [ ] Test recursive functionality and maybe make utilities for it
-- [ ] Add SwapObjects
+- [x] Add SwapObjects
 ## Low priority
 - [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
 - [x] More public Sprite/SpritePack information

@@ -73,6 +73,17 @@ func TestLevelsLayersGobjects(t *testing.T) {
 		t.Errorf("deletion failed: %v", l2l.GobjectAt(0, 0))
 	}
 
+	l2l.AddGobject(NewBaseGobject("swap 0 0", EmptySpritePack()).Build(), 0, 0)
+	l2l.AddGobject(NewBaseGobject("swap 1 1", EmptySpritePack()).Build(), 1, 1)
+	l2l.SwapGobjectsAt(0, 0, 1, 1)
+	if l2l.GobjectAt(0, 0).Name() != "swap 1 1" || l2l.GobjectAt(1, 1).Name() != "swap 0 0" {
+		t.Errorf("SwapGobjectsAt failed, map:\n%v", l2l.mapMat)
+	}
+	l2l.SwapGobjectsAt(0, 0, 0, 1)
+	if l2l.GobjectAt(0, 0) != nil || l2l.GobjectAt(0, 1).Name() != "swap 1 1" {
+		t.Errorf("SwapGobjectsAt failed, map:\n%v", l2l.mapMat)
+	}
+
 	g.NextLevel()
 	if g.Level().Name() != "Default" {
 		t.Errorf("g.NextLevel didn't wrap around (all levels: %v)", g.Levels)
