@@ -118,8 +118,9 @@ func openAndDecodeMany(in embed.FS, paths ...string) ([]image.Image, error) {
 	return r, nil
 }
 
-// Generate a map in which names of SpritePacks point to a built SpritePacs populated with ImageSequences/frames from
-// [embed.FS] `fs` embedded files, based on yaml file data. Requires a specific structure, example of which:
+// Create a map mapping SpritePack names to built SpritePacks, populated with ImageSequences containing frames from files in
+// an [embed.FS], based on YAML data.
+// The YAML requires a specific structure, example of which:
 //
 //	spritepacks:
 //	- name: card bases
