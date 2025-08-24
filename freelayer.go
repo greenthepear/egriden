@@ -26,7 +26,10 @@ type staticFreeLayerOp struct {
 	width, height int
 }
 
-func newFreeLayer(name string, z int, visible bool, staticOptions *staticFreeLayerOp, xOffset, yOffset float64) *FreeLayer {
+func newFreeLayer(
+	name string, z int, visible bool, staticOptions *staticFreeLayerOp,
+	xOffset, yOffset float64) *FreeLayer {
+
 	paramStatic := false
 	var img *ebiten.Image
 	if staticOptions != nil {
@@ -46,7 +49,9 @@ func newFreeLayer(name string, z int, visible bool, staticOptions *staticFreeLay
 }
 
 // Creates a new FreeLayer and returns a pointer to it.
-func (le *BaseLevel) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
+func (le *BaseLevel) CreateFreeLayerOnTop(
+	name string, xOffset, yOffset float64) *FreeLayer {
+
 	z := len(le.freeLayers)
 	newLayer := newFreeLayer(name, z, true, nil, xOffset, yOffset)
 	le.freeLayers = append(le.freeLayers, newLayer)
@@ -120,7 +125,9 @@ func (fl *FreeLayer) Static() bool {
 
 // Shortcut for g.Level().CreateFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
-func (g *EgridenAssets) CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer {
+func (g *EgridenAssets) CreateFreeLayerOnTop(
+	name string, xOffset, yOffset float64) *FreeLayer {
+
 	bl, ok := g.Level().(*BaseLevel)
 	if !ok {
 		panic("Level does not have BaseLevel")
@@ -137,5 +144,6 @@ func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
 	if !ok {
 		panic("Level does not have BaseLevel")
 	}
-	return bl.CreateStaticFreeLayerOnTop(name, imgWidth, imgHeight, xOffset, yOffset)
+	return bl.CreateStaticFreeLayerOnTop(
+		name, imgWidth, imgHeight, xOffset, yOffset)
 }

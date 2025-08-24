@@ -56,11 +56,13 @@ func (c Cell) IsWithinBounds() bool {
 	return c.layerPtr.IsXYwithinBounds(c.XY())
 }
 
-// Returns the layer's grid position corresponding to the given XY on the screen.
+// Returns the layer's grid position corresponding to the given XY on the
+// screen.
 //
-// Will return negative or otherwise out of bounds positions if XY is not within the grid
-// on the screen so either check the screen bounds beforehand or grid bounds afterhand
-// before accessing grid coordinates derived from this function.
+// Will return negative or otherwise out of bounds positions if XY is not within
+// the grid on the screen so either check the screen bounds beforehand or grid
+// bounds afterhand before accessing grid coordinates derived from this
+// function.
 func screenXYtoGrid(l GridLayer, x, y float64) (int, int) {
 	offx := x - l.Anchor.X
 	if offx < 0 {
@@ -76,8 +78,9 @@ func screenXYtoGrid(l GridLayer, x, y float64) (int, int) {
 }
 
 // Returns a cell at the given screen position, taking into account the layer
-// anchor. Ignores padding, gaps are seen here as extensions to the right and bottom of
-// the returned cell. To check for padding use [(*GridLayer).CellAtScreenPosWithPadding].
+// anchor. Ignores padding, gaps are seen here as extensions to the right and
+// bottom of the returned cell. To check for padding use
+// [(*GridLayer).CellAtScreenPosWithPadding].
 func (l *GridLayer) CellAtScreenPos(x, y float64) Cell {
 	foundx, foundy := screenXYtoGrid(*l, x, y)
 	return Cell{
@@ -86,8 +89,8 @@ func (l *GridLayer) CellAtScreenPos(x, y float64) Cell {
 }
 
 // Like [(*GridLayer).CellAtScreenPos] but also returns a bool as true if
-// the point is NOT within a padding gap. Even if it is, the returned cell works like in
-// [(*GridLayer).CellAtScreenPos].
+// the point is NOT within a padding gap. Even if it is, the returned cell works
+// like in [(*GridLayer).CellAtScreenPos].
 func (l *GridLayer) CellAtScreenPosWithPadding(x, y float64) (Cell, bool) {
 	withinx := mod(
 		x-l.Anchor.X, float64(l.cellDimensions.Width)+l.Padding.X)
@@ -138,7 +141,8 @@ func (c Cell) BoundsRectangle() imggg.Rectangle[float64] {
 	}
 }
 
-// Gobject within the cell, simply calls [GridLayer.GobjectAt], so it can be nil.
+// Gobject within the cell, simply calls [GridLayer.GobjectAt],
+// so it can be nil.
 func (c Cell) Gobject() Gobject {
 	return c.Layer().GobjectAt(c.XY())
 }

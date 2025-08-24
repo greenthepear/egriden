@@ -5,18 +5,18 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// For optimization there are a couple of ways a grid layer can be draw depending if it
-// changes frequently (Static or not) and if it has many (Dense) or few (Sparse)
-// gobjects most of the time.
+// For optimization there are a couple of ways a grid layer can be draw
+// depending if it changes frequently (Static or not) and if it has many (Dense)
+// or few (Sparse) gobjects most of the time.
 type DrawMode int
 
 const (
-	//Used for sparcely populated grids, ranges over a map for drawing.
+	// Used for sparcely populated grids, ranges over a map for drawing.
 	Sparse DrawMode = iota
-	//Used for thickly populated grids, ranges over a slice for drawing.
+	// Used for thickly populated grids, ranges over a slice for drawing.
 	Dense
-	//Used for layers that don't get updated often, creates ebiten.Image of the the entire layer.
-	//Can be refreshed with GridLayer.RefreshImage().
+	// Used for layers that don't get updated often, creates ebiten.Image of the
+	// the entire layer. Can be refreshed with GridLayer.RefreshImage().
 	Static
 )
 
@@ -55,13 +55,16 @@ type GridLayer struct {
 }
 
 func newGridLayer(
-	name string, z int, cellDims Dimensions, gridDims Dimensions,
-	drawMode DrawMode, anchor imggg.Point[float64], padding imggg.Point[float64]) *GridLayer {
+	name string, z int,
+	cellDims Dimensions, gridDims Dimensions,
+	drawMode DrawMode,
+	anchor imggg.Point[float64], padding imggg.Point[float64]) *GridLayer {
 
 	var mapMat map[imggg.Point[int]]Gobject = nil
 	var sliceMat [][]Gobject = nil
 	if drawMode == Sparse {
-		mapMat = make(map[imggg.Point[int]]Gobject, gridDims.Width*gridDims.Height)
+		mapMat = make(
+			map[imggg.Point[int]]Gobject, gridDims.Width*gridDims.Height)
 	} else {
 		sliceMat = make([][]Gobject, gridDims.Height)
 		for i := range sliceMat {
@@ -145,8 +148,9 @@ type GridLayerParameters struct {
 	Mode DrawMode
 }
 
-// Creates a grid layer with custom parameters within the level and returns the pointer to it.
-// If you want a simple square grid layer use [(*BaseLevel).CreateSimpleGridLayerOnTop].
+// Creates a grid layer with custom parameters within the level and returns the
+// pointer to it. If you want a simple square grid layer use
+// [(*BaseLevel).CreateSimpleGridLayerOnTop].
 func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
 	return le.addGridLayer(
 		newGridLayer(
@@ -161,7 +165,9 @@ func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameter
 
 // Shorthand for [(*BaseLevel).CreateGridLayerOnTop]
 // for the current level
-func (g *EgridenAssets) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
+func (g *EgridenAssets) CreateGridLayerOnTop(
+	name string, params GridLayerParameters) *GridLayer {
+
 	return g.Level().(*BaseLevel).CreateGridLayerOnTop(name, params)
 }
 

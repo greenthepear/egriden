@@ -21,6 +21,9 @@ func (set *gobjectSet) Add(o Gobject) {
 }
 
 func (set *gobjectSet) Delete(o Gobject) {
-	set.keys = slices.DeleteFunc(set.keys, func(fo Gobject) bool { return fo == o })
+	set.keys = slices.DeleteFunc(set.keys,
+		func(fo Gobject) bool {
+			return fo == o
+		})
 	delete(set.m, o)
 }

@@ -6,8 +6,8 @@ import (
 
 type Steps []imggg.Point[int]
 
-// Like [(Cell).GetNeighbors]. Get a slice of neighboring cells, dictated by the steps slice
-// and whenever the cells return true for checkFunc.
+// Like [(Cell).GetNeighbors]. Get a slice of neighboring cells, dictated by the
+// steps slice and whenever the cells return true for checkFunc.
 func (c Cell) GetNeighborsFunc(
 	steps Steps, includeSelf bool, inbounds bool,
 	checkFunc func(Cell) bool) []Cell {
@@ -31,11 +31,13 @@ func (c Cell) GetNeighborsFunc(
 	return r
 }
 
-// Get a slice of neighboring cells dictated by steps vectors. A step to the left by one
-// would be Pt(-1, 0), a step to the top right by two would be Pt(2, 2) etc.
+// Get a slice of neighboring cells dictated by steps vectors. A step to the
+// left by one would be Pt(-1, 0), a step to the top right by two would be
+// Pt(2, 2) etc.
 //
 // includeSelf will add the origin cell at the first position.
-// If inbounds is true, the method discards any cell that would be out of bounds in the grid.
+// If inbounds is true, the method discards any cell that would be out of bounds
+// in the grid.
 func (c Cell) GetNeighbors(
 	steps []imggg.Point[int], includeSelf bool, inbounds bool) []Cell {
 
@@ -43,7 +45,8 @@ func (c Cell) GetNeighbors(
 		steps, includeSelf, inbounds, func(c Cell) bool { return true })
 }
 
-// Like [(Cell).GetNeighborsFunc] but it returns a "set" - a map of empty structs.
+// Like [(Cell).GetNeighborsFunc] but it returns a "set" - a map of empty
+// structs.
 func (c Cell) GetNeighborsSetFunc(
 	steps []imggg.Point[int], includeSelf bool, inbounds bool,
 	checkFunc func(Cell) bool) map[Cell]struct{} {
@@ -69,7 +72,8 @@ func (c Cell) GetNeighborsSetFunc(
 
 // Like [(Cell).GetNeighbors] but it returns a "set" - a map of empty structs.
 func (c Cell) GetNeighborsSet(
-	steps []imggg.Point[int], includeSelf bool, inbounds bool) map[Cell]struct{} {
+	steps []imggg.Point[int],
+	includeSelf bool, inbounds bool) map[Cell]struct{} {
 
 	return c.GetNeighborsSetFunc(
 		steps, includeSelf, inbounds, func(c Cell) bool { return true })

@@ -51,12 +51,14 @@ func (g *EgridenAssets) NextLevel() {
 	g.CurrentLevelIndex = (g.CurrentLevelIndex + 1) % len(g.Levels)
 }
 
-// Run this while initializing the game, before adding any layers. Creates a level called `Default`
+// Run this while initializing the game, before adding any layers. Creates a
+// level called `Default`
 func (g *EgridenAssets) InitEgridenAssets() {
 	g.AddLevel(NewBaseLevel("Default"))
 }
 
-// UNTESTED! Run all the onUpdate() functions of Gobjects that have them within the current level
+// UNTESTED! Run all the onUpdate() functions of Gobjects that have them within
+// the current level
 func (g *EgridenAssets) RunUpdateScripts() {
 	g.Level().(*BaseLevel).RunUpdateScripts()
 }

@@ -32,17 +32,22 @@ type Gobject interface {
 
 	//Custom scripts
 
-	OnUpdate() func(self Gobject, l Layer)                //Runs during game.RunUpdateScripts() call
-	OnDraw() func(self Gobject, i *ebiten.Image, l Layer) //Runs every game.Draw() call
-	DrawSprite(*ebiten.Image, Layer)                      //Default sprite drawing function
+	//Runs during game.RunUpdateScripts() call
+	OnUpdate() func(self Gobject, l Layer)
+	//Runs every game.Draw() call
+	OnDraw() func(self Gobject, i *ebiten.Image, l Layer)
+	//Default sprite drawing function
+	DrawSprite(*ebiten.Image, Layer)
 
-	//objects are referenced outside of the grid sometimes, if they get deleted from it, these must be called and checked
+	//objects are referenced outside of the grid sometimes, if they get deleted
+	// from it, these must be called and checked
 
 	isMarkedForDeletion() bool
 	markForDeletion()
 }
 
-// The BaseGobject. Use it for simple Gobjects or implement your own Gobject by embedding this struct in your own.
+// The BaseGobject. Use it for simple Gobjects or implement your own Gobject by
+// embedding this struct in your own.
 type BaseGobject struct {
 	name      string
 	gridPos   imggg.Point[int]
@@ -56,7 +61,8 @@ type BaseGobject struct {
 	OnUpdateFunc func(self Gobject, l Layer)
 }
 
-// Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless Gobject that can be added to a layer
+// Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless
+// Gobject that can be added to a layer
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
 	return BaseGobject{name,
 		imggg.Pt[int](0, 0),
@@ -143,8 +149,8 @@ func (o *BaseGobject) SpritePack() SpritePack {
 	return o.sprites
 }
 
-// Set custom ebiten draw options. Remember that tx and ty get translated depending on the grid position
-// and layers offset.
+// Set custom ebiten draw options. Remember that tx and ty get translated
+// depending on the grid position and layers offset.
 func (o *BaseGobject) SetDrawOptions(op *ebiten.DrawImageOptions) {
 	o.sprites.DrawOptions = op
 }
@@ -204,7 +210,8 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 	return l.GobjectAt(x, y) != nil
 }
 
-// Adds Gobject to the layer at x y. Will overwrite the any existing Gobject there.
+// Adds Gobject to the layer at x y.
+// Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	o.setGridPos(x, y)
 
@@ -249,8 +256,8 @@ func (l *GridLayer) DeleteAt(x, y int) {
 }
 
 // Moves Gobject by first finding itself in the layer with its XY coordinates,
-// but will panic if the Gobject in that cell is not the same, so you cannot use this with
-// Gobjects that are not in the layer, obviously.
+// but will panic if the Gobject in that cell is not the same, so you cannot use
+// this with Gobjects that are not in the layer, obviously.
 func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
@@ -269,8 +276,8 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	l.AddGobject(o, x, y)
 }
 
-// Swaps objects between two grid positions, if either is empty it will be basically the same as
-// moving the object. Panics if out of bounds.
+// Swaps objects between two grid positions, if either is empty it will be
+// basically the same as moving the object. Panics if out of bounds.
 func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
 	o1 := l.GobjectAt(x1, y1)
 	o2 := l.GobjectAt(x2, y2)
@@ -290,8 +297,8 @@ func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
 	}
 }
 
-// Swaps objects between two cells, if either is empty it will be basically the same as
-// moving the object. Panics if out of bounds.
+// Swaps objects between two cells, if either is empty it will be basically the
+// same as moving the object. Panics if out of bounds.
 func (l *GridLayer) SwapObjectsAtCells(cell1, cell2 Cell) {
 	x1, y1 := cell1.XY()
 	x2, y2 := cell2.XY()
