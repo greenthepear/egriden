@@ -1,6 +1,8 @@
 package egriden
 
 import (
+	"iter"
+
 	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -111,7 +113,7 @@ func (fl *FreeLayer) DeleteGobject(o Gobject) {
 	if !ok {
 		panic("Gobject does not exist in layer")
 	}
-	o.markForDeletion()
+	o.setMarkForDeletion(true)
 	fl.gobjects.Delete(o)
 }
 
@@ -121,6 +123,18 @@ func (fl *FreeLayer) Z() int {
 
 func (fl *FreeLayer) Static() bool {
 	return fl.static
+}
+
+func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
+	return func(yield func(Gobject) bool) {
+		for _, o := range fl.gobjects.keys {
+			if !o.isMarkedForDeletion() {
+				if !yield(o) {
+					return
+				}
+			}
+		}
+	}
 }
 
 // Shortcut for g.Level().CreateFreeLayerOnTop().

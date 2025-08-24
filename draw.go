@@ -1,20 +1,8 @@
 package egriden
 
 import (
-	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-type Layer interface {
-	// Draw the Gobject's sprite based on the position in the layer and offset
-	DrawSprite(o Gobject, on *ebiten.Image)
-
-	// Draw any ebiten.Image with applied position of the Gobject within the
-	// layer
-	DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image)
-	Static() bool
-	anchor() imggg.Point[float64]
-}
 
 // Returns ebiten.DrawImageOptions of a Gobject's SpritePack applied
 // to the layer

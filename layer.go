@@ -1,9 +1,28 @@
 package egriden
 
 import (
+	"iter"
+
 	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
+
+type Layer interface {
+	// Draw the Gobject's sprite based on the position in the layer and offset
+	DrawSprite(o Gobject, on *ebiten.Image)
+
+	// Draw any ebiten.Image with applied position of the Gobject within the
+	// layer
+	DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image)
+	Static() bool
+	anchor() imggg.Point[float64]
+
+	// Iterator for all Gobjects in a layer.
+	//
+	// In case of a GridLayer in Sparce draw mode it iterates over a map so the
+	// order will be random. Use [GridLayer.AllCells] to avoid this.
+	AllGobjects() iter.Seq[Gobject]
+}
 
 // For optimization there are a couple of ways a grid layer can be draw
 // depending if it changes frequently (Static or not) and if it has many (Dense)
@@ -209,6 +228,29 @@ func (l *GridLayer) CellDimensions() (int, int) {
 // Dimensions of the cell within the grid as a point.
 func (l *GridLayer) CellDimensionsPt() imggg.Point[int] {
 	return imggg.Pt(l.cellDimensions.Width, l.cellDimensions.Height)
+}
+
+func (l GridLayer) AllGobjects() iter.Seq[Gobject] {
+	return func(yield func(Gobject) bool) {
+		if l.mode == Sparse {
+			for _, o := range l.mapMat {
+				if !o.isMarkedForDeletion() {
+					if !yield(o) {
+						return
+					}
+				}
+			}
+		} else {
+			for cell := range l.AllCells() {
+				o := cell.Gobject()
+				if o != nil && !o.isMarkedForDeletion() {
+					if !yield(o) {
+						return
+					}
+				}
+			}
+		}
+	}
 }
 
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.

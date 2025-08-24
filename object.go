@@ -43,7 +43,7 @@ type Gobject interface {
 	// from it, these must be called and checked
 
 	isMarkedForDeletion() bool
-	markForDeletion()
+	setMarkForDeletion(bool)
 }
 
 // The BaseGobject. Use it for simple Gobjects or implement your own Gobject by
@@ -164,8 +164,8 @@ func (o *BaseGobject) isMarkedForDeletion() bool {
 	return o.markedForDeletion
 }
 
-func (o *BaseGobject) markForDeletion() {
-	o.markedForDeletion = true
+func (o *BaseGobject) setMarkForDeletion(to bool) {
+	o.markedForDeletion = to
 }
 
 func (o *BaseGobject) OnDraw() func(Gobject, *ebiten.Image, Layer) {
@@ -210,9 +210,9 @@ func (l GridLayer) IsOccupiedAt(x, y int) bool {
 	return l.GobjectAt(x, y) != nil
 }
 
-// Adds Gobject to the layer at x y.
-// Will overwrite the any existing Gobject there.
-func (l *GridLayer) AddGobject(o Gobject, x, y int) {
+func (l *GridLayer) internalAddGobject(
+	o Gobject, x, y int, markForDeletion bool) {
+
 	o.setGridPos(x, y)
 
 	if o.OnUpdate() != nil {
@@ -221,15 +221,21 @@ func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 
 	if l.mode == Sparse {
 		if l.mapMat[imggg.Pt(x, y)] != nil {
-			l.mapMat[imggg.Pt(x, y)].markForDeletion()
+			l.mapMat[imggg.Pt(x, y)].setMarkForDeletion(markForDeletion)
 		}
 		l.mapMat[imggg.Pt(x, y)] = o
 		return
 	}
 	if l.sliceMat[y][x] != nil {
-		l.sliceMat[y][x].markForDeletion()
+		l.sliceMat[y][x].setMarkForDeletion(markForDeletion)
 	}
 	l.sliceMat[y][x] = o
+}
+
+// Adds Gobject to the layer at x y.
+// Will overwrite the any existing Gobject there.
+func (l *GridLayer) AddGobject(o Gobject, x, y int) {
+	l.internalAddGobject(o, x, y, true)
 }
 
 func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
@@ -239,14 +245,14 @@ func (l *GridLayer) internalDeleteAt(x, y int, markForDeletion bool) {
 
 	if l.mode == Sparse {
 		if l.mapMat[imggg.Pt(x, y)] != nil && markForDeletion {
-			l.mapMat[imggg.Pt(x, y)].markForDeletion()
+			l.mapMat[imggg.Pt(x, y)].setMarkForDeletion(true)
 		}
 		delete(l.mapMat, imggg.Pt(x, y))
 		return
 	}
 
 	if l.sliceMat[y][x] != nil && markForDeletion {
-		l.sliceMat[y][x].markForDeletion()
+		l.sliceMat[y][x].setMarkForDeletion(true)
 	}
 	l.sliceMat[y][x] = nil
 }
@@ -283,14 +289,14 @@ func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
 	o2 := l.GobjectAt(x2, y2)
 
 	if o1 != nil {
-		l.AddGobject(o1, x2, y2)
+		l.internalAddGobject(o1, x2, y2, false)
 		if o2 == nil {
 			l.internalDeleteAt(x1, y1, false)
 		}
 	}
 
 	if o2 != nil {
-		l.AddGobject(o2, x1, y1)
+		l.internalAddGobject(o2, x1, y1, false)
 		if o1 == nil {
 			l.internalDeleteAt(x2, y2, false)
 		}

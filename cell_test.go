@@ -13,6 +13,14 @@ func TestGridUtilities(t *testing.T) {
 	if l1.Anchor.Y != 50 {
 		t.Errorf("Anchor is not 50, instead %v!", l1.Anchor.Y)
 	}
+	cellCount := 0
+	for range l1.AllCells() {
+		cellCount++
+	}
+	if cellCount != 12*6 {
+		t.Errorf("Wrong number of cells from iterator: %v (should be %v)",
+			cellCount, 12*6)
+	}
 
 	// Testing associated cells with the anchor
 	shouldbe := [...]int{-3, -2, -2, -1, -1, 0, 0, 1, 1, 2}

@@ -1,6 +1,9 @@
 # General
 - [ ] Finish gridsweeper example
 - [ ] Built-in imagesequence animation scripting
+- [ ] Add grid layer deletion
+- [ ] Split RunUpdateScripts to be per layer
+- [ ] Add iterators
 
 # For v0.3.0
 ## High priority

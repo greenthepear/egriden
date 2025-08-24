@@ -72,6 +72,14 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	if l2l.IsOccupiedAt(0, 0) {
 		t.Errorf("deletion failed: %v", l2l.GobjectAt(0, 0))
 	}
+	gobjectCount := 0
+	for range l2l.AllGobjects() {
+		gobjectCount++
+	}
+	if gobjectCount != 0 {
+		t.Errorf("wrong number of gobjects from iterator: %v (should be %v)",
+			gobjectCount, 0)
+	}
 
 	l2l.AddGobject(NewBaseGobject("swap 0 0", EmptySpritePack()).Build(), 0, 0)
 	l2l.AddGobject(NewBaseGobject("swap 1 1", EmptySpritePack()).Build(), 1, 1)
@@ -82,6 +90,14 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	l2l.SwapGobjectsAt(0, 0, 0, 1)
 	if l2l.GobjectAt(0, 0) != nil || l2l.GobjectAt(0, 1).Name() != "swap 1 1" {
 		t.Errorf("SwapGobjectsAt failed, map:\n%v", l2l.mapMat)
+	}
+	gobjectCount = 0
+	for range l2l.AllGobjects() {
+		gobjectCount++
+	}
+	if gobjectCount != 2 {
+		t.Errorf("wrong number of gobjects from iterator: %v (should be %v)",
+			gobjectCount, 2)
 	}
 
 	g.NextLevel()

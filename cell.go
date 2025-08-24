@@ -1,6 +1,8 @@
 package egriden
 
 import (
+	"iter"
+
 	"github.com/greenthepear/imggg"
 )
 
@@ -150,4 +152,19 @@ func (c Cell) Gobject() Gobject {
 // Returns whenever the cell is empty or not
 func (c Cell) HasGobject() bool {
 	return c.Gobject() != nil
+}
+
+// Iterator for all cells in a GridLayer, iterates a row at a time, top to
+// bottom left to right.
+func (l GridLayer) AllCells() iter.Seq[Cell] {
+	w, h := l.Dimensions()
+	return func(yield func(Cell) bool) {
+		for hi := range h {
+			for wi := range w {
+				if !yield(l.CellAt(wi, hi)) {
+					return
+				}
+			}
+		}
+	}
 }
