@@ -193,7 +193,7 @@ func NewSpritePack() SpritePack {
 		currentSequenceKey: "",
 
 		visible: true,
-		empty:   true,
+		empty:   false, // TODO: maybe remove empty, its confusing
 
 		DrawOptions: &ebiten.DrawImageOptions{},
 		Offset:      imggg.Point[float64]{},

@@ -2,6 +2,11 @@
 
 **egriden** is not yet stable, hence the v0.x.x and will introduce breaking changes until v1.
 
+## v0.3.1 - 2025-08-25
+- Fixed an issue where [`(*GridLayer).SwapGobjectsAtCells`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.SwapGobjectsAtCells) would erroneously mark Gobjects for deletion.
+- Added iterators: [`(Layer).AllGobjects`](https://pkg.go.dev/github.com/greenthepear/egriden#Layer.AllGobjects), [`(GridLayer).AllCells`](https://pkg.go.dev/github.com/greenthepear/egriden#GridLayer.AllCells). ~~Change was supposed to be for v0.4.0 but whatever.~~
+- Updated localization files.
+
 ## v0.3.0 - 2025-08-03
 - GridLayer cells can now be **rectangles** of any side lengths, not only squares.
 - Added **padding** which creates gaps between cells.
