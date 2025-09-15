@@ -100,6 +100,16 @@ func TestLevelsLayersGobjects(t *testing.T) {
 			gobjectCount, 2)
 	}
 
+	l2l.Clear()
+	gobjectCount = 0
+	for range l2l.AllGobjects() {
+		gobjectCount++
+	}
+	if gobjectCount != 0 {
+		t.Errorf("wrong number of gobjects from iterator after clearing: %v (should be %v)",
+			gobjectCount, 0)
+	}
+
 	g.NextLevel()
 	if g.Level().Name() != "Default" {
 		t.Errorf("g.NextLevel didn't wrap around (all levels: %v)", g.Levels)

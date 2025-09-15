@@ -137,6 +137,13 @@ func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	}
 }
 
+// Delete all gobjects
+func (fl *FreeLayer) Clear() {
+	for o := range fl.AllGobjects() {
+		fl.DeleteGobject(o)
+	}
+}
+
 // Shortcut for g.Level().CreateFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
 func (g *EgridenAssets) CreateFreeLayerOnTop(

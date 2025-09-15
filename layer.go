@@ -8,11 +8,11 @@ import (
 )
 
 type Layer interface {
-	// Draw the Gobject's sprite based on the position in the layer and offset
+	// Draw the Gobject's sprite based on the position in the layer and offset.
 	DrawSprite(o Gobject, on *ebiten.Image)
 
 	// Draw any ebiten.Image with applied position of the Gobject within the
-	// layer
+	// layer.
 	DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image)
 	Static() bool
 	anchor() imggg.Point[float64]
@@ -22,6 +22,9 @@ type Layer interface {
 	// In case of a GridLayer in Sparce draw mode it iterates over a map so the
 	// order will be random. Use [GridLayer.AllCells] to avoid this.
 	AllGobjects() iter.Seq[Gobject]
+
+	// Delete all Gobjects in the layer.
+	Clear()
 }
 
 // For optimization there are a couple of ways a grid layer can be draw
@@ -67,8 +70,7 @@ type GridLayer struct {
 
 	// Anchor is the top left point from which the layer is drawn,
 	// default being (0,0). Can be anywhere, off screen or not.
-	Anchor        imggg.Point[float64]
-	numOfGobjects int
+	Anchor imggg.Point[float64]
 
 	level Level
 }
@@ -101,7 +103,6 @@ func newGridLayer(
 		sliceMat:        sliceMat,
 		staticImage:     nil,
 		Anchor:          anchor,
-		numOfGobjects:   0,
 		Padding:         padding,
 	}
 }
@@ -250,6 +251,13 @@ func (l GridLayer) AllGobjects() iter.Seq[Gobject] {
 				}
 			}
 		}
+	}
+}
+
+// Deletes all gobjects in the layer.
+func (l *GridLayer) Clear() {
+	for o := range l.AllGobjects() {
+		l.DeleteAt(o.GridPos().XY())
 	}
 }
 
