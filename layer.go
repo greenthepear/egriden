@@ -204,6 +204,7 @@ func (le *BaseLevel) ReplaceGridLayerAt(
 		params.Anchor,
 		params.PaddingVector,
 	)
+	le.gridLayers[z].level = le
 	return le.gridLayers[z]
 }
 
