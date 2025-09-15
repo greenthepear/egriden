@@ -80,10 +80,6 @@ func (le *BaseLevel) FreeLayer(z int) *FreeLayer {
 	return le.freeLayers[z]
 }
 
-func (le *BaseLevel) FreeLayers() []*FreeLayer {
-	return le.freeLayers
-}
-
 func (le *FreeLayer) anchor() imggg.Point[float64] {
 	return le.Anchor
 }

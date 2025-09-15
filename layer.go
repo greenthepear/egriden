@@ -169,9 +169,10 @@ type GridLayerParameters struct {
 }
 
 // Creates a grid layer with custom parameters within the level and returns the
-// pointer to it. If you want a simple square grid layer use
-// [(*BaseLevel).CreateSimpleGridLayerOnTop].
-func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer {
+// pointer to it.
+func (le *BaseLevel) CreateGridLayerOnTop(
+	name string, params GridLayerParameters) *GridLayer {
+
 	return le.addGridLayer(
 		newGridLayer(
 			name, 0,
@@ -181,6 +182,29 @@ func (le *BaseLevel) CreateGridLayerOnTop(name string, params GridLayerParameter
 			params.Anchor,
 			params.PaddingVector,
 		))
+}
+
+// Cleares and creates a new gridlayer at specified index.
+//
+// Probably temporary.
+func (le *BaseLevel) ReplaceGridLayerAt(
+	z int, name string, params GridLayerParameters) *GridLayer {
+
+	old := le.GridLayer(z)
+	if old == nil {
+		return nil
+	}
+	old.Clear()
+
+	le.gridLayers[z] = newGridLayer(
+		name, z,
+		params.CellDimensions,
+		params.GridDimensions,
+		params.Mode,
+		params.Anchor,
+		params.PaddingVector,
+	)
+	return le.gridLayers[z]
 }
 
 // Shorthand for [(*BaseLevel).CreateGridLayerOnTop]
@@ -264,10 +288,6 @@ func (l *GridLayer) Clear() {
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.
 func (g EgridenAssets) GridLayer(z int) *GridLayer {
 	return g.Level().GridLayer(z)
-}
-
-func (g EgridenAssets) GridLayers() []*GridLayer {
-	return g.Level().GridLayers()
 }
 
 // Draw all GridLayers of the current Level in their Z order.

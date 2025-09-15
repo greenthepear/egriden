@@ -12,15 +12,15 @@ type Level interface {
 	Index() int
 
 	GridLayer(int) *GridLayer
-	GridLayers() []*GridLayer
 
 	CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer
 	CreateSimpleGridLayerOnTop(
 		name string, squareLength int, width, height int,
 		drawMode DrawMode, XOffset, YOffset float64) *GridLayer
 
+	ReplaceGridLayerAt(z int, name string, param GridLayerParameters) *GridLayer
+
 	FreeLayer(int) *FreeLayer
-	FreeLayers() []*FreeLayer
 
 	CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer
 
@@ -54,36 +54,31 @@ func NewBaseLevel(name string) *BaseLevel {
 	return le
 }
 
-func (le *BaseLevel) Name() string {
+func (le BaseLevel) Name() string {
 	return le.name
 }
 
-func (le *BaseLevel) Index() int {
+func (le BaseLevel) Index() int {
 	return le.index
 }
 
 // Returns a GridLayer at z, returns nil if out of bounds
-func (le *BaseLevel) GridLayer(z int) *GridLayer {
+func (le BaseLevel) GridLayer(z int) *GridLayer {
 	if z >= len(le.gridLayers) || z < 0 {
 		return nil
 	}
 	return le.gridLayers[z]
 }
 
-// Returns slice of all current grid layers
-func (le *BaseLevel) GridLayers() []*GridLayer {
-	return le.gridLayers
-}
-
 // Draws all grid layers according to their Z order
-func (le *BaseLevel) DrawAllGridLayers(on *ebiten.Image) {
+func (le BaseLevel) DrawAllGridLayers(on *ebiten.Image) {
 	for _, l := range le.gridLayers {
 		l.Draw(on)
 	}
 }
 
 // Draws all free layers according to their Z order
-func (le *BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
+func (le BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
 	for _, l := range le.freeLayers {
 		l.Draw(on)
 	}

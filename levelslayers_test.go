@@ -110,6 +110,13 @@ func TestLevelsLayersGobjects(t *testing.T) {
 			gobjectCount, 0)
 	}
 
+	l2lReplaced := g.Level().
+		ReplaceGridLayerAt(0, "Replaced layer", GridLayerParameters{})
+
+	if l2lReplaced == l2l || l2lReplaced.Name != "Replaced layer" {
+		t.Errorf("layer not replaced properly")
+	}
+
 	g.NextLevel()
 	if g.Level().Name() != "Default" {
 		t.Errorf("g.NextLevel didn't wrap around (all levels: %v)", g.Levels)
