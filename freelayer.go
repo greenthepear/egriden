@@ -124,7 +124,7 @@ func (fl *FreeLayer) Static() bool {
 func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
 		for _, o := range fl.gobjects.keys {
-			if !o.isMarkedForDeletion() {
+			if o != nil && !o.isMarkedForDeletion() {
 				if !yield(o) {
 					return
 				}
