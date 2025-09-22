@@ -145,11 +145,7 @@ func (fl *FreeLayer) Clear() {
 func (g *EgridenAssets) CreateFreeLayerOnTop(
 	name string, xOffset, yOffset float64) *FreeLayer {
 
-	bl, ok := g.Level().(*BaseLevel)
-	if !ok {
-		panic("Level does not have BaseLevel")
-	}
-	return bl.CreateFreeLayerOnTop(name, xOffset, yOffset)
+	return g.Level().CreateFreeLayerOnTop(name, xOffset, yOffset)
 }
 
 // Shortcut for g.Level().CreateStaticFreeLayerOnTop().
@@ -157,10 +153,6 @@ func (g *EgridenAssets) CreateFreeLayerOnTop(
 func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
 	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
 
-	bl, ok := g.Level().(*BaseLevel)
-	if !ok {
-		panic("Level does not have BaseLevel")
-	}
-	return bl.CreateStaticFreeLayerOnTop(
+	return g.Level().CreateStaticFreeLayerOnTop(
 		name, imgWidth, imgHeight, xOffset, yOffset)
 }

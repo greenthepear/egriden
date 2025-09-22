@@ -139,7 +139,7 @@ func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 	)
 }
 
-// Shorthand for [(*BaseLevel).CreateSimpleGridLayerOnTop]
+// Shorthand for [Level.CreateSimpleGridLayerOnTop]
 // for the current level/
 //
 // Deprecated: Just use CreateGridLayerOnTop.
@@ -147,11 +147,11 @@ func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
 	name string, squareLength int, width, height int,
 	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
 
-	return g.Level().(*BaseLevel).CreateSimpleGridLayerOnTop(
+	return g.Level().CreateSimpleGridLayerOnTop(
 		name, squareLength, width, height, drawMode, XOffset, YOffset)
 }
 
-// Parameters for [(*BaseLevel).CreateGridLayerOnTop].
+// Parameters for [Level.CreateGridLayerOnTop].
 type GridLayerParameters struct {
 	// Width and height of the layer's grid
 	GridDimensions Dimensions
@@ -208,12 +208,12 @@ func (le *BaseLevel) ReplaceGridLayerAt(
 	return le.gridLayers[z]
 }
 
-// Shorthand for [(*BaseLevel).CreateGridLayerOnTop]
+// Shorthand for [Level.CreateGridLayerOnTop]
 // for the current level
 func (g *EgridenAssets) CreateGridLayerOnTop(
 	name string, params GridLayerParameters) *GridLayer {
 
-	return g.Level().(*BaseLevel).CreateGridLayerOnTop(name, params)
+	return g.Level().CreateGridLayerOnTop(name, params)
 }
 
 // False visibility disables drawing both the Sprites and custom draw scripts
@@ -293,10 +293,10 @@ func (g EgridenAssets) GridLayer(z int) *GridLayer {
 
 // Draw all GridLayers of the current Level in their Z order.
 func (g EgridenAssets) DrawAllGridLayers(on *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllGridLayers(on)
+	g.Level().DrawAllGridLayers(on)
 }
 
 // Draw all free layers of the current Level in their Z order.
 func (g EgridenAssets) DrawAllFreeLayers(on *ebiten.Image) {
-	g.Level().(*BaseLevel).DrawAllFreeLayers(on)
+	g.Level().DrawAllFreeLayers(on)
 }

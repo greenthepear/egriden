@@ -24,7 +24,17 @@ type Level interface {
 
 	CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer
 
+	DrawAllGridLayers(*ebiten.Image)
+	DrawAllFreeLayers(*ebiten.Image)
+
+	RunUpdateScripts()
+
+	CreateStaticFreeLayerOnTop(
+		name string, imgWidth, imgHeight int,
+		xOffset, yOffset float64) *FreeLayer
+
 	addGobjectWithOnUpdate(o Gobject, l Layer)
+	setIndex(int)
 }
 
 type gobjectWithLayer struct {
@@ -46,6 +56,10 @@ type BaseLevel struct {
 func (le *BaseLevel) Init() {
 	le.gridLayers = make([]*GridLayer, 0)
 	le.gobjectsWithUpdateScripts = make([]gobjectWithLayer, 0)
+}
+
+func (le *BaseLevel) setIndex(i int) {
+	le.index = i
 }
 
 func NewBaseLevel(name string) *BaseLevel {

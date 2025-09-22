@@ -28,7 +28,7 @@ func (g *EgridenAssets) LevelByName(name string) Level {
 func (g *EgridenAssets) AddLevel(le Level) Level {
 	g.Levels = append(g.Levels, le)
 	idx := len(g.Levels) - 1
-	le.(*BaseLevel).index = idx
+	le.setIndex(idx)
 	return g.Levels[idx]
 }
 
@@ -60,5 +60,5 @@ func (g *EgridenAssets) InitEgridenAssets() {
 // UNTESTED! Run all the onUpdate() functions of Gobjects that have them within
 // the current level
 func (g *EgridenAssets) RunUpdateScripts() {
-	g.Level().(*BaseLevel).RunUpdateScripts()
+	g.Level().RunUpdateScripts()
 }
