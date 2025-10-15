@@ -29,8 +29,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Update() error {
-	g.Level().GridLayer(0).RunThinkers()
-	g.Level().FreeLayer(0).RunThinkers()
+	for l := range g.Level().AllLayers(true) {
+		l.RunThinkers()
+	}
 	return nil
 }
 

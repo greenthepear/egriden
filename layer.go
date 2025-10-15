@@ -24,7 +24,8 @@ type Layer interface {
 	// order will be random. Use [GridLayer.AllCells] to avoid this.
 	AllGobjects() iter.Seq[Gobject]
 
-	// Gobjects which have a non-nil OnUpdateFunc
+	// Run OnUpdateFunc for Gobjects that have it, in order of the Gobjects'
+	// addition to the layer.
 	RunThinkers()
 
 	// Delete all Gobjects in the layer.

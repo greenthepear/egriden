@@ -1,6 +1,8 @@
 package egriden
 
 import (
+	"iter"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -30,29 +32,19 @@ type Level interface {
 		name string, imgWidth, imgHeight int,
 		xOffset, yOffset float64) *FreeLayer
 
-	addGobjectWithOnUpdate(o Gobject, l Layer)
-	setIndex(int)
-}
+	AllGridLayers() iter.Seq2[int, *GridLayer]
+	AllFreeLayers() iter.Seq2[int, *FreeLayer]
+	AllLayers(gridLayersFirst bool) iter.Seq[Layer]
 
-type gobjectWithLayer struct {
-	o Gobject
-	l Layer
+	setIndex(int)
 }
 
 type BaseLevel struct {
 	name  string
 	index int
 
-	gridLayers                []*GridLayer
-	gobjectsWithUpdateScripts []gobjectWithLayer
-
+	gridLayers []*GridLayer
 	freeLayers []*FreeLayer
-}
-
-// Initialize by creating slices for layers
-func (le *BaseLevel) Init() {
-	le.gridLayers = make([]*GridLayer, 0)
-	le.gobjectsWithUpdateScripts = make([]gobjectWithLayer, 0)
 }
 
 func (le *BaseLevel) setIndex(i int) {
@@ -61,7 +53,6 @@ func (le *BaseLevel) setIndex(i int) {
 
 func NewBaseLevel(name string) *BaseLevel {
 	le := &BaseLevel{name: name}
-	le.Init()
 	return le
 }
 
@@ -81,21 +72,64 @@ func (le BaseLevel) GridLayer(z int) *GridLayer {
 	return le.gridLayers[z]
 }
 
+func (le BaseLevel) AllGridLayers() iter.Seq2[int, *GridLayer] {
+	return func(yield func(int, *GridLayer) bool) {
+		for z, l := range le.gridLayers {
+			if !yield(z, l) {
+				return
+			}
+		}
+	}
+}
+
+func (le BaseLevel) AllFreeLayers() iter.Seq2[int, *FreeLayer] {
+	return func(yield func(int, *FreeLayer) bool) {
+		for z, l := range le.freeLayers {
+			if !yield(z, l) {
+				return
+			}
+		}
+	}
+}
+
+func (le BaseLevel) AllLayers(gridLayersFirst bool) iter.Seq[Layer] {
+	return func(yield func(Layer) bool) {
+		if gridLayersFirst {
+			for _, gl := range le.AllGridLayers() {
+				if !yield(gl) {
+					return
+				}
+			}
+			for _, fl := range le.AllFreeLayers() {
+				if !yield(fl) {
+					return
+				}
+			}
+		} else {
+			for _, fl := range le.AllFreeLayers() {
+				if !yield(fl) {
+					return
+				}
+			}
+			for _, gl := range le.AllGridLayers() {
+				if !yield(gl) {
+					return
+				}
+			}
+		}
+	}
+}
+
 // Draws all grid layers according to their Z order
 func (le BaseLevel) DrawAllGridLayers(on *ebiten.Image) {
-	for _, l := range le.gridLayers {
+	for _, l := range le.AllGridLayers() {
 		l.Draw(on)
 	}
 }
 
 // Draws all free layers according to their Z order
 func (le BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
-	for _, l := range le.freeLayers {
+	for _, l := range le.AllFreeLayers() {
 		l.Draw(on)
 	}
-}
-
-func (le *BaseLevel) addGobjectWithOnUpdate(o Gobject, l Layer) {
-	le.gobjectsWithUpdateScripts =
-		append(le.gobjectsWithUpdateScripts, gobjectWithLayer{o, l})
 }
