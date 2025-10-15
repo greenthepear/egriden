@@ -111,12 +111,16 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 }
 
 func (fl FreeLayer) internalDraw(on *ebiten.Image) {
-	for _, k := range fl.gobjects.keys {
-		if k.OnDraw() != nil {
-			k.OnDraw()(k, on, &fl)
+	for e := fl.gobjects.Front(); e != nil; e = e.Next() {
+		o, ok := e.Value.(Gobject)
+		if !ok {
+			panic("list element isn't a Gobject")
+		}
+		if o.OnDraw() != nil {
+			o.OnDraw()(o, on, &fl)
 			continue
 		}
-		k.DrawSprite(on, &fl)
+		o.DrawSprite(on, &fl)
 	}
 }
 

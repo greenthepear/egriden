@@ -1,6 +1,7 @@
 package egriden
 
 import (
+	"container/list"
 	"fmt"
 
 	"github.com/greenthepear/imggg"
@@ -44,6 +45,9 @@ type Gobject interface {
 
 	isMarkedForDeletion() bool
 	setMarkForDeletion(bool)
+
+	listElement() *list.Element
+	setListElement(*list.Element)
 }
 
 // The BaseGobject. Use it for simple Gobjects or implement your own Gobject by
@@ -59,6 +63,8 @@ type BaseGobject struct {
 
 	OnDrawFunc   func(self Gobject, i *ebiten.Image, l Layer)
 	OnUpdateFunc func(self Gobject, l Layer)
+
+	listElem *list.Element
 }
 
 // Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless
@@ -66,7 +72,7 @@ type BaseGobject struct {
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
 	return BaseGobject{name,
 		imggg.Pt[int](0, 0),
-		imggg.Pt[float64](0, 0), sprites, false, nil, nil}
+		imggg.Pt[float64](0, 0), sprites, false, nil, nil, nil}
 }
 
 func (o *BaseGobject) Name() string {
@@ -179,6 +185,14 @@ func (o *BaseGobject) OnUpdate() func(Gobject, Layer) {
 // Default function for drawing the sprite in the grid.
 func (o *BaseGobject) DrawSprite(on *ebiten.Image, l Layer) {
 	l.DrawSprite(o, on)
+}
+
+func (o BaseGobject) listElement() *list.Element {
+	return o.listElem
+}
+
+func (o *BaseGobject) setListElement(e *list.Element) {
+	o.listElem = e
 }
 
 // Makes a copy of the Gobject.

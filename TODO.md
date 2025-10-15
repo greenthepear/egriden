@@ -1,7 +1,7 @@
 - [ ] Finish gridsweeper example
 - [ ] Add grid layer deletion
 - [ ] Split RunUpdateScripts to be per layer
-- [ ] Unbind layers from levels?
+- [ ] Unbind layers from levels
 - [ ] Add grid layer draw limiter bounds
 - [ ] Built-in imagesequence animation scripting
 - [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares
@@ -9,3 +9,4 @@
 - [x] Add iterators
 - [ ] Add aseprite file support
 - [ ] Add tilemap support
+- [x] Use linked lists for free layers gobjects

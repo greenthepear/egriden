@@ -3,6 +3,8 @@ package egriden
 import (
 	"iter"
 
+	"container/list"
+
 	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -13,7 +15,7 @@ type FreeLayer struct {
 	Name string
 	z    int
 
-	gobjects gobjectSet
+	gobjects *list.List
 
 	Visible     bool
 	static      bool
@@ -44,7 +46,7 @@ func newFreeLayer(
 		z:           z,
 		Visible:     visible,
 		static:      paramStatic,
-		gobjects:    newGobjectSet(),
+		gobjects:    list.New(),
 		staticImage: img,
 		Anchor:      imggg.Pt(xOffset, yOffset),
 	}
@@ -72,7 +74,7 @@ func (le *BaseLevel) CreateStaticFreeLayerOnTop(
 	return le.freeLayers[z]
 }
 
-// Retruns FreeLayer at given z layer, returns nil if out of bounds
+// FreeLayer at given z layer, returns nil if out of bounds
 func (le *BaseLevel) FreeLayer(z int) *FreeLayer {
 	if z >= len(le.freeLayers) || z < 0 {
 		return nil
@@ -93,24 +95,17 @@ func (fl *FreeLayer) AddGobject(o Gobject, x, y float64) {
 	if o.OnUpdate() != nil {
 		fl.level.addGobjectWithOnUpdate(o, fl)
 	}
-	fl.gobjects.Add(o)
+	e := fl.gobjects.PushBack(o)
+	o.setListElement(e)
 }
 
 func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y float64) {
-	_, ok := fl.gobjects.m[o]
-	if !ok {
-		panic("Gobject does not exist in layer")
-	}
 	o.setScreenPos(x, y)
 }
 
 func (fl *FreeLayer) DeleteGobject(o Gobject) {
-	_, ok := fl.gobjects.m[o]
-	if !ok {
-		panic("Gobject does not exist in layer")
-	}
 	o.setMarkForDeletion(true)
-	fl.gobjects.Delete(o)
+	fl.gobjects.Remove(o.listElement())
 }
 
 func (fl *FreeLayer) Z() int {
@@ -123,7 +118,11 @@ func (fl *FreeLayer) Static() bool {
 
 func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
-		for _, o := range fl.gobjects.keys {
+		for e := fl.gobjects.Front(); e != nil; e = e.Next() {
+			o, ok := e.Value.(Gobject)
+			if !ok {
+				panic("list element isn't a Gobject")
+			}
 			if o != nil && !o.isMarkedForDeletion() {
 				if !yield(o) {
 					return

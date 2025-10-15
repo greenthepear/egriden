@@ -24,9 +24,52 @@ func TestFreeLayers(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	zero := 0
+	updateFuncTestCounter := &zero
 	o := NewBaseGobject(
 		"tester", NewSpritePackWithSequence(seq))
+	o.OnUpdateFunc = func(self Gobject, l Layer) {
+		*updateFuncTestCounter += 1
+	}
 	fl1.AddGobject(
 		o.Build(),
 		5, 5)
+	specificGobject := o.Build()
+	fl1.AddGobject(
+		specificGobject,
+		12, 15)
+	gobjectCount := 0
+
+	for range fl1.AllGobjects() {
+		gobjectCount++
+	}
+
+	if gobjectCount != 2 {
+		t.Errorf("not enough gobjects")
+	}
+
+	fl1.level.RunUpdateScripts()
+	if *updateFuncTestCounter != 2 {
+		t.Errorf(
+			"gobject update scripts didn't update counter correctly, value: %d",
+			*updateFuncTestCounter)
+	}
+
+	fl1.DeleteGobject(specificGobject)
+
+	gobjectCount = 0
+	for range fl1.AllGobjects() {
+		gobjectCount++
+	}
+	if gobjectCount != 1 {
+		t.Errorf("too many gobjects")
+	}
+
+	fl1.level.RunUpdateScripts()
+	if *updateFuncTestCounter != 3 {
+		t.Errorf(
+			"gobject update scripts didn't update counter correctly, value: %d",
+			*updateFuncTestCounter)
+	}
 }
