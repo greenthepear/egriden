@@ -49,7 +49,7 @@ func TestFreeLayers(t *testing.T) {
 		t.Errorf("not enough gobjects")
 	}
 
-	fl1.level.RunUpdateScripts()
+	fl1.RunThinkers()
 	if *updateFuncTestCounter != 2 {
 		t.Errorf(
 			"gobject update scripts didn't update counter correctly, value: %d",
@@ -66,7 +66,14 @@ func TestFreeLayers(t *testing.T) {
 		t.Errorf("too many gobjects")
 	}
 
-	fl1.level.RunUpdateScripts()
+	fl1.RunThinkers()
+	if *updateFuncTestCounter != 3 {
+		t.Errorf(
+			"gobject update scripts didn't update counter correctly, value: %d",
+			*updateFuncTestCounter)
+	}
+	fl1.Clear()
+	fl1.RunThinkers()
 	if *updateFuncTestCounter != 3 {
 		t.Errorf(
 			"gobject update scripts didn't update counter correctly, value: %d",

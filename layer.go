@@ -1,6 +1,7 @@
 package egriden
 
 import (
+	"container/list"
 	"iter"
 
 	"github.com/greenthepear/imggg"
@@ -19,9 +20,12 @@ type Layer interface {
 
 	// Iterator for all Gobjects in a layer.
 	//
-	// In case of a GridLayer in Sparce draw mode it iterates over a map so the
+	// In case of a GridLayer in Sparse draw mode it iterates over a map so the
 	// order will be random. Use [GridLayer.AllCells] to avoid this.
 	AllGobjects() iter.Seq[Gobject]
+
+	// Gobjects which have a non-nil OnUpdateFunc
+	RunThinkers()
 
 	// Delete all Gobjects in the layer.
 	Clear()
@@ -72,7 +76,7 @@ type GridLayer struct {
 	// default being (0,0). Can be anywhere, off screen or not.
 	Anchor imggg.Point[float64]
 
-	level Level
+	thinkers *list.List
 }
 
 func newGridLayer(
@@ -104,6 +108,7 @@ func newGridLayer(
 		staticImage:     nil,
 		Anchor:          anchor,
 		Padding:         padding,
+		thinkers:        list.New(),
 	}
 }
 
@@ -115,7 +120,6 @@ func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
 	ln := len(le.gridLayers)
 	l.z = ln
 	le.gridLayers = append(le.gridLayers, l)
-	l.level = le
 	return le.gridLayers[ln]
 }
 
@@ -184,7 +188,7 @@ func (le *BaseLevel) CreateGridLayerOnTop(
 		))
 }
 
-// Cleares and creates a new gridlayer at specified index.
+// Clears and creates a new gridlayer at specified index.
 //
 // Probably temporary.
 func (le *BaseLevel) ReplaceGridLayerAt(
@@ -204,7 +208,6 @@ func (le *BaseLevel) ReplaceGridLayerAt(
 		params.Anchor,
 		params.PaddingVector,
 	)
-	le.gridLayers[z].level = le
 	return le.gridLayers[z]
 }
 
@@ -283,6 +286,22 @@ func (l GridLayer) AllGobjects() iter.Seq[Gobject] {
 func (l *GridLayer) Clear() {
 	for o := range l.AllGobjects() {
 		l.DeleteAt(o.GridPos().XY())
+	}
+}
+
+func (l *GridLayer) RunThinkers() {
+	var next *list.Element
+	for e := l.thinkers.Front(); e != nil; e = next {
+		next = e.Next()
+		o, ok := e.Value.(Gobject)
+		if !ok {
+			panic("non-gobject in thinker list")
+		}
+		if o.isMarkedForDeletion() {
+			l.thinkers.Remove(e)
+			continue
+		}
+		o.OnUpdate()(o, l)
 	}
 }
 

@@ -22,7 +22,7 @@ type FreeLayer struct {
 	staticImage *ebiten.Image
 	Anchor      imggg.Point[float64]
 
-	level Level
+	thinkers *list.List
 }
 
 // Options for a static free layer
@@ -49,6 +49,7 @@ func newFreeLayer(
 		gobjects:    list.New(),
 		staticImage: img,
 		Anchor:      imggg.Pt(xOffset, yOffset),
+		thinkers:    list.New(),
 	}
 }
 
@@ -59,7 +60,6 @@ func (le *BaseLevel) CreateFreeLayerOnTop(
 	z := len(le.freeLayers)
 	newLayer := newFreeLayer(name, z, true, nil, xOffset, yOffset)
 	le.freeLayers = append(le.freeLayers, newLayer)
-	newLayer.level = le
 	return le.freeLayers[z]
 }
 
@@ -93,7 +93,7 @@ func (le *FreeLayer) SetVisibility(to bool) {
 func (fl *FreeLayer) AddGobject(o Gobject, x, y float64) {
 	o.setScreenPos(x, y)
 	if o.OnUpdate() != nil {
-		fl.level.addGobjectWithOnUpdate(o, fl)
+		fl.thinkers.PushBack(o)
 	}
 	e := fl.gobjects.PushBack(o)
 	o.setListElement(e)
@@ -116,14 +116,24 @@ func (fl *FreeLayer) Static() bool {
 	return fl.static
 }
 
-func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
+func (fl FreeLayer) gobjectRange() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
 		for e := fl.gobjects.Front(); e != nil; e = e.Next() {
 			o, ok := e.Value.(Gobject)
 			if !ok {
 				panic("list element isn't a Gobject")
 			}
-			if o != nil && !o.isMarkedForDeletion() {
+			if !yield(o) {
+				return
+			}
+		}
+	}
+}
+
+func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
+	return func(yield func(Gobject) bool) {
+		for o := range fl.gobjectRange() {
+			if !o.isMarkedForDeletion() {
 				if !yield(o) {
 					return
 				}
@@ -134,8 +144,25 @@ func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 
 // Delete all gobjects
 func (fl *FreeLayer) Clear() {
-	for o := range fl.AllGobjects() {
-		fl.DeleteGobject(o)
+	for o := range fl.gobjectRange() {
+		o.setMarkForDeletion(true)
+	}
+	fl.gobjects.Init()
+}
+
+func (fl *FreeLayer) RunThinkers() {
+	var next *list.Element
+	for e := fl.thinkers.Front(); e != nil; e = next {
+		next = e.Next()
+		o, ok := e.Value.(Gobject)
+		if !ok {
+			panic("non-gobject in thinker list")
+		}
+		if o.isMarkedForDeletion() {
+			fl.thinkers.Remove(e)
+			continue
+		}
+		o.OnUpdate()(o, fl)
 	}
 }
 

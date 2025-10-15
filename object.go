@@ -230,7 +230,7 @@ func (l *GridLayer) internalAddGobject(
 	o.setGridPos(x, y)
 
 	if o.OnUpdate() != nil {
-		l.level.addGobjectWithOnUpdate(o, l)
+		l.thinkers.PushBack(o)
 	}
 
 	if l.mode == Sparse {

@@ -15,7 +15,8 @@ type Game struct {
 var gopherPack egriden.SpritePack
 
 func init() {
-	seq, err := egriden.CreateImageSequenceFromFolder("gopher", "./Graphics/Gopher")
+	seq, err := egriden.CreateImageSequenceFromGlob(
+		"gopher", "./Graphics/Gopher/*")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +29,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Update() error {
-	g.RunUpdateScripts()
+	g.Level().GridLayer(0).RunThinkers()
+	g.Level().FreeLayer(0).RunThinkers()
 	return nil
 }
 
