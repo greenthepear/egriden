@@ -56,9 +56,3 @@ func (g *EgridenAssets) NextLevel() {
 func (g *EgridenAssets) InitEgridenAssets() {
 	g.AddLevel(NewBaseLevel("Default"))
 }
-
-// UNTESTED! Run all the onUpdate() functions of Gobjects that have them within
-// the current level
-func (g *EgridenAssets) RunUpdateScripts() {
-	g.Level().RunUpdateScripts()
-}

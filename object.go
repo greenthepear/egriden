@@ -33,9 +33,9 @@ type Gobject interface {
 
 	//Custom scripts
 
-	//Runs during game.RunUpdateScripts() call
+	//Runs during (Layer).RunThinkers() call
 	OnUpdate() func(self Gobject, l Layer)
-	//Runs every game.Draw() call
+	//Runs every (Layer).Draw() call
 	OnDraw() func(self Gobject, i *ebiten.Image, l Layer)
 	//Default sprite drawing function
 	DrawSprite(*ebiten.Image, Layer)

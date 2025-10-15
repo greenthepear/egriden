@@ -1,7 +1,7 @@
 - [ ] Finish gridsweeper example
 - [ ] Add grid layer deletion
-- [ ] Split RunUpdateScripts to be per layer
-- [ ] Unbind layers from levels
+- [x] Split RunUpdateScripts to be per layer
+- [x] Unbind layers from levels
 - [ ] Add grid layer draw limiter bounds
 - [ ] Built-in imagesequence animation scripting
 - [ ] "Move towards" system, utility to simplify animating movement of gobjects between squares

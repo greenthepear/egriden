@@ -24,7 +24,7 @@ func (l *GridLayer) DebugDrawCheckerBoard(
 			}
 			rec := l.CellAt(x, y).BoundsRectangle()
 
-			vector.DrawFilledRect(on,
+			vector.FillRect(on,
 				float32(rec.Min.X), float32(rec.Min.Y),
 				float32(rec.Dx()), float32(rec.Dy()),
 				currentColor, false)

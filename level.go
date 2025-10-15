@@ -1,7 +1,6 @@
 package egriden
 
 import (
-	"github.com/greenthepear/gunc"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -26,8 +25,6 @@ type Level interface {
 
 	DrawAllGridLayers(*ebiten.Image)
 	DrawAllFreeLayers(*ebiten.Image)
-
-	RunUpdateScripts()
 
 	CreateStaticFreeLayerOnTop(
 		name string, imgWidth, imgHeight int,
@@ -101,24 +98,4 @@ func (le BaseLevel) DrawAllFreeLayers(on *ebiten.Image) {
 func (le *BaseLevel) addGobjectWithOnUpdate(o Gobject, l Layer) {
 	le.gobjectsWithUpdateScripts =
 		append(le.gobjectsWithUpdateScripts, gobjectWithLayer{o, l})
-}
-
-// UNTESTED! Run all the onUpdate() functions of Gobjects that have them
-func (le *BaseLevel) RunUpdateScripts() {
-	marked := 0
-	for _, elem := range le.gobjectsWithUpdateScripts {
-		if elem.o.isMarkedForDeletion() {
-			marked++
-			continue
-		}
-		elem.o.OnUpdate()(elem.o, elem.l)
-	}
-
-	if marked > 0 {
-		le.gobjectsWithUpdateScripts = gunc.Filter(le.gobjectsWithUpdateScripts,
-			func(ol gobjectWithLayer) bool {
-				return !ol.o.isMarkedForDeletion()
-			})
-
-	}
 }
