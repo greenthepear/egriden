@@ -93,10 +93,9 @@ func (le *FreeLayer) SetVisibility(to bool) {
 func (fl *FreeLayer) AddGobject(o Gobject, x, y float64) {
 	o.setScreenPos(x, y)
 	if o.OnUpdate() != nil {
-		fl.thinkers.PushBack(o)
+		o.setThinkerElement(fl.thinkers.PushBack(o))
 	}
-	e := fl.gobjects.PushBack(o)
-	o.setListElement(e)
+	o.setGobjectElement(fl.gobjects.PushBack(o))
 }
 
 func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y float64) {
@@ -104,8 +103,12 @@ func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y float64) {
 }
 
 func (fl *FreeLayer) DeleteGobject(o Gobject) {
-	o.setMarkForDeletion(true)
-	fl.gobjects.Remove(o.listElement())
+	if o.thinkerElement() != nil {
+		fl.thinkers.Remove(o.thinkerElement())
+		o.setThinkerElement(nil)
+	}
+	fl.gobjects.Remove(o.gobjectElement())
+	o.setThinkerElement(nil)
 }
 
 func (fl *FreeLayer) Z() int {
@@ -133,10 +136,8 @@ func (fl FreeLayer) gobjectRange() iter.Seq[Gobject] {
 func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
 		for o := range fl.gobjectRange() {
-			if !o.isMarkedForDeletion() {
-				if !yield(o) {
-					return
-				}
+			if !yield(o) {
+				return
 			}
 		}
 	}
@@ -144,23 +145,15 @@ func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 
 // Delete all gobjects
 func (fl *FreeLayer) Clear() {
-	for o := range fl.gobjectRange() {
-		o.setMarkForDeletion(true)
-	}
+	fl.thinkers.Init()
 	fl.gobjects.Init()
 }
 
 func (fl *FreeLayer) RunThinkers() {
-	var next *list.Element
-	for e := fl.thinkers.Front(); e != nil; e = next {
-		next = e.Next()
+	for e := fl.thinkers.Front(); e != nil; e = e.Next() {
 		o, ok := e.Value.(Gobject)
 		if !ok {
 			panic("non-gobject in thinker list")
-		}
-		if o.isMarkedForDeletion() {
-			fl.thinkers.Remove(e)
-			continue
 		}
 		o.OnUpdate()(o, fl)
 	}

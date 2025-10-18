@@ -264,16 +264,14 @@ func (l GridLayer) AllGobjects() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
 		if l.mode == Sparse {
 			for _, o := range l.mapMat {
-				if !o.isMarkedForDeletion() {
-					if !yield(o) {
-						return
-					}
+				if !yield(o) {
+					return
 				}
 			}
 		} else {
 			for cell := range l.AllCells() {
 				o := cell.Gobject()
-				if o != nil && !o.isMarkedForDeletion() {
+				if o != nil {
 					if !yield(o) {
 						return
 					}
@@ -297,10 +295,6 @@ func (l *GridLayer) RunThinkers() {
 		o, ok := e.Value.(Gobject)
 		if !ok {
 			panic("non-gobject in thinker list")
-		}
-		if o.isMarkedForDeletion() {
-			l.thinkers.Remove(e)
-			continue
 		}
 		o.OnUpdate()(o, l)
 	}

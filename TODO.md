@@ -1,5 +1,6 @@
 - [ ] Finish gridsweeper example
 - [ ] Add grid layer deletion
+- [ ] NewLayer functions like for levels
 - [x] Split RunUpdateScripts to be per layer
 - [x] Unbind layers from levels
 - [ ] Add grid layer draw limiter bounds
@@ -10,3 +11,4 @@
 - [ ] Add aseprite file support
 - [ ] Add tilemap support
 - [x] Use linked lists for free layers gobjects
+- [ ] OnAddFunc, OnDeleteFunc for Gobjects?

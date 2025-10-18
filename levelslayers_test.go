@@ -64,7 +64,7 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	}
 
 	l2l.MoveGobjectTo(testGobjCopy, 0, 0)
-	if found := l2l.GobjectAt(0, 0); l2l.IsOccupiedAt(0, 1) || found == nil || found.isMarkedForDeletion() {
+	if found := l2l.GobjectAt(0, 0); l2l.IsOccupiedAt(0, 1) || found == nil {
 		t.Errorf("MoveGobjectTo failed\ntarget space is: %v,\nstart space is: %v",
 			l2l.GobjectAt(0, 0), l2l.GobjectAt(0, 1))
 	}
