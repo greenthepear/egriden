@@ -2,6 +2,7 @@ package egriden
 
 import (
 	"container/list"
+	"fmt"
 	"iter"
 
 	"github.com/greenthepear/imggg"
@@ -108,45 +109,6 @@ func newGridLayer(
 	}
 }
 
-func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
-	ln := len(le.gridLayers)
-	l.z = ln
-	le.gridLayers = append(le.gridLayers, l)
-	return le.gridLayers[ln]
-}
-
-// Creates a grid layer with square cells and no padding within the level.
-// Also returns the pointer to it.
-//
-// Deprecated: Just use CreateGridLayerOnTop.
-func (le *BaseLevel) CreateSimpleGridLayerOnTop(
-	name string, squareLength int, width, height int,
-	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
-
-	return le.addGridLayer(
-		newGridLayer(
-			name, 0,
-			Dimensions{squareLength, squareLength},
-			Dimensions{width, height},
-			drawMode,
-			imggg.Pt(XOffset, YOffset),
-			imggg.Pt(0.0, 0.0),
-		),
-	)
-}
-
-// Shorthand for [Level.CreateSimpleGridLayerOnTop]
-// for the current level
-//
-// Deprecated: Just use CreateGridLayerOnTop.
-func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
-	name string, squareLength int, width, height int,
-	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
-
-	return g.Level().CreateSimpleGridLayerOnTop(
-		name, squareLength, width, height, drawMode, XOffset, YOffset)
-}
-
 // Parameters for [Level.CreateGridLayerOnTop].
 type GridLayerParameters struct {
 	// Width and height of the layer's grid
@@ -183,80 +145,6 @@ func NewGridLayer(name string, params GridLayerParameters) *GridLayer {
 		params.Anchor,
 		params.PaddingVector,
 	)
-}
-
-// Add layer on top, return it's Z.
-func (le *BaseLevel) AddGridLayer(l *GridLayer) int {
-	le.addGridLayer(l)
-	return l.z
-}
-
-// Replaces a layer at specified Z. Panics if out of bounds.
-func (le *BaseLevel) ReplaceGridLayerAt(l *GridLayer, z int) {
-	if z >= len(le.gridLayers) {
-		panic("z out of bounds")
-	}
-	l.z = z
-	le.gridLayers[z] = l
-}
-
-// Deletes a layer at specified Z, updates Z of the rest of the layers.
-// Panics if out of bounds.
-func (le *BaseLevel) DeleteGridLayerAt(z int) {
-	if z >= len(le.gridLayers) {
-		panic("z out of bounds")
-	}
-	le.gridLayers = append(le.gridLayers[:z], le.gridLayers[z+1:]...)
-	for zi, l := range le.gridLayers {
-		l.z = zi
-	}
-}
-
-// Creates a grid layer with custom parameters within the level and returns the
-// pointer to it.
-func (le *BaseLevel) CreateGridLayerOnTop(
-	name string, params GridLayerParameters) *GridLayer {
-
-	return le.addGridLayer(NewGridLayer(name, params))
-}
-
-// Clears and creates a new gridlayer at specified index.
-//
-// Probably temporary.
-func (le *BaseLevel) CreateAndReplaceGridLayerAt(
-	z int, name string, params GridLayerParameters) *GridLayer {
-
-	old := le.GridLayer(z)
-	if old == nil {
-		return nil
-	}
-	old.Clear()
-
-	le.gridLayers[z] = newGridLayer(
-		name, z,
-		params.CellDimensions,
-		params.GridDimensions,
-		params.Mode,
-		params.Anchor,
-		params.PaddingVector,
-	)
-	return le.gridLayers[z]
-}
-
-// Shorthand for [Level.CreateGridLayerOnTop]
-// for the current level
-//
-// Deprecated: Use method directly from Level
-func (g *EgridenAssets) CreateGridLayerOnTop(
-	name string, params GridLayerParameters) *GridLayer {
-
-	return g.Level().CreateGridLayerOnTop(name, params)
-}
-
-// False visibility disables drawing both the Sprites and custom draw scripts
-// of all Gobjects.
-func (l *GridLayer) SetVisibility(to bool) {
-	l.Visible = to
 }
 
 // Returns the Z level
@@ -334,23 +222,124 @@ func (l *GridLayer) RunThinkers() {
 	}
 }
 
-// Returns a GridLayer at z in the current Level, returns nil if out of bounds.
-//
-// Deprecated: Use method directly from Level
-func (g EgridenAssets) GridLayer(z int) *GridLayer {
-	return g.Level().GridLayer(z)
+// Returns Gobject at x y, nil if empty. Panics if out of bounds.
+func (l GridLayer) GobjectAt(x, y int) Gobject {
+	if !l.IsXYwithinBounds(x, y) {
+		panic(fmt.Sprintf("GobjectAt() panic! (%d , %d) Out of bounds.", x, y))
+	}
+	if l.mode == Sparse {
+		return l.mapMat[imggg.Point[int]{X: x, Y: y}]
+	}
+	return l.sliceMat[y][x]
 }
 
-// Draw all GridLayers of the current Level in their Z order.
-//
-// Deprecated: Use method directly from Level
-func (g EgridenAssets) DrawAllGridLayers(on *ebiten.Image) {
-	g.Level().DrawAllGridLayers(on)
+func (l GridLayer) IsOccupiedAt(x, y int) bool {
+	return l.GobjectAt(x, y) != nil
 }
 
-// Draw all free layers of the current Level in their Z order.
+func (l *GridLayer) internalAddGobject(
+	o Gobject, x, y int) {
+
+	o.setGridPos(x, y)
+
+	if o.OnUpdate() != nil {
+		o.setThinkerElement(l.thinkers.PushBack(o))
+	}
+
+	if l.mode == Sparse {
+		l.mapMat[imggg.Pt(x, y)] = o
+		return
+	}
+	l.sliceMat[y][x] = o
+}
+
+// Adds Gobject to the layer at x y.
+// Will overwrite the any existing Gobject there.
+func (l *GridLayer) AddGobject(o Gobject, x, y int) {
+	l.internalAddGobject(o, x, y)
+
+	if o.OnAdd() != nil {
+		o.OnAdd()(o, l)
+	}
+}
+
+func (l *GridLayer) internalDeleteAt(x, y int,
+	triggerDelete bool, removeFromThinkers bool) {
+
+	if !l.IsXYwithinBounds(x, y) {
+		panic("not within layer bounds")
+	}
+
+	o := l.GobjectAt(x, y)
+	if o != nil {
+		if removeFromThinkers && o.thinkerElement() != nil {
+			l.thinkers.Remove(o.thinkerElement())
+		}
+		if triggerDelete && o.OnDelete() != nil {
+			o.OnDelete()(o, l)
+		}
+	}
+
+	if l.mode == Sparse {
+		delete(l.mapMat, imggg.Pt(x, y))
+		return
+	}
+
+	l.sliceMat[y][x] = nil
+}
+
+func (l *GridLayer) DeleteAt(x, y int) {
+	l.internalDeleteAt(x, y, true, true)
+}
+
+// Moves Gobject by first finding itself in the layer with its XY coordinates,
+// but will panic if the Gobject in that cell is not the same, so you cannot use
+// this with Gobjects that are not in the layer, obviously.
 //
-// Deprecated: Use method directly from Level
-func (g EgridenAssets) DrawAllFreeLayers(on *ebiten.Image) {
-	g.Level().DrawAllFreeLayers(on)
+// Will override any Gobject.
+func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
+	if !l.IsXYwithinBounds(x, y) {
+		panic("not within layer bounds")
+	}
+	fromX, fromY := o.GridPos().XY()
+	fromGobject := l.GobjectAt(fromX, fromY)
+	if fromGobject != o {
+		panic(fmt.Sprintf(
+			`Gobject '%s' is not the same as in the layer (%p != %p).
+			Are you referencing one from another layer or one that wasn't added yet?`,
+			o.Name(), o, fromGobject,
+		))
+	}
+
+	l.internalDeleteAt(fromX, fromY, false, true)
+	l.AddGobject(o, x, y)
+}
+
+// Swaps objects between two grid positions, if either is empty it will be
+// basically the same as moving the object. Panics if out of bounds.
+func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
+	o1 := l.GobjectAt(x1, y1)
+	o2 := l.GobjectAt(x2, y2)
+
+	if o1 != nil {
+		l.internalAddGobject(o1, x2, y2)
+		if o2 == nil {
+			l.internalDeleteAt(x1, y1, false, false)
+		}
+	}
+
+	if o2 != nil {
+		l.internalAddGobject(o2, x1, y1)
+		if o1 == nil {
+			l.internalDeleteAt(x2, y2, false, false)
+		}
+	}
+}
+
+// Swaps objects between two cells, if either is empty it will be basically the
+// same as moving the object. Panics if out of bounds.
+func (l *GridLayer) SwapObjectsAtCells(cell1, cell2 Cell) {
+	x1, y1 := cell1.XY()
+	x2, y2 := cell2.XY()
+	l.SwapGobjectsAt(x1, y1, x2, y2)
 }

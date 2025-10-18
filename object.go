@@ -81,8 +81,8 @@ type BaseGobject struct {
 	thinkerElem *list.Element // Referenced by thinker list in layers
 }
 
-// Create a new BaseGobject. Use BaseGobject.Build() to create a scriptless
-// Gobject that can be added to a layer
+// Create a new BaseGobject. Use BaseGobject.Build() to create copies for that
+// can be added to layers.
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
 	return BaseGobject{name,
 		imggg.Pt[int](0, 0),
@@ -228,128 +228,4 @@ func (o BaseGobject) Build() Gobject {
 		copy.sprites = EmptySpritePack()
 	}
 	return &copy
-}
-
-/// Layer interactions
-
-// Returns Gobject at x y, nil if empty. Panics if out of bounds.
-func (l GridLayer) GobjectAt(x, y int) Gobject {
-	if !l.IsXYwithinBounds(x, y) {
-		panic(fmt.Sprintf("GobjectAt() panic! (%d , %d) Out of bounds.", x, y))
-	}
-	if l.mode == Sparse {
-		return l.mapMat[imggg.Point[int]{X: x, Y: y}]
-	}
-	return l.sliceMat[y][x]
-}
-
-func (l GridLayer) IsOccupiedAt(x, y int) bool {
-	return l.GobjectAt(x, y) != nil
-}
-
-func (l *GridLayer) internalAddGobject(
-	o Gobject, x, y int) {
-
-	o.setGridPos(x, y)
-
-	if o.OnUpdate() != nil {
-		o.setThinkerElement(l.thinkers.PushBack(o))
-	}
-
-	if l.mode == Sparse {
-		l.mapMat[imggg.Pt(x, y)] = o
-		return
-	}
-	l.sliceMat[y][x] = o
-}
-
-// Adds Gobject to the layer at x y.
-// Will overwrite the any existing Gobject there.
-func (l *GridLayer) AddGobject(o Gobject, x, y int) {
-	l.internalAddGobject(o, x, y)
-
-	if o.OnAdd() != nil {
-		o.OnAdd()(o, l)
-	}
-}
-
-func (l *GridLayer) internalDeleteAt(x, y int,
-	triggerDelete bool, removeFromThinkers bool) {
-
-	if !l.IsXYwithinBounds(x, y) {
-		panic("not within layer bounds")
-	}
-
-	o := l.GobjectAt(x, y)
-	if o != nil {
-		if removeFromThinkers && o.thinkerElement() != nil {
-			l.thinkers.Remove(o.thinkerElement())
-		}
-		if triggerDelete && o.OnDelete() != nil {
-			o.OnDelete()(o, l)
-		}
-	}
-
-	if l.mode == Sparse {
-		delete(l.mapMat, imggg.Pt(x, y))
-		return
-	}
-
-	l.sliceMat[y][x] = nil
-}
-
-func (l *GridLayer) DeleteAt(x, y int) {
-	l.internalDeleteAt(x, y, true, true)
-}
-
-// Moves Gobject by first finding itself in the layer with its XY coordinates,
-// but will panic if the Gobject in that cell is not the same, so you cannot use
-// this with Gobjects that are not in the layer, obviously.
-//
-// Will override any Gobject.
-func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
-	if !l.IsXYwithinBounds(x, y) {
-		panic("not within layer bounds")
-	}
-	fromX, fromY := o.GridPos().XY()
-	fromGobject := l.GobjectAt(fromX, fromY)
-	if fromGobject != o {
-		panic(fmt.Sprintf(
-			`Gobject '%s' is not the same as in the layer (%p != %p).
-			Are you referencing one from another layer or one that wasn't added yet?`,
-			o.Name(), o, fromGobject,
-		))
-	}
-
-	l.internalDeleteAt(fromX, fromY, false, true)
-	l.AddGobject(o, x, y)
-}
-
-// Swaps objects between two grid positions, if either is empty it will be
-// basically the same as moving the object. Panics if out of bounds.
-func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
-	o1 := l.GobjectAt(x1, y1)
-	o2 := l.GobjectAt(x2, y2)
-
-	if o1 != nil {
-		l.internalAddGobject(o1, x2, y2)
-		if o2 == nil {
-			l.internalDeleteAt(x1, y1, false, false)
-		}
-	}
-
-	if o2 != nil {
-		l.internalAddGobject(o2, x1, y1)
-		if o1 == nil {
-			l.internalDeleteAt(x2, y2, false, false)
-		}
-	}
-}
-
-// Swaps objects between two cells, if either is empty it will be basically the
-// same as moving the object. Panics if out of bounds.
-func (l *GridLayer) SwapObjectsAtCells(cell1, cell2 Cell) {
-	x1, y1 := cell1.XY()
-	x2, y2 := cell2.XY()
-	l.SwapGobjectsAt(x1, y1, x2, y2)
 }

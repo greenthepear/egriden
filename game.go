@@ -1,5 +1,10 @@
 package egriden
 
+import (
+	"github.com/greenthepear/imggg"
+	"github.com/hajimehoshi/ebiten/v2"
+)
+
 // Egriden components to be embedded in your Game{} struct.
 type EgridenAssets struct {
 	Levels            []Level
@@ -53,10 +58,66 @@ func (g *EgridenAssets) NextLevel() {
 	g.CurrentLevelIndex = (g.CurrentLevelIndex + 1) % len(g.Levels)
 }
 
+/// Deprecated
+
+// Shorthand for [Level.CreateSimpleGridLayerOnTop]
+// for the current level
+//
+// Deprecated: Just use CreateGridLayerOnTop.
+func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
+	name string, squareLength int, width, height int,
+	drawMode DrawMode, XOffset, YOffset float64) *GridLayer {
+
+	return g.Level().CreateSimpleGridLayerOnTop(
+		name, squareLength, width, height, drawMode, XOffset, YOffset)
+}
+
+// Shorthand for [Level.CreateGridLayerOnTop]
+// for the current level
+//
+// Deprecated: Use method directly from Level
+func (g *EgridenAssets) CreateGridLayerOnTop(
+	name string, params GridLayerParameters) *GridLayer {
+
+	return g.Level().CreateGridLayerOnTop(name, params)
+}
+
 // Run this while initializing the game, before adding any layers. Creates a
 // level called `Default`
 //
 // Deprecated: just use g.AddLevel(NewBaseLevel("Default"))
 func (g *EgridenAssets) InitEgridenAssets() {
 	g.AddLevel(NewBaseLevel("Default"))
+}
+
+// Returns a GridLayer at z in the current Level, returns nil if out of bounds.
+//
+// Deprecated: Use method directly from Level
+func (g EgridenAssets) GridLayer(z int) *GridLayer {
+	return g.Level().GridLayer(z)
+}
+
+// Draw all GridLayers of the current Level in their Z order.
+//
+// Deprecated: Use method directly from Level
+func (g EgridenAssets) DrawAllGridLayers(on *ebiten.Image) {
+	g.Level().DrawAllGridLayers(on)
+}
+
+// Draw all free layers of the current Level in their Z order.
+//
+// Deprecated: Use method directly from Level
+func (g EgridenAssets) DrawAllFreeLayers(on *ebiten.Image) {
+	g.Level().DrawAllFreeLayers(on)
+}
+
+// Shortcut for g.Level().CreateFreeLayerOnTop().
+// Level implementation must have BaseLevel component.
+//
+// Deprecated: Use method directly from Level
+func (g *EgridenAssets) CreateFreeLayerOnTop(
+	name string, xOffset, yOffset float64) *FreeLayer {
+
+	return g.Level().CreateFreeLayerOnTop(name,
+		imggg.Point[float64]{X: xOffset, Y: yOffset})
 }
