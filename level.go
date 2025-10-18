@@ -28,10 +28,6 @@ type Level interface {
 	DrawAllGridLayers(*ebiten.Image)
 	DrawAllFreeLayers(*ebiten.Image)
 
-	CreateStaticFreeLayerOnTop(
-		name string, imgWidth, imgHeight int,
-		xOffset, yOffset float64) *FreeLayer
-
 	AllGridLayers() iter.Seq2[int, *GridLayer]
 	AllFreeLayers() iter.Seq2[int, *FreeLayer]
 	AllLayers(gridLayersFirst bool) iter.Seq[Layer]

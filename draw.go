@@ -10,21 +10,8 @@ func appliedDrawOptionsForPosition(
 	o Gobject, layer Layer) *ebiten.DrawImageOptions {
 
 	copy := *o.SpritePack().DrawOptions
-	r := &copy
-	drawX, drawY := o.ScreenPos(layer).XY()
-
-	// In static layers, the layer anchor offsets are handled in the draw
-	// function itself, so they need to be subtracted here
-	if layer.Static() {
-		xRealign, yRealign := layer.anchor().XY()
-		r.GeoM.Translate(
-			drawX-xRealign, drawY-yRealign)
-	} else {
-		r.GeoM.Translate(
-			drawX, drawY)
-	}
-
-	return r
+	copy.GeoM.Translate(o.ScreenPos(layer).XY())
+	return &copy
 
 }
 
@@ -44,18 +31,6 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 
 		}
 	}
-}
-
-// Refresh image of a static grid layer
-func (l *GridLayer) RefreshImage() {
-	if l.mode != Static {
-		return
-	}
-	img := ebiten.NewImage(
-		l.layerDimensions.Width*l.cellDimensions.Width,
-		l.layerDimensions.Height*l.cellDimensions.Height)
-	l.drawFromSliceMat(img)
-	l.staticImage = img
 }
 
 func (l GridLayer) DrawLikeSprite(
@@ -100,13 +75,8 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 		}
 	case Dense:
 		l.drawFromSliceMat(on)
-	case Static:
-		if l.staticImage == nil {
-			l.RefreshImage()
-		}
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(l.Anchor.X), float64(l.Anchor.Y))
-		on.DrawImage(l.staticImage, op)
+	default:
+		panic("unknown DrawMode")
 	}
 }
 
@@ -129,19 +99,5 @@ func (fl FreeLayer) Draw(on *ebiten.Image) {
 	if !fl.Visible {
 		return
 	}
-	if fl.static {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(fl.Anchor.X), float64(fl.Anchor.Y))
-		on.DrawImage(fl.staticImage, op)
-		return
-	}
 	fl.internalDraw(on)
-}
-
-// Refresh/create image of a static free layer
-func (fl *FreeLayer) RefreshImage() {
-	if !fl.static {
-		return
-	}
-	fl.internalDraw(fl.staticImage)
 }

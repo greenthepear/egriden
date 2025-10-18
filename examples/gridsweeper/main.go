@@ -68,7 +68,7 @@ func main() {
 	g.InitEgridenAssets()
 	offx, offy := 10.0, 30.0
 	lbg := g.CreateSimpleGridLayerOnTop("Background",
-		defGridLen, defGridWidth, defGridHeight, egriden.Static, offx, offy)
+		defGridLen, defGridWidth, defGridHeight, egriden.Dense, offx, offy)
 	lbo := g.CreateSimpleGridLayerOnTop("Bombs",
 		defGridLen, defGridWidth, defGridHeight, egriden.Sparse, offx, offy)
 	lre := g.CreateSimpleGridLayerOnTop("Reveal tiles",

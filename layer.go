@@ -15,8 +15,7 @@ type Layer interface {
 	// Draw any ebiten.Image with applied position of the Gobject within the
 	// layer.
 	DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image)
-	Static() bool
-	anchor() imggg.Point[float64]
+	CurrentAnchor() imggg.Point[float64]
 
 	// Iterator for all Gobjects in a layer.
 	//
@@ -33,18 +32,15 @@ type Layer interface {
 }
 
 // For optimization there are a couple of ways a grid layer can be draw
-// depending if it changes frequently (Static or not) and if it has many (Dense)
-// or few (Sparse) gobjects most of the time.
+// depending on if it has many (Dense) or few (Sparse) gobjects
+// most of the time.
 type DrawMode int
 
 const (
-	// Used for sparcely populated grids, ranges over a map for drawing.
+	// Used for sparsely populated grids, ranges over a map for drawing.
 	Sparse DrawMode = iota
 	// Used for thickly populated grids, ranges over a slice for drawing.
 	Dense
-	// Used for layers that don't get updated often, creates ebiten.Image of the
-	// the entire layer. Can be refreshed with GridLayer.RefreshImage().
-	Static
 )
 
 type Dimensions struct {
@@ -67,11 +63,10 @@ type GridLayer struct {
 	Padding imggg.Point[float64]
 	// If false no sprite will be drawn, nor layers' gobjects draw scripts
 	// executed.
-	Visible     bool
-	mode        DrawMode
-	mapMat      map[imggg.Point[int]]Gobject
-	sliceMat    [][]Gobject
-	staticImage *ebiten.Image
+	Visible  bool
+	mode     DrawMode
+	mapMat   map[imggg.Point[int]]Gobject
+	sliceMat [][]Gobject
 
 	// Anchor is the top left point from which the layer is drawn,
 	// default being (0,0). Can be anywhere, off screen or not.
@@ -106,15 +101,10 @@ func newGridLayer(
 		mode:            drawMode,
 		mapMat:          mapMat,
 		sliceMat:        sliceMat,
-		staticImage:     nil,
 		Anchor:          anchor,
 		Padding:         padding,
 		thinkers:        list.New(),
 	}
-}
-
-func (l *GridLayer) Static() bool {
-	return l.mode == Static
 }
 
 func (le *BaseLevel) addGridLayer(l *GridLayer) *GridLayer {
@@ -233,7 +223,7 @@ func (l *GridLayer) Z() int {
 	return l.z
 }
 
-func (l *GridLayer) anchor() imggg.Point[float64] {
+func (l GridLayer) CurrentAnchor() imggg.Point[float64] {
 	return l.Anchor
 }
 

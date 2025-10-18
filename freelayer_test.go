@@ -15,9 +15,6 @@ func TestFreeLayers(t *testing.T) {
 		t.Errorf("Offsets didn't get applied! (%v, %v) != (%v, %v)",
 			testoffx, testoffy, offx, offy)
 	}
-	if fl1.static {
-		t.Errorf("Layer shouldn't be static!")
-	}
 	seq, err := CreateImageSequenceFromFolder(
 		"unrev", "./examples/gridsweeper/Graphics/unrevealed")
 

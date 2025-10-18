@@ -6,7 +6,6 @@ import (
 	"container/list"
 
 	"github.com/greenthepear/imggg"
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // A free layer is a layer where the default drawing position of Gobjects is only
@@ -17,39 +16,23 @@ type FreeLayer struct {
 
 	gobjects *list.List
 
-	Visible     bool
-	static      bool
-	staticImage *ebiten.Image
-	Anchor      imggg.Point[float64]
+	Visible bool
+	Anchor  imggg.Point[float64]
 
 	thinkers *list.List
 }
 
-// Options for a static free layer
-type staticFreeLayerOp struct {
-	width, height int
-}
-
 func newFreeLayer(
-	name string, z int, visible bool, staticOptions *staticFreeLayerOp,
+	name string, z int, visible bool,
 	xOffset, yOffset float64) *FreeLayer {
 
-	paramStatic := false
-	var img *ebiten.Image
-	if staticOptions != nil {
-		paramStatic = true
-		img = ebiten.NewImage(staticOptions.width, staticOptions.height)
-	}
-
 	return &FreeLayer{
-		Name:        name,
-		z:           z,
-		Visible:     visible,
-		static:      paramStatic,
-		gobjects:    list.New(),
-		staticImage: img,
-		Anchor:      imggg.Pt(xOffset, yOffset),
-		thinkers:    list.New(),
+		Name:     name,
+		z:        z,
+		Visible:  visible,
+		gobjects: list.New(),
+		Anchor:   imggg.Pt(xOffset, yOffset),
+		thinkers: list.New(),
 	}
 }
 
@@ -58,19 +41,8 @@ func (le *BaseLevel) CreateFreeLayerOnTop(
 	name string, xOffset, yOffset float64) *FreeLayer {
 
 	z := len(le.freeLayers)
-	newLayer := newFreeLayer(name, z, true, nil, xOffset, yOffset)
+	newLayer := newFreeLayer(name, z, true, xOffset, yOffset)
 	le.freeLayers = append(le.freeLayers, newLayer)
-	return le.freeLayers[z]
-}
-
-// Creates a free layer whose image needs to to be refreshed to be updated.
-// Remember to call Refresh() at least once after populating,
-// otherwise you'll just get an empty image.
-func (le *BaseLevel) CreateStaticFreeLayerOnTop(
-	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
-	z := len(le.freeLayers)
-	le.freeLayers = append(le.freeLayers, newFreeLayer(name, z, true,
-		&staticFreeLayerOp{imgWidth, imgHeight}, xOffset, yOffset))
 	return le.freeLayers[z]
 }
 
@@ -82,7 +54,7 @@ func (le *BaseLevel) FreeLayer(z int) *FreeLayer {
 	return le.freeLayers[z]
 }
 
-func (le *FreeLayer) anchor() imggg.Point[float64] {
+func (le *FreeLayer) CurrentAnchor() imggg.Point[float64] {
 	return le.Anchor
 }
 
@@ -113,10 +85,6 @@ func (fl *FreeLayer) DeleteGobject(o Gobject) {
 
 func (fl *FreeLayer) Z() int {
 	return fl.z
-}
-
-func (fl *FreeLayer) Static() bool {
-	return fl.static
 }
 
 func (fl FreeLayer) gobjectRange() iter.Seq[Gobject] {
@@ -167,15 +135,4 @@ func (g *EgridenAssets) CreateFreeLayerOnTop(
 	name string, xOffset, yOffset float64) *FreeLayer {
 
 	return g.Level().CreateFreeLayerOnTop(name, xOffset, yOffset)
-}
-
-// Shortcut for g.Level().CreateStaticFreeLayerOnTop().
-// Level implementation must have BaseLevel component.
-//
-// Deprecated: Use method directly from Level
-func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
-	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
-
-	return g.Level().CreateStaticFreeLayerOnTop(
-		name, imgWidth, imgHeight, xOffset, yOffset)
 }

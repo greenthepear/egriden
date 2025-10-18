@@ -87,7 +87,7 @@ func (o *BaseGobject) setGridPos(x, y int) {
 // Position on the screen, in a FreeLayer it's just the position, for
 // GridLayer it's the draw anchor.
 func (o *BaseGobject) ScreenPos(layer Layer) imggg.Point[float64] {
-	xoffset, yoffset := layer.anchor().XY()
+	xoffset, yoffset := layer.CurrentAnchor().XY()
 	spriteXoffset, spriteYoffset := o.SpritePack().Offset.XY()
 	switch l := layer.(type) {
 	case *GridLayer:
