@@ -3,6 +3,7 @@ package egriden
 import (
 	"iter"
 
+	"github.com/greenthepear/imggg"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -14,16 +15,25 @@ type Level interface {
 
 	GridLayer(int) *GridLayer
 
+	AddGridLayer(l *GridLayer) int
+	DeleteGridLayerAt(z int)
+	ReplaceGridLayerAt(l *GridLayer, z int)
+
+	AddFreeLayer(l *FreeLayer) int
+	DeleteFreeLayerAt(z int)
+	ReplaceFreeLayerAt(l *FreeLayer, z int)
+
 	CreateGridLayerOnTop(name string, params GridLayerParameters) *GridLayer
 	CreateSimpleGridLayerOnTop(
 		name string, squareLength int, width, height int,
 		drawMode DrawMode, XOffset, YOffset float64) *GridLayer
 
-	ReplaceGridLayerAt(z int, name string, param GridLayerParameters) *GridLayer
+	CreateAndReplaceGridLayerAt(
+		z int, name string, param GridLayerParameters) *GridLayer
 
 	FreeLayer(int) *FreeLayer
 
-	CreateFreeLayerOnTop(name string, xOffset, yOffset float64) *FreeLayer
+	CreateFreeLayerOnTop(name string, anchor imggg.Point[float64]) *FreeLayer
 
 	DrawAllGridLayers(*ebiten.Image)
 	DrawAllFreeLayers(*ebiten.Image)

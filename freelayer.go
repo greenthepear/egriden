@@ -24,24 +24,58 @@ type FreeLayer struct {
 
 func newFreeLayer(
 	name string, z int, visible bool,
-	xOffset, yOffset float64) *FreeLayer {
+	anchor imggg.Point[float64]) *FreeLayer {
 
 	return &FreeLayer{
 		Name:     name,
 		z:        z,
 		Visible:  visible,
 		gobjects: list.New(),
-		Anchor:   imggg.Pt(xOffset, yOffset),
+		Anchor:   anchor,
 		thinkers: list.New(),
+	}
+}
+
+// Creates a new FreeLayer. Before adding to a level, it will have Z of 0.
+func NewFreeLayer(name string, anchor imggg.Point[float64]) *FreeLayer {
+	return newFreeLayer(name, 0, true, anchor)
+}
+
+// Add layer on top, return it's Z.
+func (le *BaseLevel) AddFreeLayer(l *FreeLayer) int {
+	ln := len(le.freeLayers)
+	l.z = ln
+	le.freeLayers = append(le.freeLayers, l)
+	return ln
+}
+
+// Replaces a layer at specified Z. Panics if out of bounds.
+func (le *BaseLevel) ReplaceFreeLayerAt(l *FreeLayer, z int) {
+	if z >= len(le.freeLayers) {
+		panic("z out of bounds")
+	}
+	l.z = z
+	le.freeLayers[z] = l
+}
+
+// Deletes a layer at specified Z, updates Z of the rest of the layers.
+// Panics if out of bounds.
+func (le *BaseLevel) DeleteFreeLayerAt(z int) {
+	if z >= len(le.freeLayers) {
+		panic("z out of bounds")
+	}
+	le.freeLayers = append(le.freeLayers[:z], le.freeLayers[z+1:]...)
+	for zi, l := range le.freeLayers {
+		l.z = zi
 	}
 }
 
 // Creates a new FreeLayer and returns a pointer to it.
 func (le *BaseLevel) CreateFreeLayerOnTop(
-	name string, xOffset, yOffset float64) *FreeLayer {
+	name string, anchor imggg.Point[float64]) *FreeLayer {
 
 	z := len(le.freeLayers)
-	newLayer := newFreeLayer(name, z, true, xOffset, yOffset)
+	newLayer := newFreeLayer(name, z, true, anchor)
 	le.freeLayers = append(le.freeLayers, newLayer)
 	return le.freeLayers[z]
 }
@@ -134,5 +168,6 @@ func (fl *FreeLayer) RunThinkers() {
 func (g *EgridenAssets) CreateFreeLayerOnTop(
 	name string, xOffset, yOffset float64) *FreeLayer {
 
-	return g.Level().CreateFreeLayerOnTop(name, xOffset, yOffset)
+	return g.Level().CreateFreeLayerOnTop(name,
+		imggg.Point[float64]{X: xOffset, Y: yOffset})
 }

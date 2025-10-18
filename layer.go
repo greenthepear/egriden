@@ -163,26 +163,66 @@ type GridLayerParameters struct {
 	Mode DrawMode
 }
 
+// Creates a new GridLayer. Before adding to a level, it will have Z of 0.
+//
+// GridDimensions and CellDimensions width and height needs to be bigger than 0,
+// panics if they aren't.
+func NewGridLayer(name string, params GridLayerParameters) *GridLayer {
+	if params.GridDimensions.Width <= 0 || params.GridDimensions.Height <= 0 {
+		panic("GridLayer grid width and height need to be bigger than 0")
+	}
+	if params.CellDimensions.Width <= 0 || params.CellDimensions.Height <= 0 {
+		panic("GridLayer cell width and height need to be bigger than 0")
+	}
+	return newGridLayer(
+		name, 0,
+		params.CellDimensions,
+		params.GridDimensions,
+		params.Mode,
+		params.Anchor,
+		params.PaddingVector,
+	)
+}
+
+// Add layer on top, return it's Z.
+func (le *BaseLevel) AddGridLayer(l *GridLayer) int {
+	le.addGridLayer(l)
+	return l.z
+}
+
+// Replaces a layer at specified Z. Panics if out of bounds.
+func (le *BaseLevel) ReplaceGridLayerAt(l *GridLayer, z int) {
+	if z >= len(le.gridLayers) {
+		panic("z out of bounds")
+	}
+	l.z = z
+	le.gridLayers[z] = l
+}
+
+// Deletes a layer at specified Z, updates Z of the rest of the layers.
+// Panics if out of bounds.
+func (le *BaseLevel) DeleteGridLayerAt(z int) {
+	if z >= len(le.gridLayers) {
+		panic("z out of bounds")
+	}
+	le.gridLayers = append(le.gridLayers[:z], le.gridLayers[z+1:]...)
+	for zi, l := range le.gridLayers {
+		l.z = zi
+	}
+}
+
 // Creates a grid layer with custom parameters within the level and returns the
 // pointer to it.
 func (le *BaseLevel) CreateGridLayerOnTop(
 	name string, params GridLayerParameters) *GridLayer {
 
-	return le.addGridLayer(
-		newGridLayer(
-			name, 0,
-			params.CellDimensions,
-			params.GridDimensions,
-			params.Mode,
-			params.Anchor,
-			params.PaddingVector,
-		))
+	return le.addGridLayer(NewGridLayer(name, params))
 }
 
 // Clears and creates a new gridlayer at specified index.
 //
 // Probably temporary.
-func (le *BaseLevel) ReplaceGridLayerAt(
+func (le *BaseLevel) CreateAndReplaceGridLayerAt(
 	z int, name string, params GridLayerParameters) *GridLayer {
 
 	old := le.GridLayer(z)

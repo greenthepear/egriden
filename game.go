@@ -1,16 +1,18 @@
 package egriden
 
 // Egriden components to be embedded in your Game{} struct.
-//
-// You need to run [InitEgridenAssets()] in the main function before
-// your game starts.
 type EgridenAssets struct {
 	Levels            []Level
 	CurrentLevelIndex int
 }
 
-// Get the current level
+// Get the current level, returns nil if there are no levels. Index starts at
+// 0 so the first level added will be returned if
+// (EgridenAssets).CurrentLevelIndex was not changed
 func (g *EgridenAssets) Level() Level {
+	if g.CurrentLevelIndex >= len(g.Levels) {
+		return nil
+	}
 	return g.Levels[g.CurrentLevelIndex]
 }
 
@@ -53,6 +55,8 @@ func (g *EgridenAssets) NextLevel() {
 
 // Run this while initializing the game, before adding any layers. Creates a
 // level called `Default`
+//
+// Deprecated: just use g.AddLevel(NewBaseLevel("Default"))
 func (g *EgridenAssets) InitEgridenAssets() {
 	g.AddLevel(NewBaseLevel("Default"))
 }

@@ -1,6 +1,6 @@
 - [ ] Finish gridsweeper example
-- [ ] Add grid layer deletion
-- [ ] NewLayer functions like for levels
+- [x] Add grid layer deletion
+- [x] NewLayer functions like for levels
 - [x] Split RunUpdateScripts to be per layer
 - [x] Unbind layers from levels
 - [ ] Add grid layer draw limiter bounds

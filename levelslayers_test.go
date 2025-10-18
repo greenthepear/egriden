@@ -2,6 +2,8 @@ package egriden
 
 import (
 	"testing"
+
+	"github.com/greenthepear/imggg"
 )
 
 func TestLevelsLayersGobjects(t *testing.T) {
@@ -111,7 +113,7 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	}
 
 	l2lReplaced := g.Level().
-		ReplaceGridLayerAt(0, "Replaced layer", GridLayerParameters{})
+		CreateAndReplaceGridLayerAt(0, "Replaced layer", GridLayerParameters{})
 
 	if l2lReplaced == l2l || l2lReplaced.Name != "Replaced layer" {
 		t.Errorf("layer not replaced properly")
@@ -120,5 +122,91 @@ func TestLevelsLayersGobjects(t *testing.T) {
 	g.NextLevel()
 	if g.Level().Name() != "Default" {
 		t.Errorf("g.NextLevel didn't wrap around (all levels: %v)", g.Levels)
+	}
+}
+
+// Test 0.4.0 methods
+func TestLevelsLayerNew(t *testing.T) {
+	g := &EgridenAssets{}
+	if g.Level() != nil {
+		t.Errorf("non-nil where there should be no level")
+	}
+
+	level0 := NewBaseLevel("Level 0")
+	level1 := NewBaseLevel("Level 1")
+
+	g.AddLevel(level0)
+	g.AddLevel(level1)
+	if level0.Index() != 0 || level0.Name() != "Level 0" ||
+		level1.Index() != 1 || level1.Name() != "Level 1" {
+
+		t.Errorf("Levels not properly initialized:\n%v\n%v", level0, level1)
+	}
+
+	if g.Level() != level0 {
+		t.Errorf("Wrong level returned: %v", g.Level())
+	}
+
+	l0 := NewGridLayer("Layer 0", GridLayerParameters{
+		CellDimensions: Dimensions{10, 10},
+		GridDimensions: Dimensions{3, 4},
+		Mode:           Sparse,
+	})
+	l1 := NewGridLayer("Layer 1", GridLayerParameters{
+		CellDimensions: Dimensions{10, 10},
+		GridDimensions: Dimensions{4, 5},
+		Mode:           Sparse,
+	})
+	l0z := level0.AddGridLayer(l0)
+	level0.AddGridLayer(l1)
+	if l0z != 0 {
+		t.Errorf("Wrong z returned: %v", l0z)
+	}
+	if level0.GridLayer(l0z) != l0 {
+		t.Errorf("Layers should be the same: %v != %v",
+			l0, level0.GridLayer(l0z))
+	}
+	level0.DeleteGridLayerAt(l0z)
+	if level0.GridLayer(l0z) == l0 ||
+		level0.GridLayer(l0z) != l1 ||
+		l1.Z() != l0z {
+
+		t.Errorf("Wrong layer after deletion: %v", level0.GridLayer(l0z))
+	}
+
+	freeLayers := []*FreeLayer{
+		NewFreeLayer("Free layer 0", imggg.Point[float64]{}),
+		NewFreeLayer("Free layer 1", imggg.Point[float64]{}),
+		NewFreeLayer("Free layer 2", imggg.Point[float64]{}),
+		NewFreeLayer("Free layer 3", imggg.Point[float64]{}),
+	}
+	rfl0 := NewFreeLayer("Free layer replacement", imggg.Point[float64]{})
+	for _, fl := range freeLayers {
+		level1.AddFreeLayer(fl)
+	}
+	if len(level1.freeLayers) != 4 {
+		t.Errorf("Wrong number of layers: %v", len(level1.freeLayers))
+	}
+	level1.ReplaceFreeLayerAt(rfl0, 1)
+	if level1.FreeLayer(1) != rfl0 ||
+		level1.FreeLayer(1).Name != "Free layer replacement" {
+
+		t.Errorf("Free layer not replaced correctly: %v != %v",
+			level1.FreeLayer(1), rfl0)
+	}
+	if len(level1.freeLayers) != 4 {
+		t.Errorf("Wrong number of layers: %v", len(level1.freeLayers))
+	}
+	level1.DeleteFreeLayerAt(1)
+	if len(level1.freeLayers) != 3 {
+		t.Errorf("Wrong number of layers: %v", len(level1.freeLayers))
+	}
+	for z, l := range level1.AllFreeLayers() {
+		if l.Z() != z {
+			t.Errorf("Wrong z for layer: %v %v", z, l)
+		}
+	}
+	if level1.FreeLayer(2).Name != "Free layer 3" {
+		t.Errorf("Wrong layer name after deletion: %v", level1.FreeLayer(3))
 	}
 }
