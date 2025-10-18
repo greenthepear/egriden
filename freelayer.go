@@ -102,6 +102,10 @@ func (fl *FreeLayer) AddGobject(o Gobject, x, y float64) {
 		o.setThinkerElement(fl.thinkers.PushBack(o))
 	}
 	o.setGobjectElement(fl.gobjects.PushBack(o))
+
+	if o.OnAdd() != nil {
+		o.OnAdd()(o, fl)
+	}
 }
 
 func (fl *FreeLayer) MoveGobjectTo(o Gobject, x, y float64) {
@@ -115,6 +119,9 @@ func (fl *FreeLayer) DeleteGobject(o Gobject) {
 	}
 	fl.gobjects.Remove(o.gobjectElement())
 	o.setThinkerElement(nil)
+	if o.OnDelete() != nil {
+		o.OnDelete()(o, fl)
+	}
 }
 
 func (fl *FreeLayer) Z() int {
@@ -123,7 +130,9 @@ func (fl *FreeLayer) Z() int {
 
 func (fl FreeLayer) gobjectRange() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
-		for e := fl.gobjects.Front(); e != nil; e = e.Next() {
+		var next *list.Element
+		for e := fl.gobjects.Front(); e != nil; e = next {
+			next = e.Next() // In case of deletion during iteration
 			o, ok := e.Value.(Gobject)
 			if !ok {
 				panic("list element isn't a Gobject")
@@ -135,6 +144,8 @@ func (fl FreeLayer) gobjectRange() iter.Seq[Gobject] {
 	}
 }
 
+// Iterates over all Gobjects in the layer. Deleting gobjects during iteration
+// might cause headaches.
 func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	return func(yield func(Gobject) bool) {
 		for o := range fl.gobjectRange() {
@@ -145,14 +156,16 @@ func (fl FreeLayer) AllGobjects() iter.Seq[Gobject] {
 	}
 }
 
-// Delete all gobjects
+// Delete all gobjects. This does not trigger OnDelete.
 func (fl *FreeLayer) Clear() {
 	fl.thinkers.Init()
 	fl.gobjects.Init()
 }
 
 func (fl *FreeLayer) RunThinkers() {
-	for e := fl.thinkers.Front(); e != nil; e = e.Next() {
+	var next *list.Element
+	for e := fl.thinkers.Front(); e != nil; e = next {
+		next = e.Next() // In case of deletion during iteration
 		o, ok := e.Value.(Gobject)
 		if !ok {
 			panic("non-gobject in thinker list")

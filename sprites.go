@@ -78,11 +78,12 @@ func CreateImageSequenceFromGlob(
 	found, err := filepath.Glob(globPattern)
 	if err != nil {
 		return ImageSequence{}, fmt.Errorf(
-			"while searching for files using pattern `%v`: %v", globPattern, err)
+			"while searching for files using pattern `%v`: %v",
+			globPattern, err)
 	}
 	if len(found) == 0 {
 		return ImageSequence{}, fmt.Errorf(
-			"no PNG files found using `%v`", globPattern)
+			"no files found using `%v`", globPattern)
 	}
 	return CreateImageSequenceFromPaths(name, found...)
 }

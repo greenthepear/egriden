@@ -11,4 +11,4 @@
 - [ ] Add aseprite file support
 - [ ] Add tilemap support
 - [x] Use linked lists for free layers gobjects
-- [ ] OnAddFunc, OnDeleteFunc for Gobjects?
+- [x] OnAddFunc, OnDeleteFunc for Gobjects?

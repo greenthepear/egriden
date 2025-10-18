@@ -33,11 +33,21 @@ type Gobject interface {
 
 	//Custom scripts
 
-	//Runs during (Layer).RunThinkers() call
+	//Runs during (Layer).RunThinkers() call.
 	OnUpdate() func(self Gobject, l Layer)
-	//Runs every (Layer).Draw() call
+
+	//Runs every (Layer).Draw() call.
 	OnDraw() func(self Gobject, i *ebiten.Image, l Layer)
-	//Default sprite drawing function
+
+	//Runs when Gobject gets added to a layer.
+	OnAdd() func(self Gobject, l Layer)
+
+	//Runs on (*FreeLayer).DeleteGobject and (*GridLayer).DeleteAt calls,
+	//but not when gobjects get overwritten by new or moving Gobjects in a
+	//GridLayer.
+	OnDelete() func(self Gobject, l Layer)
+
+	//Default sprite drawing function.
 	DrawSprite(*ebiten.Image, Layer)
 
 	thinkerElement() *list.Element
@@ -56,8 +66,16 @@ type BaseGobject struct {
 
 	sprites SpritePack
 
-	OnDrawFunc   func(self Gobject, i *ebiten.Image, l Layer)
+	//Runs during (Layer).RunThinkers() call.
+	OnDrawFunc func(self Gobject, i *ebiten.Image, l Layer)
+	//Runs every (Layer).Draw() call.
 	OnUpdateFunc func(self Gobject, l Layer)
+	//Runs when Gobject gets added to a layer.
+	OnAddFunc func(self Gobject, l Layer)
+	//Runs on (*FreeLayer).DeleteGobject and (*GridLayer).DeleteAt calls,
+	//but not when gobjects get overwritten by new or moving Gobjects in a
+	//GridLayer. Also doesn't run during (Layer).Clear().
+	OnDeleteFunc func(self Gobject, l Layer)
 
 	gobjectElem *list.Element // Referenced by FreeLayer
 	thinkerElem *list.Element // Referenced by thinker list in layers
@@ -68,7 +86,8 @@ type BaseGobject struct {
 func NewBaseGobject(name string, sprites SpritePack) BaseGobject {
 	return BaseGobject{name,
 		imggg.Pt[int](0, 0),
-		imggg.Pt[float64](0, 0), sprites, nil, nil, nil, nil}
+		imggg.Pt[float64](0, 0),
+		sprites, nil, nil, nil, nil, nil, nil}
 }
 
 func (o *BaseGobject) Name() string {
@@ -162,12 +181,20 @@ func (o *BaseGobject) SetDrawOffsets(x, y float64) {
 	o.sprites.Offset = imggg.Pt(x, y)
 }
 
-func (o *BaseGobject) OnDraw() func(Gobject, *ebiten.Image, Layer) {
+func (o BaseGobject) OnDraw() func(Gobject, *ebiten.Image, Layer) {
 	return o.OnDrawFunc
 }
 
-func (o *BaseGobject) OnUpdate() func(Gobject, Layer) {
+func (o BaseGobject) OnUpdate() func(Gobject, Layer) {
 	return o.OnUpdateFunc
+}
+
+func (o BaseGobject) OnAdd() func(Gobject, Layer) {
+	return o.OnAddFunc
+}
+
+func (o BaseGobject) OnDelete() func(Gobject, Layer) {
+	return o.OnDeleteFunc
 }
 
 // Default function for drawing the sprite in the grid.
@@ -240,16 +267,27 @@ func (l *GridLayer) internalAddGobject(
 // Will overwrite the any existing Gobject there.
 func (l *GridLayer) AddGobject(o Gobject, x, y int) {
 	l.internalAddGobject(o, x, y)
+
+	if o.OnAdd() != nil {
+		o.OnAdd()(o, l)
+	}
 }
 
-func (l *GridLayer) internalDeleteAt(x, y int) {
+func (l *GridLayer) internalDeleteAt(x, y int,
+	triggerDelete bool, removeFromThinkers bool) {
+
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
 	}
 
 	o := l.GobjectAt(x, y)
-	if o != nil && o.thinkerElement() != nil {
-		l.thinkers.Remove(o.thinkerElement())
+	if o != nil {
+		if removeFromThinkers && o.thinkerElement() != nil {
+			l.thinkers.Remove(o.thinkerElement())
+		}
+		if triggerDelete && o.OnDelete() != nil {
+			o.OnDelete()(o, l)
+		}
 	}
 
 	if l.mode == Sparse {
@@ -261,12 +299,14 @@ func (l *GridLayer) internalDeleteAt(x, y int) {
 }
 
 func (l *GridLayer) DeleteAt(x, y int) {
-	l.internalDeleteAt(x, y)
+	l.internalDeleteAt(x, y, true, true)
 }
 
 // Moves Gobject by first finding itself in the layer with its XY coordinates,
 // but will panic if the Gobject in that cell is not the same, so you cannot use
 // this with Gobjects that are not in the layer, obviously.
+//
+// Will override any Gobject.
 func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 	if !l.IsXYwithinBounds(x, y) {
 		panic("not within layer bounds")
@@ -281,7 +321,7 @@ func (l *GridLayer) MoveGobjectTo(o Gobject, x, y int) {
 		))
 	}
 
-	l.internalDeleteAt(fromX, fromY)
+	l.internalDeleteAt(fromX, fromY, false, true)
 	l.AddGobject(o, x, y)
 }
 
@@ -294,14 +334,14 @@ func (l *GridLayer) SwapGobjectsAt(x1, y1, x2, y2 int) {
 	if o1 != nil {
 		l.internalAddGobject(o1, x2, y2)
 		if o2 == nil {
-			l.internalDeleteAt(x1, y1)
+			l.internalDeleteAt(x1, y1, false, false)
 		}
 	}
 
 	if o2 != nil {
 		l.internalAddGobject(o2, x1, y1)
 		if o1 == nil {
-			l.internalDeleteAt(x2, y2)
+			l.internalDeleteAt(x2, y2, false, false)
 		}
 	}
 }

@@ -27,7 +27,8 @@ type Layer interface {
 	// addition to the layer.
 	RunThinkers()
 
-	// Delete all Gobjects in the layer.
+	// Delete all Gobjects in the layer. This does not trigger Gobjects'
+	// OnDelete.
 	Clear()
 }
 
@@ -313,10 +314,11 @@ func (l GridLayer) AllGobjects() iter.Seq[Gobject] {
 	}
 }
 
-// Deletes all gobjects in the layer.
+// Deletes all gobjects in the layer. This does not trigger OnDelete.
 func (l *GridLayer) Clear() {
 	for o := range l.AllGobjects() {
-		l.DeleteAt(o.GridPos().XY())
+		x, y := o.GridPos().XY()
+		l.internalDeleteAt(x, y, false, true)
 	}
 }
 
