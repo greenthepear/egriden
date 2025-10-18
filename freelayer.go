@@ -161,6 +161,8 @@ func (fl *FreeLayer) RunThinkers() {
 
 // Shortcut for g.Level().CreateFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
+//
+// Deprecated: Use method directly from Level
 func (g *EgridenAssets) CreateFreeLayerOnTop(
 	name string, xOffset, yOffset float64) *FreeLayer {
 
@@ -169,6 +171,8 @@ func (g *EgridenAssets) CreateFreeLayerOnTop(
 
 // Shortcut for g.Level().CreateStaticFreeLayerOnTop().
 // Level implementation must have BaseLevel component.
+//
+// Deprecated: Use method directly from Level
 func (g *EgridenAssets) CreateStaticFreeLayerOnTop(
 	name string, imgWidth, imgHeight int, xOffset, yOffset float64) *FreeLayer {
 

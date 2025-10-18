@@ -145,7 +145,7 @@ func (le *BaseLevel) CreateSimpleGridLayerOnTop(
 }
 
 // Shorthand for [Level.CreateSimpleGridLayerOnTop]
-// for the current level/
+// for the current level
 //
 // Deprecated: Just use CreateGridLayerOnTop.
 func (g *EgridenAssets) CreateSimpleGridLayerOnTop(
@@ -214,6 +214,8 @@ func (le *BaseLevel) ReplaceGridLayerAt(
 
 // Shorthand for [Level.CreateGridLayerOnTop]
 // for the current level
+//
+// Deprecated: Use method directly from Level
 func (g *EgridenAssets) CreateGridLayerOnTop(
 	name string, params GridLayerParameters) *GridLayer {
 
@@ -301,16 +303,22 @@ func (l *GridLayer) RunThinkers() {
 }
 
 // Returns a GridLayer at z in the current Level, returns nil if out of bounds.
+//
+// Deprecated: Use method directly from Level
 func (g EgridenAssets) GridLayer(z int) *GridLayer {
 	return g.Level().GridLayer(z)
 }
 
 // Draw all GridLayers of the current Level in their Z order.
+//
+// Deprecated: Use method directly from Level
 func (g EgridenAssets) DrawAllGridLayers(on *ebiten.Image) {
 	g.Level().DrawAllGridLayers(on)
 }
 
 // Draw all free layers of the current Level in their Z order.
+//
+// Deprecated: Use method directly from Level
 func (g EgridenAssets) DrawAllFreeLayers(on *ebiten.Image) {
 	g.Level().DrawAllFreeLayers(on)
 }
