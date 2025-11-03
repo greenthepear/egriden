@@ -66,9 +66,9 @@ type BaseGobject struct {
 
 	sprites SpritePack
 
-	//Runs during (Layer).RunThinkers() call.
-	OnDrawFunc func(self Gobject, i *ebiten.Image, l Layer)
 	//Runs every (Layer).Draw() call.
+	OnDrawFunc func(self Gobject, i *ebiten.Image, l Layer)
+	//Runs during (Layer).RunThinkers() call.
 	OnUpdateFunc func(self Gobject, l Layer)
 	//Runs when Gobject gets added to a layer.
 	OnAddFunc func(self Gobject, l Layer)

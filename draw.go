@@ -54,7 +54,7 @@ func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 }
 
 // Draw the layer
-func (l GridLayer) Draw(on *ebiten.Image) {
+func (l *GridLayer) Draw(on *ebiten.Image) {
 	if !l.Visible {
 		return
 	}
@@ -67,11 +67,11 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 			}
 
 			if o.OnDraw() != nil {
-				o.OnDraw()(o, on, &l)
+				o.OnDraw()(o, on, l)
 				continue
 			}
 
-			o.DrawSprite(on, &l)
+			o.DrawSprite(on, l)
 		}
 	case Dense:
 		l.drawFromSliceMat(on)
@@ -80,22 +80,22 @@ func (l GridLayer) Draw(on *ebiten.Image) {
 	}
 }
 
-func (fl FreeLayer) internalDraw(on *ebiten.Image) {
+func (fl *FreeLayer) internalDraw(on *ebiten.Image) {
 	for e := fl.gobjects.Front(); e != nil; e = e.Next() {
 		o, ok := e.Value.(Gobject)
 		if !ok {
 			panic("list element isn't a Gobject")
 		}
 		if o.OnDraw() != nil {
-			o.OnDraw()(o, on, &fl)
+			o.OnDraw()(o, on, fl)
 			continue
 		}
-		o.DrawSprite(on, &fl)
+		o.DrawSprite(on, fl)
 	}
 }
 
 // Draw the layer
-func (fl FreeLayer) Draw(on *ebiten.Image) {
+func (fl *FreeLayer) Draw(on *ebiten.Image) {
 	if !fl.Visible {
 		return
 	}
