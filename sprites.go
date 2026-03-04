@@ -88,20 +88,32 @@ func CreateImageSequenceFromGlob(
 	return CreateImageSequenceFromPaths(name, found...)
 }
 
-// Creates image sequence from std's image.Image using ebiten.NewImageFromImage
-func CreateImageSequenceFromImages(
-	name string, images ...image.Image) (ImageSequence, error) {
-
+// Like [CreateImageSequenceFromImages] but you can set a function that is
+// applied to every image before assignment.
+func CreateImageSequenceFromImagesWithApply(
+	name string,
+	f func(image *ebiten.Image) *ebiten.Image,
+	images ...image.Image,
+) (ImageSequence, error) {
 	if len(images) < 1 {
 		return ImageSequence{}, fmt.Errorf("no images provided")
 	}
 	frameSlice := make([]*ebiten.Image, len(images))
 
 	for i, img := range images {
-		frameSlice[i] = ebiten.NewImageFromImage(img)
+		ebitenImage := ebiten.NewImageFromImage(img)
+		finalImage := f(ebitenImage)
+		frameSlice[i] = finalImage
 	}
 
 	return ImageSequence{name, frameSlice}, nil
+}
+
+// Creates image sequence from std's image.Image using ebiten.NewImageFromImage
+func CreateImageSequenceFromImages(
+	name string, images ...image.Image) (ImageSequence, error) {
+	return CreateImageSequenceFromImagesWithApply(name,
+		func(image *ebiten.Image) *ebiten.Image { return image }, images...)
 }
 
 func openAndDecode(in embed.FS, path string) (image.Image, error) {
@@ -129,28 +141,13 @@ func openAndDecodeMany(in embed.FS, paths ...string) ([]image.Image, error) {
 	return r, nil
 }
 
-// Create a map mapping SpritePack names to built SpritePacks, populated with
-// ImageSequences containing frames from files in an [embed.FS],
-// based on YAML data.
-// The YAML requires a specific structure, example of which:
-//
-//	spritepacks:
-//	- name: card bases
-//	  sequences:
-//	    - name: back
-//	      paths:
-//	        - "Graphics/card_base_back.png"
-//	    - name: front
-//	      paths:
-//	        - "Graphics/CardsBase/card_front_base_pink.png"
-//	        - "Graphics/CardsBase/card_front_base_green.png"
-//	        - "Graphics/CardsBase/card_front_base_blue.png"
-//	        - "Graphics/CardsBase/card_front_base_orange.png"
-//	- name: card patterns
-//	...
-func CreateSpritePacksFromYaml(
-	yamlBytes []byte, fs embed.FS) (map[string]SpritePack, error) {
-
+// Like [CreateSpritePacksFromYaml] but you can set a function that is applied
+// to every image before assignment.
+// Simply uses [CreateImageSequenceFromImagesWithApply].
+func CreateSpritePacksFromYamlWithImageApply(
+	yamlBytes []byte, fs embed.FS,
+	f func(image *ebiten.Image) *ebiten.Image,
+) (map[string]SpritePack, error) {
 	var data struct {
 		Spritepacks []struct {
 			Name      string
@@ -173,8 +170,8 @@ func CreateSpritePacksFromYaml(
 			if err != nil {
 				return nil, err
 			}
-			createdSequence, err := CreateImageSequenceFromImages(
-				sequence.Name, images...)
+			createdSequence, err := CreateImageSequenceFromImagesWithApply(
+				sequence.Name, f, images...)
 			if err != nil {
 				return nil, err
 			}
@@ -184,6 +181,33 @@ func CreateSpritePacksFromYaml(
 			finalSequences...)
 	}
 	return spritemap, nil
+}
+
+// Create a map mapping SpritePack names to built SpritePacks, populated with
+// ImageSequences containing frames from files in an [embed.FS],
+// based on YAML data. If you want to modify the image before assignment you
+// can use [CreateSpritePacksFromYamlWithImageApply].
+// The YAML requires a specific structure, example of which:
+//
+//	spritepacks:
+//	- name: card bases
+//	  sequences:
+//	    - name: back
+//	      paths:
+//	        - "Graphics/card_base_back.png"
+//	    - name: front
+//	      paths:
+//	        - "Graphics/CardsBase/card_front_base_pink.png"
+//	        - "Graphics/CardsBase/card_front_base_green.png"
+//	        - "Graphics/CardsBase/card_front_base_blue.png"
+//	        - "Graphics/CardsBase/card_front_base_orange.png"
+//	- name: card patterns
+//	...
+func CreateSpritePacksFromYaml(
+	yamlBytes []byte, fs embed.FS) (map[string]SpritePack, error) {
+
+	return CreateSpritePacksFromYamlWithImageApply(yamlBytes, fs,
+		func(image *ebiten.Image) *ebiten.Image { return image })
 }
 
 func NewSpritePack() SpritePack {
