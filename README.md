@@ -11,9 +11,11 @@ Current features:
 
 There's no abstract grid container for arranging objects to determine the state of your game, instead **the grid is the state**.
 
-It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to [create games](https://madeby.green).
+It is an evolution of the messy code base created for [TacZ](https://github.com/greenthepear/TacZ) and is currently used by me to [create games](https://madeby.green). **[suPerPair](https://greenthefirst.itch.io/superpair) was made in egriden!**
 
-***Currently unstable!*** Contributions of any kind are welcome. Check [the changelog](CHANGELOG.md) for updates.
+[![suPerPair](docs/superpair_miniature.png)](https://greenthefirst.itch.io/superpair)
+
+*Currently unstable!* Contributions of any kind are welcome. Check [the changelog](CHANGELOG.md) for updates.
 
 # Install
 
