@@ -7,11 +7,11 @@ import (
 // Returns ebiten.DrawImageOptions of a Gobject's SpritePack applied
 // to the layer
 func appliedDrawOptionsForPosition(
-	o Gobject, layer Layer) *ebiten.DrawImageOptions {
+	o Gobject, layer Layer) ebiten.DrawImageOptions {
 
 	copy := *o.SpritePack().DrawOptions
 	copy.GeoM.Translate(o.ScreenPos(layer).XY())
-	return &copy
+	return copy
 
 }
 
@@ -36,8 +36,8 @@ func (l GridLayer) drawFromSliceMat(on *ebiten.Image) {
 func (l GridLayer) DrawLikeSprite(
 	img *ebiten.Image, o Gobject, on *ebiten.Image) {
 
-	on.DrawImage(img,
-		appliedDrawOptionsForPosition(o, &l))
+	dop := appliedDrawOptionsForPosition(o, &l)
+	on.DrawImage(img, &dop)
 }
 
 func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
@@ -45,8 +45,8 @@ func (l GridLayer) DrawSprite(o Gobject, on *ebiten.Image) {
 }
 
 func (fl FreeLayer) DrawLikeSprite(img *ebiten.Image, o Gobject, on *ebiten.Image) {
-	on.DrawImage(img,
-		appliedDrawOptionsForPosition(o, &fl))
+	dop := appliedDrawOptionsForPosition(o, &fl)
+	on.DrawImage(img, &dop)
 }
 
 func (fl FreeLayer) DrawSprite(o Gobject, on *ebiten.Image) {
